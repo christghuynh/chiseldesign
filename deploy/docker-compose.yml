@@ -1,0 +1,52 @@
+# Production stack (INF-3): backend (uvicorn) + caddy (HTTPS for $DOMAIN, frontend, /api proxy).
+#
+# Run from the repo root, with the root .env for both variable substitution and the backend:
+#   docker compose --env-file .env -f deploy/docker-compose.yml up -d --build
+# (`make deploy` / deploy/deploy.sh do this on the VM.) Needs DOMAIN in .env, with an A record
+# pointing at this host and ports 80 and 443 open, for the certificate.
+name: sketchbuild
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    image: sketchbuild-backend
+    platform: linux/amd64
+    restart: unless-stopped
+    env_file:
+      - path: ../.env
+        required: true
+    environment:
+      # SQLite and the TTS cache live on the volume, whatever .env says.
+      DATABASE_PATH: /data/sketchbuild.db
+      CORS_ORIGINS: https://${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - app-data:/data
+    expose:
+      - "8000"
+
+  caddy:
+    build:
+      context: ..
+      dockerfile: deploy/web.Dockerfile
+    image: sketchbuild-web
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      SITE_ADDRESS: ${DOMAIN:?set DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      # Certificates and ACME account; keep them so restarts don't hit Let's Encrypt rate limits.
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  app-data:
+  caddy-data:
+  caddy-config:

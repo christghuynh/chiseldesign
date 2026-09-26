@@ -1,0 +1,23 @@
+# SITE_ADDRESS is the domain in production (Caddy then gets a Let's Encrypt certificate and
+# redirects HTTP to HTTPS) and ":80" locally (plain HTTP, no TLS). Set by the compose files.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	handle /api/* {
+		# Backstop for uploads; the backend validates type and size itself (INF-8).
+		request_body {
+			max_size 12MB
+		}
+		reverse_proxy backend:8000
+	}
+
+	handle {
+		root * /srv
+		# Vite fingerprints everything under /assets, so it can be cached forever.
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		# Single-page app: unknown paths get index.html.
+		try_files {path} /index.html
+		file_server
+	}
+}
