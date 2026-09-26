@@ -99,15 +99,15 @@ label { line-height: 1.35; }
   transform: translateY(-1px);
 }
 
-.app-home-button img { transition: height 160ms ease; }
-.app-home-button:hover img { height: 4.5rem; }
+.app-home-button img { transform-origin: center; transition: transform 160ms ease; }
+.app-home-button:hover img { transform: scale(.94); }
 .app-home-button:focus-visible { outline: 3px solid color-mix(in srgb, var(--focus) 45%, transparent); outline-offset: 2px; }
 
 .app-brand-name {
   display: inline-flex;
   align-items: baseline;
   font-family: ui-rounded, "Avenir Next Rounded", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
-  font-size: 1.22em;
+  font-size: 1.38em;
   font-weight: 800;
   letter-spacing: -.065em;
   text-shadow: 0 1px 0 color-mix(in srgb, var(--surface-solid) 75%, transparent);
@@ -118,6 +118,22 @@ label { line-height: 1.35; }
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.app-brand-name--chisel {
+  background: linear-gradient(125deg, var(--text) 2%, var(--brand-deep) 55%, var(--accent-sage-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--surface-solid) 76%, transparent);
+}
+
+:root[data-theme="dark"] .app-brand-name--chisel {
+  background: linear-gradient(125deg, var(--text) 2%, var(--accent-sage) 58%, var(--brand));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 36%);
 }
 
 .app-card {

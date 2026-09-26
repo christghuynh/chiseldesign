@@ -45,12 +45,12 @@ export default function App() {
       </a>
       <header className="app-header sticky top-0 z-30">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button flex items-center gap-2 text-left text-xl font-black tracking-tight" aria-label="Go to SketchBuild welcome screen">
-              <span className="relative h-11 w-16 overflow-hidden" aria-hidden="true">
-                <img src="/brand/logo.png" alt="" className="absolute left-1/2 top-1/2 h-20 max-w-none -translate-x-1/2 -translate-y-1/2" />
+          <div className="flex items-center gap-1">
+            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button flex items-center gap-1 text-left text-xl font-black tracking-tight" aria-label="Go to Chisel welcome screen">
+              <span className="h-11 w-24 shrink-0 overflow-hidden" aria-hidden="true">
+                <img src="/brand/logo.png" alt="" className="h-full w-full object-contain" />
               </span>
-              <span className="app-brand-name"><span>Sketch</span><span className="app-brand-name__build">Build</span></span>
+              <span className="app-brand-name app-brand-name--chisel">Chisel</span>
             </button>
             <div className="app-sections-menu relative">
               <button
