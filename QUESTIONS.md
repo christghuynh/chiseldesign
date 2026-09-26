@@ -82,3 +82,18 @@ What I did meanwhile: kept `highlightedIds` only, as the spec says. Nothing to c
 ### FE-8 — Wording on the Done screen (p4 Lane B, 2026-09-26)
 Question: The Done screen says "Walk the ramp slowly once before anyone relies on it, and check every fastener." That's placeholder safety text I wrote. Should it come from the rules/safety copy (NC-3), and should it depend on the template?
 What I did meanwhile: left the placeholder in `frontend/src/components/build/BuildDone.tsx`.
+
+### FE-11 — Project thumbnails have no field in the API (p4 FE-11, 2026-09-26)
+Question: `ProjectSummary.thumb` exists and `projects.thumb_png` is in SQLite, but `ProjectCreateRequest` and `VersionCreateRequest` have no thumbnail field, and `repo.create_project` always stores NULL. So the frontend can't send the Scene capture (PRD §12).
+Options I see: A) P3 adds `thumb: str | None = None` (PNG data URL) to both requests and stores it (contract change: announce, then `make types`); P4 then captures the canvas on save. B) Keep no thumbnails for the hackathon.
+What I did meanwhile: B. The list shows the template name in the thumbnail slot, and renders `thumb` when the server sends one.
+
+### FE-11 — Where the login button mounts in the header (p4 FE-11, 2026-09-26; for P2)
+Question: `AuthButton` (`components/auth/AuthButton.tsx`) is ready but `App.tsx` is P2's. It shows "Log in", or the user's name with "Log out", or "Login off (local dev)" when Auth0 isn't configured.
+Options I see: A) P2 adds `<AuthButton />` next to the theme and shortcuts buttons in the header (one import, one element). B) Leave it on the Projects screen only.
+What I did meanwhile: B. The Projects screen has it, and "Save" on the Plan and Projects screens offers "Log in to save" when needed.
+
+### FE-11 — Starting a new design while a saved project is open (p4 FE-11, 2026-09-26; for P2)
+Question: `currentProjectId` stays set after opening a project, so if the user then starts a fresh design in Capture, "Save new version" would add it to the old project.
+Options I see: A) Capture calls `setCurrentProjectId(null)` when it applies a new parse result (P2's screen). B) Keep the current safeguard only.
+What I did meanwhile: B. Whenever a project is open, Save offers both "Save new version" and "Save as new project".
