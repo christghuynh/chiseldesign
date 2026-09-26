@@ -1,5 +1,6 @@
-# Local-only planning doc (team spec, not part of the repo)
+# Local-only planning docs (team spec and foundation notes, not part of the repo)
 PRD.md
+foundation.md
 
 # Secrets
 .env
