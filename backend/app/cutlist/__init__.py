@@ -1,13 +1,23 @@
 """Cut list: part extents, labelling and cut-list rows (GEO-10)."""
 
-from app.cutlist.cutlist import actual_dims, build_cut_list, label_for_index, label_parts, sheet_piece_dims
+from app.cutlist.cutlist import (
+    actual_dims,
+    build_cut_list,
+    label_for_index,
+    label_lengths,
+    label_parts,
+    label_sheet_dims,
+    sheet_piece_dims,
+)
 from app.cutlist.geometry import part_extents, part_length, shape_signature
 
 __all__ = [
     "actual_dims",
     "build_cut_list",
     "label_for_index",
+    "label_lengths",
     "label_parts",
+    "label_sheet_dims",
     "part_extents",
     "part_length",
     "shape_signature",

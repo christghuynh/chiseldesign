@@ -6,6 +6,7 @@ from app.cutlist import (
     actual_dims,
     build_cut_list,
     label_for_index,
+    label_lengths,
     label_parts,
     part_extents,
     part_length,
@@ -251,3 +252,15 @@ def test_rows_are_ordered_by_label_and_labels_by_material_then_length(fixture_pa
 def test_build_cut_list_is_a_pure_function_of_labelled_parts():
     labelled = label_parts([make_part(), make_part(name="Ledger", thickness=90.0)])
     assert build_cut_list(labelled) == build_cut_list(labelled)
+
+
+def test_parts_of_one_label_that_differ_by_a_rounding_hair_share_the_longest_length():
+    # coordinates rounded to 3 decimals make two "identical" posts 0.001" apart; the row must show one length
+    short = make_part(name="Post", material="4x4_PT", profile=[(0.0, 0.832), (3.5, 0.832), (3.5, 43.479), (0.0, 43.479)], thickness=3.5)
+    tall = make_part(name="Post", material="4x4_PT", profile=[(0.0, -6.377), (3.5, -6.377), (3.5, 36.271), (0.0, 36.271)], thickness=3.5)
+    assert part_length(short) == 42.647 and part_length(tall) == 42.648
+    parts = label_parts([short, tall])
+    assert parts[0].label == parts[1].label
+    (row,) = build_cut_list(parts)
+    assert row.qty == 2 and row.length_in == 42.648
+    assert label_lengths(parts) == {parts[0].label: 42.648}
