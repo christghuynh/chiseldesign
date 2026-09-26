@@ -127,3 +127,51 @@ def test_shipped_instructions_fake_is_valid_and_used_by_default():
     steps = InstructionsResponse.model_validate(r.json()).steps
     assert len(steps) == 10
     assert steps[0].title == "Prepare the site"
+
+
+# ---------------------------------------------------------------------------------------------
+# Each step must fit in one /voice/tts request (MAX_TEXT_CHARS), callouts included
+
+
+def _frontend_spoken_text(step):
+    # Same as spokenText() in frontend/src/components/build/audioQueue.ts.
+    parts = [step.title, step.text, *(c.spoken for c in step.cut_callouts)]
+    parts = [p.strip() for p in parts if p.strip()]
+    return " ".join(p if p[-1] in ".!?" else p + "." for p in parts)
+
+
+def test_a_step_too_long_to_speak_falls_back_to_the_skeleton():
+    long = _valid_ai_steps(10)
+    long["steps"][4]["text"] = "Carefully line everything up before you fasten it. " * 12  # ~600 chars
+    with fake_responses("instructions", long):
+        steps = InstructionsResponse.model_validate(_post().json()).steps
+    assert steps[1].title == "Cut all stringers"  # skeleton fallback
+
+
+def test_callouts_count_toward_the_spoken_length():
+    # Short enough on its own, but the step with four labels also reads four cut callouts.
+    steps_in = _valid_ai_steps(10)
+    callout_chars = sum(
+        len(c.spoken) + 2
+        for c in InstructionsResponse.model_validate(_post().json()).steps[8].cut_callouts
+    )
+    assert callout_chars > 0
+    steps_in["steps"][8]["text"] = "x" * (500 - callout_chars - len(steps_in["steps"][8]["title"]))
+    with fake_responses("instructions", steps_in):
+        steps = InstructionsResponse.model_validate(_post().json()).steps
+    assert steps[1].title == "Cut all stringers"  # rejected because of the callouts
+
+
+@pytest.mark.parametrize("ai", ["valid", "fallback"])
+def test_every_returned_step_fits_in_one_tts_request(ai):
+    from app.voice.tts import MAX_TEXT_CHARS
+
+    if ai == "valid":
+        with fake_responses("instructions", _valid_ai_steps(10)):
+            steps = InstructionsResponse.model_validate(_post().json()).steps
+    else:
+        with fake_responses("instructions", AIUnavailable("down")):
+            steps = InstructionsResponse.model_validate(_post().json()).steps
+    assert steps
+    for step in steps:
+        assert len(_frontend_spoken_text(step)) <= MAX_TEXT_CHARS, step.n

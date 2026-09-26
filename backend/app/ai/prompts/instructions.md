@@ -18,6 +18,8 @@ Hard rules:
 - Do NOT state any measurement, quantity, angle or price. The app fills in the exact cut sizes
   separately and reads them aloud; if you mention a size you will be wrong. Refer to parts by what
   they are ("the stringers", "the deck boards"), not by number.
+- Keep each step short: title, instructions and safety tip together under 250 characters. The
+  app adds the spoken cut sizes after your text, and each step is read aloud in one go.
 - Keep it encouraging and concrete. No preamble, no closing remarks — just the steps.
 
 ## Build outline (in order)
