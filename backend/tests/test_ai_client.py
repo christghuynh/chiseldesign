@@ -119,7 +119,10 @@ def test_shipped_parse_fake_is_used_when_nothing_is_queued():
     }
     out = generate_json("read this", schema, call="parse")
     assert out["template"] == "ramp"
-    assert out["params"]["total_rise_in"]["value"] == 21
+    # Lane A (parse) owns fakes/parse.json and represents params as a LIST of
+    # {name, value, unit, confidence, source} (see reports/p3-parse.md / QUESTIONS.md).
+    rise = next(p for p in out["params"] if p["name"] == "total_rise_in")
+    assert rise["value"] == 21
 
 
 def test_fake_output_that_breaks_the_schema_is_invalid_output():
