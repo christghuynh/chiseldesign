@@ -22,7 +22,7 @@ def test_each_request_logs_method_path_status_and_latency(caplog):
 def test_request_bodies_are_never_logged(caplog):
     secret = "measurement-blob-that-must-not-appear"
     with caplog.at_level(logging.INFO, logger="app.request"):
-        client.post("/api/generate", json={"template": "ramp", "params": {}, "meta": {"note": secret}})
+        client.post("/api/generate", json={"template": "ramp", "params": {"total_rise_in": {"value": 15, "source": "user"}}, "meta": {"note": secret}})
     lines = [r.getMessage() for r in caplog.records if r.name == "app.request"]
     assert lines == [lines[0]] and lines[0].startswith("POST /api/generate status=200")
     assert all(secret not in r.getMessage() for r in caplog.records)

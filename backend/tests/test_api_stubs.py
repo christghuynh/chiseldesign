@@ -1,4 +1,5 @@
-"""F-4: the FastAPI skeleton. Real routes return fixtures; the rest return 501 in the standard error shape."""
+"""The API routes. /generate, /edit and /templates go through the real engine; /parse and /instructions are
+still fixture stubs; the rest return 501 in the standard error shape."""
 
 import pytest
 from fastapi.testclient import TestClient
@@ -8,7 +9,13 @@ from app.models import EditResponse, GenerateResponse, InstructionsResponse, Par
 
 client = TestClient(app)
 
-SPEC = client.post("/api/generate", json={"template": "ramp", "params": {}}).json()["spec"]
+
+def user(value):
+    return {"value": value, "source": "user"}
+
+
+RAMP_PARAMS = {"total_rise_in": user(15), "available_length_in": user(160)}
+SPEC = client.post("/api/generate", json={"template": "ramp", "params": {**RAMP_PARAMS, "layout": user("straight")}}).json()["spec"]
 
 
 def test_health():
@@ -18,28 +25,46 @@ def test_health():
     assert body["ok"] is True and body["version"]
 
 
-def test_templates_returns_the_ramp_schema():
+def test_templates_returns_the_registered_templates_with_schemas():
     r = client.get("/api/templates")
     assert r.status_code == 200
-    templates = [TemplateInfo.model_validate(t) for t in r.json()]
-    assert [t.key for t in templates] == ["ramp"]
-    assert "total_rise_in" in templates[0].params_schema["properties"]
+    templates = {t["key"]: TemplateInfo.model_validate(t) for t in r.json()}
+    assert "ramp" in templates
+    assert "total_rise_in" in templates["ramp"].params_schema["properties"]
+    assert all(t.params_schema["properties"] and t.defaults is not None for t in templates.values())
 
 
-def test_generate_defaults_to_the_straight_fixture():
-    r = client.post("/api/generate", json={"template": "ramp", "params": {}})
+def test_generate_a_straight_ramp_that_is_too_long_fails_the_site_fit_rule_with_a_switchback_fix():
+    r = client.post("/api/generate", json={"template": "ramp", "params": {**RAMP_PARAMS, "layout": user("straight")}})
     assert r.status_code == 200
     result = GenerateResponse.model_validate(r.json())
-    assert result.spec.params["layout"].value == "straight"
-    assert any(c.id == "RAMP-007" and c.status == "fail" for c in result.spec.rule_checks)
+    assert result.spec.params["layout"].value == "straight" and result.spec.parts and result.plan.cut_list
+    fail = next(c for c in result.spec.rule_checks if c.id == "RAMP-007")
+    assert fail.status == "fail" and fail.fix is not None and fail.fix.params_patch == {"layout": "switchback"}
 
 
-def test_generate_returns_the_switchback_fixture_when_asked():
-    params = {"layout": {"value": "switchback", "source": "user"}}
-    r = client.post("/api/generate", json={"template": "ramp", "params": params})
+def test_generate_applying_the_fix_gives_a_switchback_that_fits():
+    r = client.post("/api/generate", json={"template": "ramp", "params": {**RAMP_PARAMS, "layout": user("switchback")}})
     result = GenerateResponse.model_validate(r.json())
     assert result.spec.params["layout"].value == "switchback"
     assert next(c for c in result.spec.rule_checks if c.id == "RAMP-007").status == "pass"
+
+
+def test_generate_fills_defaults_and_lists_assumptions():
+    r = client.post("/api/generate", json={"template": "ramp", "params": {"total_rise_in": user(12)}})
+    result = GenerateResponse.model_validate(r.json())
+    assert result.spec.params["clear_width_in"].source == "default" and result.spec.params["total_rise_in"].source == "user"
+    assert "clear_width_in" in result.spec.assumed and "total_rise_in" not in result.spec.assumed
+    assert result.plan.has_placeholder_prices is True
+
+
+def test_generate_missing_or_bad_params_are_a_readable_422():
+    missing = client.post("/api/generate", json={"template": "ramp", "params": {}})
+    assert missing.status_code == 422
+    assert missing.json() == {"error": {"code": "INVALID_PARAMS", "message": "total_rise_in is required"}}
+    bad = client.post("/api/generate", json={"template": "ramp", "params": {"total_rise_in": user(200)}})
+    assert bad.status_code == 422 and bad.json()["error"]["code"] == "INVALID_PARAMS"
+    assert "total_rise_in" in bad.json()["error"]["message"]
 
 
 def test_generate_with_an_unknown_template_is_a_readable_422():

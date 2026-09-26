@@ -14,12 +14,29 @@ from fastapi.testclient import TestClient
 from app.ai import numwords
 from app.ai.client import AIInvalidOutput, AIUnavailable, fake_responses
 from app.main import app
-from app.models import InstructionsResponse
+from app import engine
+from app.models import InstructionsResponse, ParamValue
 
 client = TestClient(app)
 
-_STRAIGHT = json.loads((Path(__file__).resolve().parents[2] / "fixtures/specs/ramp_straight.json").read_text())
-SPEC = _STRAIGHT["spec"]
+# The spec comes from the real engine (as it does in the app), so its labels always agree with the cut list the
+# handler recomputes; the tests never depend on which letters a fixture file happens to use.
+_SPEC, _PLAN = engine.generate(
+    "ramp",
+    {"total_rise_in": ParamValue(value=15, source="user"), "available_length_in": ParamValue(value=160, source="user"), "layout": ParamValue(value="straight", source="user")},
+    {"contractor_quote_cad": 4000.0},
+)
+SPEC = _SPEC.model_dump(mode="json")
+_ROWS = [r.model_dump(mode="json") for r in _PLAN.cut_list]
+ALL_LABELS = {r["label"] for r in _ROWS}
+
+
+def _labels(*names):
+    return sorted({r["label"] for r in _ROWS if r["name"] in names})
+
+
+STRINGER = _labels("Stringer")[0]
+STRINGER_LENGTH = next(r["length_in"] for r in _ROWS if r["label"] == STRINGER)
 
 
 @pytest.fixture(autouse=True)
@@ -32,8 +49,8 @@ def _post():
 
 
 def _valid_ai_steps(n=10):
-    # n steps, each using labels that exist in the straight cut list (A..J).
-    labels_cycle = [[], ["C"], ["D"], ["D"], ["C"], ["C"], ["H", "I", "J"], ["A"], ["B", "E", "F", "G"], []]
+    # n steps, each using labels that exist in the straight cut list.
+    labels_cycle = [[], [STRINGER], _labels("Ledger"), _labels("Ledger"), [STRINGER], [STRINGER], _labels("Deck board"), _labels("Edge curb"), _labels("Handrail", "Handrail post"), []]
     steps = []
     for i in range(n):
         steps.append(
@@ -90,12 +107,12 @@ def test_cut_callouts_are_generated_in_code_from_the_cut_list():
     with fake_responses("instructions", _valid_ai_steps(10)):
         r = _post()
     steps = InstructionsResponse.model_validate(r.json()).steps
-    # Step 2 cuts label C: 2x6_PT, 168.541 in.
-    step_c = next(s for s in steps if s.part_labels == ["C"])
+    # The stringer step cuts one label: 2x6_PT, ~168.54 in.
+    step_c = next(s for s in steps if s.part_labels == [STRINGER])
     assert len(step_c.cut_callouts) == 1
     callout = step_c.cut_callouts[0]
-    assert callout.label == "C"
-    assert callout.spoken == numwords.cut_callout_spoken("2x6_PT", 168.541)
+    assert callout.label == STRINGER
+    assert callout.spoken == numwords.cut_callout_spoken("2x6_PT", STRINGER_LENGTH)
     assert callout.spoken == "two-by-six, one hundred sixty-eight and nine sixteenths inches"
 
 
@@ -105,7 +122,7 @@ def test_callouts_only_appear_for_labels_that_cut_in_that_step():
     steps = InstructionsResponse.model_validate(r.json()).steps
     for step in steps:
         callout_labels = [c.label for c in step.cut_callouts]
-        assert callout_labels == [lab for lab in step.part_labels if lab in set("ABCDEFGHIJ")]
+        assert callout_labels == [lab for lab in step.part_labels if lab in ALL_LABELS]
 
 
 @pytest.mark.parametrize("exc", [AIUnavailable("down"), AIInvalidOutput("bad json")])
@@ -117,7 +134,7 @@ def test_ai_error_falls_back_with_a_200(exc):
     assert len(steps) == 10
     assert steps[0].title == "Prepare the site"
     # Fallback still attaches code-generated callouts.
-    step_c = next(s for s in steps if s.part_labels == ["C"])
+    step_c = next(s for s in steps if s.part_labels == [STRINGER])
     assert step_c.cut_callouts and step_c.cut_callouts[0].spoken.startswith("two-by-six,")
 
 

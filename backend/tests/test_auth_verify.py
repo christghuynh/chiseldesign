@@ -16,7 +16,7 @@ from app.auth.verify import DEV_USER_SUB, current_user, verify_token
 from app.main import app
 
 client = TestClient(app)
-SPEC = client.post("/api/generate", json={"template": "ramp", "params": {}}).json()["spec"]
+SPEC = client.post("/api/generate", json={"template": "ramp", "params": {"total_rise_in": {"value": 15, "source": "user"}}}).json()["spec"]
 
 DOMAIN = "test-tenant.auth0.com"
 AUDIENCE = "https://api.sketchbuild.test"

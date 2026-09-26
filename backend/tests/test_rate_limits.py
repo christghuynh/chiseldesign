@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app.main import create_app
 
 client = TestClient(create_app())
-SPEC = client.post("/api/generate", json={"template": "ramp", "params": {}, "meta": {}}).json()["spec"]
+SPEC = client.post("/api/generate", json={"template": "ramp", "params": {"total_rise_in": {"value": 15, "source": "user"}}, "meta": {}}).json()["spec"]
 
 
 @pytest.fixture(autouse=True)

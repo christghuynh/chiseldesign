@@ -12,7 +12,7 @@ from app.models import ProjectDetail, ProjectSummary
 
 client = TestClient(app)
 
-SPEC = client.post("/api/generate", json={"template": "ramp", "params": {}}).json()["spec"]
+SPEC = client.post("/api/generate", json={"template": "ramp", "params": {"total_rise_in": {"value": 15, "source": "user"}}}).json()["spec"]
 
 
 @pytest.fixture(autouse=True)
