@@ -596,59 +596,31 @@
         "group": "run_1"
       },
       {
-        "id": "B-1",
-        "label": "B",
+        "id": "C-1",
+        "label": "C",
         "name": "Edge curb",
-        "material": "2x4_PT",
-        "profile": [[0.0, 0.0], [90.0, 7.5], [89.709, 10.988], [-0.291, 3.488]],
+        "material": "2x6_PT",
+        "profile": [[0.0, 0.0], [180.0, 15.0], [179.543, 20.481], [-0.457, 5.481]],
         "thickness": 1.5,
         "transform": {
           "pos": [0.0, 0.0, -18.0],
           "rot": [0.0, 0.0, 0.0]
         },
-        "cut_notes": ["Splice: butt joint over a stringer"],
+        "cut_notes": ["Square cut both ends"],
         "group": "run_1"
       },
       {
-        "id": "B-2",
-        "label": "B",
+        "id": "C-2",
+        "label": "C",
         "name": "Edge curb",
-        "material": "2x4_PT",
-        "profile": [[0.0, 0.0], [90.0, 7.5], [89.709, 10.988], [-0.291, 3.488]],
+        "material": "2x6_PT",
+        "profile": [[0.0, 0.0], [180.0, 15.0], [179.543, 20.481], [-0.457, 5.481]],
         "thickness": 1.5,
         "transform": {
           "pos": [0.0, 0.0, 16.5],
           "rot": [0.0, 0.0, 0.0]
         },
-        "cut_notes": ["Splice: butt joint over a stringer"],
-        "group": "run_1"
-      },
-      {
-        "id": "B-3",
-        "label": "B",
-        "name": "Edge curb",
-        "material": "2x4_PT",
-        "profile": [[90.0, 7.5], [180.0, 15.0], [179.709, 18.488], [89.709, 10.988]],
-        "thickness": 1.5,
-        "transform": {
-          "pos": [0.0, 0.0, -18.0],
-          "rot": [0.0, 0.0, 0.0]
-        },
-        "cut_notes": ["Splice: butt joint over a stringer"],
-        "group": "run_1"
-      },
-      {
-        "id": "B-4",
-        "label": "B",
-        "name": "Edge curb",
-        "material": "2x4_PT",
-        "profile": [[90.0, 7.5], [180.0, 15.0], [179.709, 18.488], [89.709, 10.988]],
-        "thickness": 1.5,
-        "transform": {
-          "pos": [0.0, 0.0, 16.5],
-          "rot": [0.0, 0.0, 0.0]
-        },
-        "cut_notes": ["Splice: butt joint over a stringer"],
+        "cut_notes": ["Square cut both ends"],
         "group": "run_1"
       },
       {
@@ -722,8 +694,8 @@
         "group": "handrail"
       },
       {
-        "id": "C-1",
-        "label": "C",
+        "id": "B-1",
+        "label": "B",
         "name": "Handrail",
         "material": "2x4_PT",
         "profile": [[119.562, 42.576], [178.395, 47.479], [178.105, 50.967], [119.271, 46.064]],
@@ -806,8 +778,8 @@
         "group": "handrail"
       },
       {
-        "id": "C-2",
-        "label": "C",
+        "id": "B-2",
+        "label": "B",
         "name": "Handrail",
         "material": "2x4_PT",
         "profile": [[119.562, 42.576], [178.395, 47.479], [178.105, 50.967], [119.271, 46.064]],
@@ -865,7 +837,7 @@
         "id": "RAMP-006",
         "title": "Edge protection on open sides",
         "status": "pass",
-        "detail": "Edge curbs are included on both sides",
+        "detail": "Edge curbs 5.5 in tall (the standard asks for at least 4 in) are included on every open side",
         "source_ref": "ada-405-9",
         "fix": null
       },
@@ -920,25 +892,25 @@
       },
       {
         "label": "B",
-        "name": "Edge curb",
-        "material": "2x4_PT",
-        "actual_dims": "1-1/2 × 3-1/2",
-        "length_in": 90.312,
-        "length_display": "7' 6-5/16\"",
-        "qty": 4,
-        "part_ids": ["B-1", "B-2", "B-3", "B-4"],
-        "cut_notes": ["Splice: butt joint over a stringer"]
-      },
-      {
-        "label": "C",
         "name": "Handrail",
         "material": "2x4_PT",
         "actual_dims": "1-1/2 × 3-1/2",
         "length_in": 59.038,
         "length_display": "4' 11-1/16\"",
         "qty": 2,
-        "part_ids": ["C-1", "C-2"],
+        "part_ids": ["B-1", "B-2"],
         "cut_notes": ["Splice: butt joint centered on a post"]
+      },
+      {
+        "label": "C",
+        "name": "Edge curb",
+        "material": "2x6_PT",
+        "actual_dims": "1-1/2 × 5-1/2",
+        "length_in": 180.624,
+        "length_display": "15' 5/8\"",
+        "qty": 2,
+        "part_ids": ["C-1", "C-2"],
+        "cut_notes": ["Square cut both ends"]
       },
       {
         "label": "D",
@@ -1082,82 +1054,6 @@
     ],
     "layouts": [
       {
-        "stock_id": "2x4_PT_96-1",
-        "material": "2x4_PT",
-        "kind": "board",
-        "length_in": 96.0,
-        "width_in": 3.5,
-        "pieces": [
-          {
-            "label": "B",
-            "part_id": "B-1",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 90.312,
-            "h": 3.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.94075
-      },
-      {
-        "stock_id": "2x4_PT_96-2",
-        "material": "2x4_PT",
-        "kind": "board",
-        "length_in": 96.0,
-        "width_in": 3.5,
-        "pieces": [
-          {
-            "label": "B",
-            "part_id": "B-2",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 90.312,
-            "h": 3.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.94075
-      },
-      {
-        "stock_id": "2x4_PT_96-3",
-        "material": "2x4_PT",
-        "kind": "board",
-        "length_in": 96.0,
-        "width_in": 3.5,
-        "pieces": [
-          {
-            "label": "B",
-            "part_id": "B-3",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 90.312,
-            "h": 3.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.94075
-      },
-      {
-        "stock_id": "2x4_PT_96-4",
-        "material": "2x4_PT",
-        "kind": "board",
-        "length_in": 96.0,
-        "width_in": 3.5,
-        "pieces": [
-          {
-            "label": "B",
-            "part_id": "B-4",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 90.312,
-            "h": 3.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.94075
-      },
-      {
         "stock_id": "2x4_PT_120-1",
         "material": "2x4_PT",
         "kind": "board",
@@ -1203,8 +1099,8 @@
         "width_in": 3.5,
         "pieces": [
           {
-            "label": "C",
-            "part_id": "C-1",
+            "label": "B",
+            "part_id": "B-1",
             "x": 0.0,
             "y": 0.0,
             "w": 59.038,
@@ -1212,8 +1108,8 @@
             "rotated": false
           },
           {
-            "label": "C",
-            "part_id": "C-2",
+            "label": "B",
+            "part_id": "B-2",
             "x": 59.163,
             "y": 0.0,
             "w": 59.038,
@@ -1250,6 +1146,44 @@
         "width_in": 5.5,
         "pieces": [
           {
+            "label": "C",
+            "part_id": "C-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 180.624,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.94075
+      },
+      {
+        "stock_id": "2x6_PT_192-2",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "C",
+            "part_id": "C-2",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 180.624,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.94075
+      },
+      {
+        "stock_id": "2x6_PT_192-3",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
             "label": "D",
             "part_id": "D-1",
             "x": 0.0,
@@ -1262,7 +1196,7 @@
         "utilization": 0.8778125
       },
       {
-        "stock_id": "2x6_PT_192-2",
+        "stock_id": "2x6_PT_192-4",
         "material": "2x6_PT",
         "kind": "board",
         "length_in": 192.0,
@@ -1281,7 +1215,7 @@
         "utilization": 0.8778125
       },
       {
-        "stock_id": "2x6_PT_192-3",
+        "stock_id": "2x6_PT_192-5",
         "material": "2x6_PT",
         "kind": "board",
         "length_in": 192.0,
@@ -1300,7 +1234,7 @@
         "utilization": 0.8778125
       },
       {
-        "stock_id": "2x6_PT_192-4",
+        "stock_id": "2x6_PT_192-6",
         "material": "2x6_PT",
         "kind": "board",
         "length_in": 192.0,
@@ -1791,15 +1725,6 @@
     ],
     "shopping": [
       {
-        "key": "2x4_PT_96",
-        "description": "2x4 pressure-treated, 8 ft (placeholder price)",
-        "unit": "each",
-        "qty": 4,
-        "unit_price": 8.0,
-        "subtotal": 32.0,
-        "source_url": null
-      },
-      {
         "key": "2x4_PT_120",
         "description": "2x4 pressure-treated, 10 ft (placeholder price)",
         "unit": "each",
@@ -1821,9 +1746,9 @@
         "key": "2x6_PT_192",
         "description": "2x6 pressure-treated, 16 ft (placeholder price)",
         "unit": "each",
-        "qty": 4,
+        "qty": 6,
         "unit_price": 24.0,
-        "subtotal": 96.0,
+        "subtotal": 144.0,
         "source_url": null
       },
       {
@@ -1881,11 +1806,11 @@
         "source_url": null
       }
     ],
-    "subtotal": 526.0,
-    "tax": 68.38,
-    "total": 594.38,
+    "subtotal": 542.0,
+    "tax": 70.46,
+    "total": 612.46,
     "contractor_quote": 4000.0,
-    "savings": 3405.62,
+    "savings": 3387.54,
     "has_placeholder_prices": true
   }
 }

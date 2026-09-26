@@ -44,13 +44,13 @@
   {
     "phase": "install",
     "title": "Install the edge curbs",
-    "part_labels": ["B"],
+    "part_labels": ["C"],
     "action_key": "install_curbs"
   },
   {
     "phase": "install",
     "title": "Install the handrail posts and rails",
-    "part_labels": ["A", "C", "F", "G", "H"],
+    "part_labels": ["A", "B", "F", "G", "H"],
     "action_key": "install_handrails"
   },
   {
