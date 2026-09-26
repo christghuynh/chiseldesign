@@ -305,13 +305,13 @@ def test_rule_sources_exist_and_come_from_the_constants():
 @pytest.mark.parametrize(
     ("height", "status", "patch"),
     [
-        (12, "warn", 24),
-        (23.9, "warn", 24),
-        (24, "pass", None),
+        (12, "warn", 15),
+        (14.9, "warn", 15),
+        (15, "pass", None),
         (30, "pass", None),
-        (36, "pass", None),
-        (36.1, "warn", 36),
-        (48, "warn", 36),
+        (34, "pass", None),
+        (34.1, "warn", 34),
+        (48, "warn", 34),
     ],
 )
 def test_height_rule_thresholds_and_fix(height, status, patch):
