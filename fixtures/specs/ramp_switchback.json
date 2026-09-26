@@ -1,0 +1,2791 @@
+{
+  "spec": {
+    "schema_version": "1.0",
+    "template": "ramp",
+    "params": {
+      "total_rise_in": {
+        "value": 15.0,
+        "source": "inferred",
+        "confidence": 0.7
+      },
+      "clear_width_in": {
+        "value": 36.0,
+        "source": "default",
+        "confidence": null
+      },
+      "available_length_in": {
+        "value": 160.0,
+        "source": "user",
+        "confidence": null
+      },
+      "layout": {
+        "value": "switchback",
+        "source": "user",
+        "confidence": null
+      },
+      "slope_ratio": {
+        "value": 12.0,
+        "source": "default",
+        "confidence": null
+      },
+      "landing_length_in": {
+        "value": 60.0,
+        "source": "default",
+        "confidence": null
+      },
+      "framing": {
+        "value": "2x6_PT",
+        "source": "default",
+        "confidence": null
+      },
+      "stringer_spacing_in": {
+        "value": 16.0,
+        "source": "default",
+        "confidence": null
+      },
+      "decking": {
+        "value": "5/4x6_PT_deck",
+        "source": "default",
+        "confidence": null
+      },
+      "deck_gap_in": {
+        "value": 0.125,
+        "source": "default",
+        "confidence": null
+      },
+      "handrails": {
+        "value": "auto",
+        "source": "default",
+        "confidence": null
+      },
+      "edge_curb": {
+        "value": true,
+        "source": "default",
+        "confidence": null
+      }
+    },
+    "assumed": [
+      "total_rise_in",
+      "clear_width_in",
+      "slope_ratio",
+      "landing_length_in",
+      "framing",
+      "stringer_spacing_in",
+      "decking",
+      "deck_gap_in",
+      "handrails",
+      "edge_curb"
+    ],
+    "parts": [
+      {
+        "id": "F-1",
+        "label": "F",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[78.27, 0.0], [90.0, 0.977], [90.0, 6.497], [12.042, 0.0]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["85.2\u00b0 level cut at bottom end (sits on grade)", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_1"
+      },
+      {
+        "id": "F-2",
+        "label": "F",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[78.27, 0.0], [90.0, 0.977], [90.0, 6.497], [12.042, 0.0]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, -6.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["85.2\u00b0 level cut at bottom end (sits on grade)", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_1"
+      },
+      {
+        "id": "F-3",
+        "label": "F",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[78.27, 0.0], [90.0, 0.977], [90.0, 6.497], [12.042, 0.0]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, 5.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["85.2\u00b0 level cut at bottom end (sits on grade)", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_1"
+      },
+      {
+        "id": "F-4",
+        "label": "F",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[78.27, 0.0], [90.0, 0.977], [90.0, 6.497], [12.042, 0.0]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, 16.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["85.2\u00b0 level cut at bottom end (sits on grade)", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_1"
+      },
+      {
+        "id": "O-1",
+        "label": "O",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[5.519, 0.0], [5.481, 0.457], [0.0, 0.0]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Bevel bottom edge to sit on grade"],
+        "group": "run_1"
+      },
+      {
+        "id": "O-2",
+        "label": "O",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[5.644, 0.0], [11.164, 0.0], [11.087, 0.924], [5.606, 0.467]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Bevel bottom edge to sit on grade"],
+        "group": "run_1"
+      },
+      {
+        "id": "O-3",
+        "label": "O",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[11.289, 0.0], [12.042, 0.0], [16.775, 0.394], [16.692, 1.391], [11.211, 0.934]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Bevel bottom edge to sit on grade"],
+        "group": "run_1"
+      },
+      {
+        "id": "N-1",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[16.9, 0.405], [22.381, 0.862], [22.298, 1.858], [16.817, 1.401]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-2",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[22.505, 0.872], [27.986, 1.329], [27.903, 2.325], [22.422, 1.869]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-3",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[28.111, 1.339], [33.592, 1.796], [33.509, 2.792], [28.028, 2.336]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-4",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[33.716, 1.806], [39.197, 2.263], [39.114, 3.26], [33.633, 2.803]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-5",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[39.322, 2.273], [44.803, 2.73], [44.72, 3.727], [39.239, 3.27]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-6",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[44.928, 2.741], [50.409, 3.197], [50.326, 4.194], [44.845, 3.737]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-7",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[50.533, 3.208], [56.014, 3.664], [55.931, 4.661], [50.45, 4.204]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-8",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[56.139, 3.675], [61.62, 4.132], [61.537, 5.128], [56.056, 4.671]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-9",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[61.744, 4.142], [67.225, 4.599], [67.142, 5.595], [61.661, 5.138]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-10",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[67.35, 4.609], [72.831, 5.066], [72.748, 6.062], [67.267, 5.606]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-11",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[72.955, 5.076], [78.436, 5.533], [78.353, 6.529], [72.872, 6.073]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-12",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[78.561, 5.543], [84.042, 6.0], [83.959, 6.997], [78.478, 6.54]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "N-13",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[84.167, 6.01], [89.648, 6.467], [89.565, 7.464], [84.084, 7.007]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_1"
+      },
+      {
+        "id": "P-1",
+        "label": "P",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[89.772, 6.478], [90.083, 6.503], [90.0, 7.5], [89.689, 7.474]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Rip to 5/16 in wide"],
+        "group": "run_1"
+      },
+      {
+        "id": "A-1",
+        "label": "A",
+        "name": "Edge curb",
+        "material": "2x4_PT",
+        "profile": [[0.0, 0.0], [90.0, 7.5], [89.709, 10.988], [-0.291, 3.488]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "run_1"
+      },
+      {
+        "id": "A-2",
+        "label": "A",
+        "name": "Edge curb",
+        "material": "2x4_PT",
+        "profile": [[0.0, 0.0], [90.0, 7.5], [89.709, 10.988], [-0.291, 3.488]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, 16.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "run_1"
+      },
+      {
+        "id": "K-1",
+        "label": "K",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[0.0, 0.0], [3.5, 0.0], [3.5, 36.271], [0.0, 36.271]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [0.0, 0.0, -21.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "J-1",
+        "label": "J",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[43.25, 0.0], [46.75, 0.0], [46.75, 39.875], [43.25, 39.875]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [0.0, 0.0, -21.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "I-1",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[86.5, 0.832], [90.0, 0.832], [90.0, 43.479], [86.5, 43.479]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [0.0, 0.0, -21.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "B-1",
+        "label": "B",
+        "name": "Handrail",
+        "material": "2x4_PT",
+        "profile": [[-2.699, 32.388], [87.301, 39.888], [87.01, 43.376], [-2.99, 35.876]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, -23.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "K-2",
+        "label": "K",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[0.0, 0.0], [3.5, 0.0], [3.5, 36.271], [0.0, 36.271]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [0.0, 0.0, 18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "J-2",
+        "label": "J",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[43.25, 0.0], [46.75, 0.0], [46.75, 39.875], [43.25, 39.875]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [0.0, 0.0, 18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "I-2",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[86.5, 0.832], [90.0, 0.832], [90.0, 43.479], [86.5, 43.479]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [0.0, 0.0, 18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "B-2",
+        "label": "B",
+        "name": "Handrail",
+        "material": "2x4_PT",
+        "profile": [[-2.699, 32.388], [87.301, 39.888], [87.01, 43.376], [-2.99, 35.876]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, 21.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "C-1",
+        "label": "C",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[0.0, -6.523], [90.0, 0.977], [90.0, 6.497], [0.0, -1.003]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["4.8\u00b0 plumb cut at bottom end", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_2"
+      },
+      {
+        "id": "C-2",
+        "label": "C",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[0.0, -6.523], [90.0, 0.977], [90.0, 6.497], [0.0, -1.003]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 54.5],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["4.8\u00b0 plumb cut at bottom end", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_2"
+      },
+      {
+        "id": "C-3",
+        "label": "C",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[0.0, -6.523], [90.0, 0.977], [90.0, 6.497], [0.0, -1.003]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 43.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["4.8\u00b0 plumb cut at bottom end", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_2"
+      },
+      {
+        "id": "C-4",
+        "label": "C",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "profile": [[0.0, -6.523], [90.0, 0.977], [90.0, 6.497], [0.0, -1.003]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 31.5],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["4.8\u00b0 plumb cut at bottom end", "4.8\u00b0 plumb cut at top end"],
+        "group": "run_2"
+      },
+      {
+        "id": "H-1",
+        "label": "H",
+        "name": "Ledger",
+        "material": "2x6_PT",
+        "profile": [[90.0, 0.997], [91.5, 0.997], [91.5, 6.497], [90.0, 6.497]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "run_2"
+      },
+      {
+        "id": "N-14",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[0.083, -0.997], [5.564, -0.54], [5.481, 0.457], [0.0, 0.0]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-15",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[5.689, -0.529], [11.17, -0.073], [11.087, 0.924], [5.606, 0.467]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-16",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[11.294, -0.062], [16.775, 0.394], [16.692, 1.391], [11.211, 0.934]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-17",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[16.9, 0.405], [22.381, 0.862], [22.298, 1.858], [16.817, 1.401]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-18",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[22.505, 0.872], [27.986, 1.329], [27.903, 2.325], [22.422, 1.869]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-19",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[28.111, 1.339], [33.592, 1.796], [33.509, 2.792], [28.028, 2.336]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-20",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[33.716, 1.806], [39.197, 2.263], [39.114, 3.26], [33.633, 2.803]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-21",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[39.322, 2.273], [44.803, 2.73], [44.72, 3.727], [39.239, 3.27]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-22",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[44.928, 2.741], [50.409, 3.197], [50.326, 4.194], [44.845, 3.737]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-23",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[50.533, 3.208], [56.014, 3.664], [55.931, 4.661], [50.45, 4.204]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-24",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[56.139, 3.675], [61.62, 4.132], [61.537, 5.128], [56.056, 4.671]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-25",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[61.744, 4.142], [67.225, 4.599], [67.142, 5.595], [61.661, 5.138]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-26",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[67.35, 4.609], [72.831, 5.066], [72.748, 6.062], [67.267, 5.606]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-27",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[72.955, 5.076], [78.436, 5.533], [78.353, 6.529], [72.872, 6.073]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-28",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[78.561, 5.543], [84.042, 6.0], [83.959, 6.997], [78.478, 6.54]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "N-29",
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[84.167, 6.01], [89.648, 6.467], [89.565, 7.464], [84.084, 7.007]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": [],
+        "group": "run_2"
+      },
+      {
+        "id": "P-2",
+        "label": "P",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[89.772, 6.478], [90.083, 6.503], [90.0, 7.5], [89.689, 7.474]],
+        "thickness": 36.0,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Rip to 5/16 in wide"],
+        "group": "run_2"
+      },
+      {
+        "id": "A-3",
+        "label": "A",
+        "name": "Edge curb",
+        "material": "2x4_PT",
+        "profile": [[0.0, 0.0], [90.0, 7.5], [89.709, 10.988], [-0.291, 3.488]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 66.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "run_2"
+      },
+      {
+        "id": "A-4",
+        "label": "A",
+        "name": "Edge curb",
+        "material": "2x4_PT",
+        "profile": [[0.0, 0.0], [90.0, 7.5], [89.709, 10.988], [-0.291, 3.488]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 31.5],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "run_2"
+      },
+      {
+        "id": "I-3",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[0.0, -6.377], [3.5, -6.377], [3.5, 36.271], [0.0, 36.271]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [90.0, 7.5, 69.5],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "I-4",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[43.25, -2.773], [46.75, -2.773], [46.75, 39.875], [43.25, 39.875]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [90.0, 7.5, 69.5],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "I-5",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[86.5, 0.832], [90.0, 0.832], [90.0, 43.479], [86.5, 43.479]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [90.0, 7.5, 69.5],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "B-3",
+        "label": "B",
+        "name": "Handrail",
+        "material": "2x4_PT",
+        "profile": [[-2.699, 32.388], [87.301, 39.888], [87.01, 43.376], [-2.99, 35.876]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 71.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "I-6",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[0.0, -6.377], [3.5, -6.377], [3.5, 36.271], [0.0, 36.271]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [90.0, 7.5, 30.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "I-7",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[43.25, -2.773], [46.75, -2.773], [46.75, 39.875], [43.25, 39.875]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [90.0, 7.5, 30.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "I-8",
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "profile": [[86.5, 0.832], [90.0, 0.832], [90.0, 43.479], [86.5, 43.479]],
+        "thickness": 3.5,
+        "transform": {
+          "pos": [90.0, 7.5, 30.0],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "B-4",
+        "label": "B",
+        "name": "Handrail",
+        "material": "2x4_PT",
+        "profile": [[-2.699, 32.388], [87.301, 39.888], [87.01, 43.376], [-2.99, 35.876]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [90.0, 7.5, 26.5],
+          "rot": [0.0, 3.141592653589793, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "handrail"
+      },
+      {
+        "id": "D-1",
+        "label": "D",
+        "name": "Landing rim (end)",
+        "material": "2x6_PT",
+        "profile": [[90.0, 1.0], [91.5, 1.0], [91.5, 6.5], [90.0, 6.5]],
+        "thickness": 84.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "landing"
+      },
+      {
+        "id": "D-2",
+        "label": "D",
+        "name": "Landing rim (end)",
+        "material": "2x6_PT",
+        "profile": [[148.5, 1.0], [150.0, 1.0], [150.0, 6.5], [148.5, 6.5]],
+        "thickness": 84.0,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "landing"
+      },
+      {
+        "id": "G-1",
+        "label": "G",
+        "name": "Landing rim (side)",
+        "material": "2x6_PT",
+        "profile": [[91.5, 1.0], [148.5, 1.0], [148.5, 6.5], [91.5, 6.5]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "landing"
+      },
+      {
+        "id": "G-2",
+        "label": "G",
+        "name": "Landing rim (side)",
+        "material": "2x6_PT",
+        "profile": [[91.5, 1.0], [148.5, 1.0], [148.5, 6.5], [91.5, 6.5]],
+        "thickness": 1.5,
+        "transform": {
+          "pos": [0.0, 0.0, 64.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "landing"
+      },
+      {
+        "id": "E-1",
+        "label": "E",
+        "name": "Landing joist",
+        "material": "2x6_PT",
+        "profile": [[105.25, 1.0], [106.75, 1.0], [106.75, 6.5], [105.25, 6.5]],
+        "thickness": 81.0,
+        "transform": {
+          "pos": [0.0, 0.0, -16.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "landing"
+      },
+      {
+        "id": "E-2",
+        "label": "E",
+        "name": "Landing joist",
+        "material": "2x6_PT",
+        "profile": [[121.25, 1.0], [122.75, 1.0], [122.75, 6.5], [121.25, 6.5]],
+        "thickness": 81.0,
+        "transform": {
+          "pos": [0.0, 0.0, -16.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "landing"
+      },
+      {
+        "id": "E-3",
+        "label": "E",
+        "name": "Landing joist",
+        "material": "2x6_PT",
+        "profile": [[137.25, 1.0], [138.75, 1.0], [138.75, 6.5], [137.25, 6.5]],
+        "thickness": 81.0,
+        "transform": {
+          "pos": [0.0, 0.0, -16.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Square cut both ends"],
+        "group": "landing"
+      },
+      {
+        "id": "L-1",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, -18.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-2",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, -12.375],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-3",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, -6.75],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-4",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, -1.125],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-5",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 4.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-6",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 10.125],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-7",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 15.75],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-8",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 21.375],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-9",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 27.0],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-10",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 32.625],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-11",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 38.25],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-12",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 43.875],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-13",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 49.5],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "L-14",
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.5,
+        "transform": {
+          "pos": [0.0, 0.0, 55.125],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": [],
+        "group": "landing"
+      },
+      {
+        "id": "M-1",
+        "label": "M",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "profile": [[90.0, 6.5], [150.0, 6.5], [150.0, 7.5], [90.0, 7.5]],
+        "thickness": 5.25,
+        "transform": {
+          "pos": [0.0, 0.0, 60.75],
+          "rot": [0.0, 0.0, 0.0]
+        },
+        "cut_notes": ["Rip to 5-1/4 in wide"],
+        "group": "landing"
+      }
+    ],
+    "rule_checks": [
+      {
+        "id": "RAMP-001",
+        "title": "Slope no steeper than 1:12",
+        "status": "pass",
+        "detail": "Slope is 1:12; guideline is 1:12 or gentler",
+        "source_ref": "tbd-slope",
+        "fix": null
+      },
+      {
+        "id": "RAMP-002",
+        "title": "Rise per run within maximum",
+        "status": "pass",
+        "detail": "Rise per run is 7-1/2\"; guideline maximum is 2' 6\"",
+        "source_ref": "tbd-rise-per-run",
+        "fix": null
+      },
+      {
+        "id": "RAMP-003",
+        "title": "Clear width at least the minimum",
+        "status": "pass",
+        "detail": "Clear width is 3' 0\"; guideline minimum is 3' 0\"",
+        "source_ref": "tbd-clear-width",
+        "fix": null
+      },
+      {
+        "id": "RAMP-004",
+        "title": "Landings long enough",
+        "status": "pass",
+        "detail": "Turn landing is 5' 0\"; guideline minimum is 5' 0\"",
+        "source_ref": "tbd-landing",
+        "fix": null
+      },
+      {
+        "id": "RAMP-005",
+        "title": "Handrails present when required",
+        "status": "pass",
+        "detail": "Rise is 1' 3\"; handrails are included",
+        "source_ref": "tbd-handrails",
+        "fix": null
+      },
+      {
+        "id": "RAMP-006",
+        "title": "Edge protection on open sides",
+        "status": "pass",
+        "detail": "Edge curbs are included on both sides",
+        "source_ref": "tbd-edge-protection",
+        "fix": null
+      },
+      {
+        "id": "RAMP-007",
+        "title": "Fits the available length",
+        "status": "pass",
+        "detail": "Ramp footprint is 12' 6\"; 13' 4\" is available",
+        "source_ref": "tbd-site-fit",
+        "fix": null
+      },
+      {
+        "id": "RAMP-008",
+        "title": "Permit and local code notice",
+        "status": "info",
+        "detail": "Guidelines, not code compliance. Check local permit requirements.",
+        "source_ref": "tbd-permit",
+        "fix": null
+      }
+    ],
+    "meta": {
+      "contractor_quote_cad": 4000.0,
+      "notes": "Rough hand-built fixture (task F-3). Replaced by real /generate output in GEO-16. Prices are placeholders.",
+      "image_ref": null
+    }
+  },
+  "plan": {
+    "cut_list": [
+      {
+        "label": "A",
+        "name": "Edge curb",
+        "material": "2x4_PT",
+        "actual_dims": "1-1/2 × 3-1/2",
+        "length_in": 90.312,
+        "length_display": "7' 6-5/16\"",
+        "qty": 4,
+        "part_ids": ["A-1", "A-2", "A-3", "A-4"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "B",
+        "name": "Handrail",
+        "material": "2x4_PT",
+        "actual_dims": "1-1/2 × 3-1/2",
+        "length_in": 90.312,
+        "length_display": "7' 6-5/16\"",
+        "qty": 4,
+        "part_ids": ["B-1", "B-2", "B-3", "B-4"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "C",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "actual_dims": "1-1/2 × 5-1/2",
+        "length_in": 90.77,
+        "length_display": "7' 6-3/4\"",
+        "qty": 4,
+        "part_ids": ["C-1", "C-2", "C-3", "C-4"],
+        "cut_notes": ["4.8\u00b0 plumb cut at bottom end", "4.8\u00b0 plumb cut at top end"]
+      },
+      {
+        "label": "D",
+        "name": "Landing rim (end)",
+        "material": "2x6_PT",
+        "actual_dims": "1-1/2 × 5-1/2",
+        "length_in": 84.0,
+        "length_display": "7' 0\"",
+        "qty": 2,
+        "part_ids": ["D-1", "D-2"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "E",
+        "name": "Landing joist",
+        "material": "2x6_PT",
+        "actual_dims": "1-1/2 × 5-1/2",
+        "length_in": 81.0,
+        "length_display": "6' 9\"",
+        "qty": 3,
+        "part_ids": ["E-1", "E-2", "E-3"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "F",
+        "name": "Stringer",
+        "material": "2x6_PT",
+        "actual_dims": "1-1/2 × 5-1/2",
+        "length_in": 78.229,
+        "length_display": "6' 6-1/4\"",
+        "qty": 4,
+        "part_ids": ["F-1", "F-2", "F-3", "F-4"],
+        "cut_notes": ["85.2\u00b0 level cut at bottom end (sits on grade)", "4.8\u00b0 plumb cut at top end"]
+      },
+      {
+        "label": "G",
+        "name": "Landing rim (side)",
+        "material": "2x6_PT",
+        "actual_dims": "1-1/2 × 5-1/2",
+        "length_in": 57.0,
+        "length_display": "4' 9\"",
+        "qty": 2,
+        "part_ids": ["G-1", "G-2"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "H",
+        "name": "Ledger",
+        "material": "2x6_PT",
+        "actual_dims": "1-1/2 × 5-1/2",
+        "length_in": 36.0,
+        "length_display": "3' 0\"",
+        "qty": 1,
+        "part_ids": ["H-1"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "I",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "actual_dims": "3-1/2 × 3-1/2",
+        "length_in": 42.647,
+        "length_display": "3' 6-5/8\"",
+        "qty": 8,
+        "part_ids": ["I-1", "I-2", "I-3", "I-4", "I-5", "I-6", "I-7", "I-8"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "J",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "actual_dims": "3-1/2 × 3-1/2",
+        "length_in": 39.875,
+        "length_display": "3' 3-7/8\"",
+        "qty": 2,
+        "part_ids": ["J-1", "J-2"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "K",
+        "name": "Handrail post",
+        "material": "4x4_PT",
+        "actual_dims": "3-1/2 × 3-1/2",
+        "length_in": 36.271,
+        "length_display": "3' 1/4\"",
+        "qty": 2,
+        "part_ids": ["K-1", "K-2"],
+        "cut_notes": ["Square cut both ends"]
+      },
+      {
+        "label": "L",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "actual_dims": "1 × 5-1/2",
+        "length_in": 60.0,
+        "length_display": "5' 0\"",
+        "qty": 14,
+        "part_ids": [
+          "L-1",
+          "L-2",
+          "L-3",
+          "L-4",
+          "L-5",
+          "L-6",
+          "L-7",
+          "L-8",
+          "L-9",
+          "L-10",
+          "L-11",
+          "L-12",
+          "L-13",
+          "L-14"
+        ],
+        "cut_notes": []
+      },
+      {
+        "label": "M",
+        "name": "Landing deck board",
+        "material": "5/4x6_PT_deck",
+        "actual_dims": "1 × 5-1/2",
+        "length_in": 60.0,
+        "length_display": "5' 0\"",
+        "qty": 1,
+        "part_ids": ["M-1"],
+        "cut_notes": ["Rip to 5-1/4 in wide"]
+      },
+      {
+        "label": "N",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "actual_dims": "1 × 5-1/2",
+        "length_in": 36.0,
+        "length_display": "3' 0\"",
+        "qty": 29,
+        "part_ids": [
+          "N-1",
+          "N-2",
+          "N-3",
+          "N-4",
+          "N-5",
+          "N-6",
+          "N-7",
+          "N-8",
+          "N-9",
+          "N-10",
+          "N-11",
+          "N-12",
+          "N-13",
+          "N-14",
+          "N-15",
+          "N-16",
+          "N-17",
+          "N-18",
+          "N-19",
+          "N-20",
+          "N-21",
+          "N-22",
+          "N-23",
+          "N-24",
+          "N-25",
+          "N-26",
+          "N-27",
+          "N-28",
+          "N-29"
+        ],
+        "cut_notes": []
+      },
+      {
+        "label": "O",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "actual_dims": "1 × 5-1/2",
+        "length_in": 36.0,
+        "length_display": "3' 0\"",
+        "qty": 3,
+        "part_ids": ["O-1", "O-2", "O-3"],
+        "cut_notes": ["Bevel bottom edge to sit on grade"]
+      },
+      {
+        "label": "P",
+        "name": "Deck board",
+        "material": "5/4x6_PT_deck",
+        "actual_dims": "1 × 5-1/2",
+        "length_in": 36.0,
+        "length_display": "3' 0\"",
+        "qty": 2,
+        "part_ids": ["P-1", "P-2"],
+        "cut_notes": ["Rip to 5/16 in wide"]
+      }
+    ],
+    "layouts": [
+      {
+        "stock_id": "2x4_PT_96-1",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "A",
+            "part_id": "A-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x4_PT_96-2",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "A",
+            "part_id": "A-2",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x4_PT_96-3",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "B",
+            "part_id": "B-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x4_PT_96-4",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "B",
+            "part_id": "B-2",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x4_PT_96-5",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "A",
+            "part_id": "A-3",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x4_PT_96-6",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "A",
+            "part_id": "A-4",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x4_PT_96-7",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "B",
+            "part_id": "B-3",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x4_PT_96-8",
+        "material": "2x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "B",
+            "part_id": "B-4",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.312,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9407
+      },
+      {
+        "stock_id": "2x6_PT_192-1",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "C",
+            "part_id": "C-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.77,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "C",
+            "part_id": "C-2",
+            "x": 90.895,
+            "y": 0.0,
+            "w": 90.77,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9455
+      },
+      {
+        "stock_id": "2x6_PT_192-2",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "C",
+            "part_id": "C-3",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 90.77,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "C",
+            "part_id": "C-4",
+            "x": 90.895,
+            "y": 0.0,
+            "w": 90.77,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9455
+      },
+      {
+        "stock_id": "2x6_PT_192-3",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "D",
+            "part_id": "D-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 84.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "D",
+            "part_id": "D-2",
+            "x": 84.125,
+            "y": 0.0,
+            "w": 84.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.875
+      },
+      {
+        "stock_id": "2x6_PT_168-1",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 168.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "E",
+            "part_id": "E-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 81.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "E",
+            "part_id": "E-2",
+            "x": 81.125,
+            "y": 0.0,
+            "w": 81.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9643
+      },
+      {
+        "stock_id": "2x6_PT_168-2",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 168.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "E",
+            "part_id": "E-3",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 81.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "F",
+            "part_id": "F-1",
+            "x": 81.125,
+            "y": 0.0,
+            "w": 78.229,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9478
+      },
+      {
+        "stock_id": "2x6_PT_168-3",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 168.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "F",
+            "part_id": "F-2",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 78.229,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "F",
+            "part_id": "F-3",
+            "x": 78.354,
+            "y": 0.0,
+            "w": 78.229,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9313
+      },
+      {
+        "stock_id": "2x6_PT_192-4",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "F",
+            "part_id": "F-4",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 78.229,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "G",
+            "part_id": "G-1",
+            "x": 78.354,
+            "y": 0.0,
+            "w": 57.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "H",
+            "part_id": "H-1",
+            "x": 135.479,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8918
+      },
+      {
+        "stock_id": "2x6_PT_96-1",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "G",
+            "part_id": "G-2",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 57.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.5938
+      },
+      {
+        "stock_id": "4x4_PT_96-1",
+        "material": "4x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "I",
+            "part_id": "I-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          },
+          {
+            "label": "I",
+            "part_id": "I-2",
+            "x": 42.772,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8885
+      },
+      {
+        "stock_id": "4x4_PT_96-2",
+        "material": "4x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "I",
+            "part_id": "I-3",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          },
+          {
+            "label": "I",
+            "part_id": "I-4",
+            "x": 42.772,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8885
+      },
+      {
+        "stock_id": "4x4_PT_96-3",
+        "material": "4x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "I",
+            "part_id": "I-5",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          },
+          {
+            "label": "I",
+            "part_id": "I-6",
+            "x": 42.772,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8885
+      },
+      {
+        "stock_id": "4x4_PT_96-4",
+        "material": "4x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "I",
+            "part_id": "I-7",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          },
+          {
+            "label": "I",
+            "part_id": "I-8",
+            "x": 42.772,
+            "y": 0.0,
+            "w": 42.647,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8885
+      },
+      {
+        "stock_id": "4x4_PT_120-1",
+        "material": "4x4_PT",
+        "kind": "board",
+        "length_in": 120.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "J",
+            "part_id": "J-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 39.875,
+            "h": 3.5,
+            "rotated": false
+          },
+          {
+            "label": "J",
+            "part_id": "J-2",
+            "x": 40.0,
+            "y": 0.0,
+            "w": 39.875,
+            "h": 3.5,
+            "rotated": false
+          },
+          {
+            "label": "K",
+            "part_id": "K-1",
+            "x": 80.0,
+            "y": 0.0,
+            "w": 36.271,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9668
+      },
+      {
+        "stock_id": "4x4_PT_96-5",
+        "material": "4x4_PT",
+        "kind": "board",
+        "length_in": 96.0,
+        "width_in": 3.5,
+        "pieces": [
+          {
+            "label": "K",
+            "part_id": "K-2",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.271,
+            "h": 3.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.3778
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-1",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "L",
+            "part_id": "L-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-2",
+            "x": 60.125,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-3",
+            "x": 120.25,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-2",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "L",
+            "part_id": "L-4",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-5",
+            "x": 60.125,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-6",
+            "x": 120.25,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-3",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "L",
+            "part_id": "L-7",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-8",
+            "x": 60.125,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-9",
+            "x": 120.25,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-4",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "L",
+            "part_id": "L-10",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-11",
+            "x": 60.125,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-12",
+            "x": 120.25,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-5",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "L",
+            "part_id": "L-13",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "L",
+            "part_id": "L-14",
+            "x": 60.125,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "M",
+            "part_id": "M-1",
+            "x": 120.25,
+            "y": 0.0,
+            "w": 60.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-6",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "O",
+            "part_id": "O-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "O",
+            "part_id": "O-2",
+            "x": 36.125,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "O",
+            "part_id": "O-3",
+            "x": 72.25,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-1",
+            "x": 108.375,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-2",
+            "x": 144.5,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-7",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "N",
+            "part_id": "N-3",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-4",
+            "x": 36.125,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-5",
+            "x": 72.25,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-6",
+            "x": 108.375,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-7",
+            "x": 144.5,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-8",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "N",
+            "part_id": "N-8",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-9",
+            "x": 36.125,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-10",
+            "x": 72.25,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-11",
+            "x": 108.375,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-12",
+            "x": 144.5,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-9",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "N",
+            "part_id": "N-13",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "P",
+            "part_id": "P-1",
+            "x": 36.125,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-14",
+            "x": 72.25,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-15",
+            "x": 108.375,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-16",
+            "x": 144.5,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-10",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "N",
+            "part_id": "N-17",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-18",
+            "x": 36.125,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-19",
+            "x": 72.25,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-20",
+            "x": 108.375,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-21",
+            "x": 144.5,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_192-11",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "N",
+            "part_id": "N-22",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-23",
+            "x": 36.125,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-24",
+            "x": 72.25,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-25",
+            "x": 108.375,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-26",
+            "x": 144.5,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.9375
+      },
+      {
+        "stock_id": "5/4x6_PT_deck_168-1",
+        "material": "5/4x6_PT_deck",
+        "kind": "board",
+        "length_in": 168.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "N",
+            "part_id": "N-27",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-28",
+            "x": 36.125,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "N",
+            "part_id": "N-29",
+            "x": 72.25,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "P",
+            "part_id": "P-2",
+            "x": 108.375,
+            "y": 0.0,
+            "w": 36.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8571
+      }
+    ],
+    "shopping": [
+      {
+        "key": "2x4_PT_96",
+        "description": "2x4 pressure-treated, 8 ft (placeholder price)",
+        "unit": "each",
+        "qty": 8,
+        "unit_price": 8.0,
+        "subtotal": 64.0,
+        "source_url": null
+      },
+      {
+        "key": "2x6_PT_96",
+        "description": "2x6 pressure-treated, 8 ft (placeholder price)",
+        "unit": "each",
+        "qty": 1,
+        "unit_price": 8.0,
+        "subtotal": 8.0,
+        "source_url": null
+      },
+      {
+        "key": "2x6_PT_168",
+        "description": "2x6 pressure-treated, 14 ft (placeholder price)",
+        "unit": "each",
+        "qty": 3,
+        "unit_price": 14.0,
+        "subtotal": 42.0,
+        "source_url": null
+      },
+      {
+        "key": "2x6_PT_192",
+        "description": "2x6 pressure-treated, 16 ft (placeholder price)",
+        "unit": "each",
+        "qty": 4,
+        "unit_price": 16.0,
+        "subtotal": 64.0,
+        "source_url": null
+      },
+      {
+        "key": "4x4_PT_96",
+        "description": "4x4 pressure-treated, 8 ft (placeholder price)",
+        "unit": "each",
+        "qty": 5,
+        "unit_price": 8.0,
+        "subtotal": 40.0,
+        "source_url": null
+      },
+      {
+        "key": "4x4_PT_120",
+        "description": "4x4 pressure-treated, 10 ft (placeholder price)",
+        "unit": "each",
+        "qty": 1,
+        "unit_price": 10.0,
+        "subtotal": 10.0,
+        "source_url": null
+      },
+      {
+        "key": "5/4x6_PT_deck_168",
+        "description": "5/4x6 pressure-treated deck board, 14 ft (placeholder price)",
+        "unit": "each",
+        "qty": 1,
+        "unit_price": 14.0,
+        "subtotal": 14.0,
+        "source_url": null
+      },
+      {
+        "key": "5/4x6_PT_deck_192",
+        "description": "5/4x6 pressure-treated deck board, 16 ft (placeholder price)",
+        "unit": "each",
+        "qty": 11,
+        "unit_price": 16.0,
+        "subtotal": 176.0,
+        "source_url": null
+      },
+      {
+        "key": "deck_screws_box",
+        "description": "Deck screws, box (placeholder price)",
+        "unit": "box",
+        "qty": 1,
+        "unit_price": 10.0,
+        "subtotal": 10.0,
+        "source_url": null
+      },
+      {
+        "key": "structural_screws_box",
+        "description": "Structural screws, box (placeholder price)",
+        "unit": "box",
+        "qty": 1,
+        "unit_price": 10.0,
+        "subtotal": 10.0,
+        "source_url": null
+      },
+      {
+        "key": "post_base",
+        "description": "Post base (placeholder price)",
+        "unit": "each",
+        "qty": 12,
+        "unit_price": 5.0,
+        "subtotal": 60.0,
+        "source_url": null
+      },
+      {
+        "key": "joist_hanger",
+        "description": "Joist hanger (placeholder price)",
+        "unit": "each",
+        "qty": 6,
+        "unit_price": 2.0,
+        "subtotal": 12.0,
+        "source_url": null
+      }
+    ],
+    "subtotal": 510.0,
+    "tax": 66.3,
+    "total": 576.3,
+    "contractor_quote": 4000.0,
+    "savings": 3423.7,
+    "has_placeholder_prices": true
+  }
+}

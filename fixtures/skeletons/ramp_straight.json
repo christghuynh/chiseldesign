@@ -1,0 +1,62 @@
+[
+  {
+    "phase": "prep",
+    "title": "Prepare the site",
+    "part_labels": [],
+    "action_key": "prepare_site"
+  },
+  {
+    "phase": "cut",
+    "title": "Cut all stringers",
+    "part_labels": ["C"],
+    "action_key": "cut_stringers"
+  },
+  {
+    "phase": "cut",
+    "title": "Cut the ledger",
+    "part_labels": ["D"],
+    "action_key": "cut_ledger"
+  },
+  {
+    "phase": "assemble",
+    "title": "Attach the ledger",
+    "part_labels": ["D"],
+    "action_key": "attach_ledger"
+  },
+  {
+    "phase": "assemble",
+    "title": "Set the stringers",
+    "part_labels": ["C"],
+    "action_key": "set_stringers"
+  },
+  {
+    "phase": "check",
+    "title": "Check the slope with a level",
+    "part_labels": ["C"],
+    "action_key": "check_slope"
+  },
+  {
+    "phase": "install",
+    "title": "Install the decking",
+    "part_labels": ["H", "I", "J"],
+    "action_key": "install_decking"
+  },
+  {
+    "phase": "install",
+    "title": "Install the edge curbs",
+    "part_labels": ["A"],
+    "action_key": "install_curbs"
+  },
+  {
+    "phase": "install",
+    "title": "Install the handrail posts and rails",
+    "part_labels": ["B", "E", "F", "G"],
+    "action_key": "install_handrails"
+  },
+  {
+    "phase": "check",
+    "title": "Final check",
+    "part_labels": [],
+    "action_key": "final_check"
+  }
+]

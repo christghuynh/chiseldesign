@@ -1,0 +1,162 @@
+{
+  "steps": [
+    {
+      "n": 1,
+      "title": "Prepare the site",
+      "text": "Clear and level the area where the ramp will sit. Mark the footprint of both runs and the turn landing on the ground.",
+      "part_labels": [],
+      "cut_callouts": [],
+      "safety_tip": "Call before you dig to locate buried utilities."
+    },
+    {
+      "n": 2,
+      "title": "Cut the stringers",
+      "text": "Cut all stringers for both runs. Each has a level cut where it meets the ground and a plumb cut at the top.",
+      "part_labels": ["C", "F"],
+      "cut_callouts": [
+        {
+          "label": "C",
+          "spoken": "two-by-six, ninety and three quarters inches"
+        },
+        {
+          "label": "F",
+          "spoken": "two-by-six, seventy-eight and a quarter inches"
+        }
+      ],
+      "safety_tip": "Wear eye and ear protection when using the saw."
+    },
+    {
+      "n": 3,
+      "title": "Cut the ledger and landing framing",
+      "text": "Cut the ledger and the landing frame: end rims, side rims and inner joists.",
+      "part_labels": ["D", "E", "G", "H"],
+      "cut_callouts": [
+        {
+          "label": "D",
+          "spoken": "two-by-six, eighty-four inches"
+        },
+        {
+          "label": "E",
+          "spoken": "two-by-six, eighty-one inches"
+        },
+        {
+          "label": "G",
+          "spoken": "two-by-six, fifty-seven inches"
+        },
+        {
+          "label": "H",
+          "spoken": "two-by-six, thirty-six inches"
+        }
+      ],
+      "safety_tip": null
+    },
+    {
+      "n": 4,
+      "title": "Build the landing",
+      "text": "Assemble the landing frame with the inner joists 16 inches apart, then fasten the landing deck boards across it.",
+      "part_labels": ["D", "E", "G", "L", "M"],
+      "cut_callouts": [
+        {
+          "label": "L",
+          "spoken": "five-quarter deck board, sixty inches"
+        },
+        {
+          "label": "M",
+          "spoken": "five-quarter deck board, sixty inches"
+        }
+      ],
+      "safety_tip": null
+    },
+    {
+      "n": 5,
+      "title": "Attach the ledger",
+      "text": "Fasten the ledger to the porch at the top of the second run. Check that it is level before you drive the last fasteners.",
+      "part_labels": ["H"],
+      "cut_callouts": [],
+      "safety_tip": "Make sure the ladder is on firm ground."
+    },
+    {
+      "n": 6,
+      "title": "Set the stringers",
+      "text": "Set the stringers of both runs, spaced 16 inches on center. Fasten the tops to the landing frame and the ledger.",
+      "part_labels": ["C", "F"],
+      "cut_callouts": [],
+      "safety_tip": null
+    },
+    {
+      "n": 7,
+      "title": "Check the slope",
+      "text": "Lay a level along each run and confirm the slope is 1 in 12 or gentler before decking.",
+      "part_labels": ["C", "F"],
+      "cut_callouts": [],
+      "safety_tip": null
+    },
+    {
+      "n": 8,
+      "title": "Install the decking",
+      "text": "Fasten deck boards across the stringers with a small gap between boards. Rip the last board on each run to fit.",
+      "part_labels": ["N", "O", "P"],
+      "cut_callouts": [
+        {
+          "label": "N",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        },
+        {
+          "label": "O",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        },
+        {
+          "label": "P",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        }
+      ],
+      "safety_tip": null
+    },
+    {
+      "n": 9,
+      "title": "Install the edge curbs",
+      "text": "Fasten a curb along both outside edges of each run so wheels and walker feet can't slip off.",
+      "part_labels": ["A"],
+      "cut_callouts": [
+        {
+          "label": "A",
+          "spoken": "two-by-four, ninety and five sixteenths inches"
+        }
+      ],
+      "safety_tip": null
+    },
+    {
+      "n": 10,
+      "title": "Install the handrail posts and rails",
+      "text": "Set the 4x4 posts no more than 6 feet apart, then fasten a rail across the top of each row of posts.",
+      "part_labels": ["B", "I", "J", "K"],
+      "cut_callouts": [
+        {
+          "label": "B",
+          "spoken": "two-by-four, ninety and five sixteenths inches"
+        },
+        {
+          "label": "I",
+          "spoken": "four-by-four, forty-two and five eighths inches"
+        },
+        {
+          "label": "J",
+          "spoken": "four-by-four, thirty-nine and seven eighths inches"
+        },
+        {
+          "label": "K",
+          "spoken": "four-by-four, thirty-six and a quarter inches"
+        }
+      ],
+      "safety_tip": "Rails must be solid enough to lean on. Test them before use."
+    },
+    {
+      "n": 11,
+      "title": "Final check",
+      "text": "Check every fastener, sand splinters, and walk the whole ramp slowly before anyone relies on it.",
+      "part_labels": [],
+      "cut_callouts": [],
+      "safety_tip": null
+    }
+  ]
+}

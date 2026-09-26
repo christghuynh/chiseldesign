@@ -1,0 +1,106 @@
+[
+  {
+    "key": "ramp",
+    "name": "Accessibility ramp",
+    "description": "Wooden ramp with optional switchback, landings, curbs and handrails.",
+    "params_schema": {
+      "title": "Params",
+      "type": "object",
+      "required": ["total_rise_in"],
+      "properties": {
+        "total_rise_in": {
+          "title": "Total rise (in)",
+          "description": "Height from ground to the top of the porch",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "clear_width_in": {
+          "title": "Clear width (in)",
+          "description": "Usable width between edges",
+          "type": "number",
+          "default": 36,
+          "minimum": 30,
+          "maximum": 60
+        },
+        "available_length_in": {
+          "title": "Available length (in)",
+          "description": "Length of yard or site available; leave empty for no limit",
+          "type": ["number", "null"],
+          "default": null
+        },
+        "layout": {
+          "title": "Layout",
+          "description": "auto picks straight when it fits, otherwise switchback",
+          "type": "string",
+          "enum": ["auto", "straight", "switchback"],
+          "default": "auto"
+        },
+        "slope_ratio": {
+          "title": "Slope (run per unit rise)",
+          "description": "12 means 1:12; 12 or more is recommended",
+          "type": "number",
+          "default": 12
+        },
+        "landing_length_in": {
+          "title": "Landing length (in)",
+          "description": "Length of each landing",
+          "type": "number",
+          "default": 60
+        },
+        "framing": {
+          "title": "Framing lumber",
+          "description": "Stringer and landing framing material",
+          "type": "string",
+          "enum": ["2x6_PT", "2x8_PT"],
+          "default": "2x6_PT"
+        },
+        "stringer_spacing_in": {
+          "title": "Stringer spacing (in)",
+          "description": "On center",
+          "type": "number",
+          "default": 16
+        },
+        "decking": {
+          "title": "Decking",
+          "description": "Deck boards or plywood",
+          "type": "string",
+          "enum": ["5/4x6_PT_deck", "3/4_ext_ply"],
+          "default": "5/4x6_PT_deck"
+        },
+        "deck_gap_in": {
+          "title": "Deck gap (in)",
+          "description": "Gap between deck boards",
+          "type": "number",
+          "default": 0.125
+        },
+        "handrails": {
+          "title": "Handrails",
+          "description": "auto adds handrails when the rise requires them",
+          "type": "string",
+          "enum": ["auto", "yes", "no"],
+          "default": "auto"
+        },
+        "edge_curb": {
+          "title": "Edge curb",
+          "description": "2x4 curb on open sides",
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "defaults": {
+      "clear_width_in": 36,
+      "available_length_in": null,
+      "layout": "auto",
+      "slope_ratio": 12,
+      "landing_length_in": 60,
+      "framing": "2x6_PT",
+      "stringer_spacing_in": 16,
+      "decking": "5/4x6_PT_deck",
+      "deck_gap_in": 0.125,
+      "handrails": "auto",
+      "edge_curb": true
+    }
+  }
+]
