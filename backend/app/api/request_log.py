@@ -48,5 +48,21 @@ class RequestLogMiddleware:
             )
 
 
+def _ensure_app_logging() -> None:
+    """Make INFO lines from `app.*` loggers (this one, `app.ai` latency) visible under uvicorn.
+
+    uvicorn only configures its own loggers; without this, Python's default WARNING level would
+    silently drop them. Records still propagate to the root logger (pytest's caplog relies on it).
+    """
+    app_log = logging.getLogger("app")
+    if not app_log.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+        app_log.addHandler(handler)
+    if app_log.level == logging.NOTSET:
+        app_log.setLevel(logging.INFO)
+
+
 def add_request_logging(app) -> None:
+    _ensure_app_logging()
     app.add_middleware(RequestLogMiddleware)
