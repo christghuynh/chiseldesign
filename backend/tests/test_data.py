@@ -44,10 +44,15 @@ def test_every_purchasable_item_has_a_price():
         assert key in all_prices
 
 
-def test_prices_are_placeholders_until_nc4():
-    """Flip this when real retailer prices replace the placeholders (task NC-4)."""
-    assert all(p.placeholder for p in prices().values())
-    assert all("placeholder price" in p.description for p in prices().values())
+def test_placeholders_say_so_and_real_prices_cite_their_source():
+    """Holds before and after the real retailer prices arrive (task NC-4)."""
+    for key, p in prices().items():
+        assert p.price_cad > 0, key
+        if p.placeholder:
+            assert "placeholder price" in p.description and p.source_url is None, key
+        else:
+            assert p.source_url and p.source_url.startswith("http") and p.retrieved_at, f"{key}: a real price needs its product URL and date"
+            assert "placeholder" not in p.description.lower(), key
 
 
 def test_fastener_boxes_say_how_many_pieces_they_hold():
