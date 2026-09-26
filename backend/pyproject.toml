@@ -11,6 +11,8 @@ dependencies = [
     "cadquery>=2.5",
     "google-genai==2.25.0",
     "jsonschema==4.25.1",
+    "pyjwt==2.10.1",
+    "cryptography==44.0.0",
 ]
 
 [dependency-groups]
