@@ -8,9 +8,20 @@ and the curb/rail/panel segmenting can all share them.
 import math
 from dataclasses import dataclass
 
+from app.data import LumberSpec, lumber_spec
+from app.rules.constants import EDGE_CURB_MIN_HEIGHT_IN
+
 # A ripped (narrowed) board is only worth cutting when it ends up at least this wide.
 MIN_RIPPED_WIDTH_IN = 2.0
 _EPS = 1e-9
+CURB_MATERIAL = "2x6_PT"  # on edge: 5.5 in tall, above the 4 in minimum that ADA 405.9.2 needs
+
+
+def curb_spec() -> LumberSpec:
+    """The curb board. A curb must stand at least EDGE_CURB_MIN_HEIGHT_IN tall (ADA 405.9.2): a 2x4 on edge (3.5 in) is too low."""
+    spec = lumber_spec(CURB_MATERIAL)
+    assert spec.width_in is not None and spec.width_in >= EDGE_CURB_MIN_HEIGHT_IN.value, "edge curbs must be at least 4 in tall"
+    return spec
 
 
 @dataclass(frozen=True)

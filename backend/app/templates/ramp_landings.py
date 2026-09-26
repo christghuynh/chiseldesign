@@ -10,8 +10,11 @@ frame is `h = min(framing width, E - d)` deep, so it never reaches below the gro
     Landing deck board    boards run ALONG X, laid across the landing width (same sliver-avoiding rule as runs)
     Landing deck panel    plywood tiled into pieces of at most 96 x 48 in
     Landing post          4x4 corner posts from the ground up to the frame bottom (none if the frame is on the ground)
+    Edge curb             2x6 on edge along every open edge of the deck (only when `edge_curb` is on)
 
-Decisions: no curbs and no handrails on landings. Pieces longer than the longest board sold (a very
+Decisions: no handrails on landings. Curbs go on the open edges only: both long sides, and on a switchback
+turn landing also the far end and the 12 in gap between the two runs (a straight ramp's landing is
+entered from one run and left by the next, so its two ends are not edges). Pieces longer than the longest board sold (a very
 long landing) are cut into equal lengths with a butt joint, so every part can be bought.
 """
 
@@ -21,7 +24,7 @@ from app.data import lumber_spec
 from app.engine_errors import ParamValidationError
 from app.templates.geometry import PartBuilder
 from app.templates.ramp import Derived, Landing, Params
-from app.templates.ramp_boards import equal_pieces, layout_boards
+from app.templates.ramp_boards import CURB_MATERIAL, curb_spec, equal_pieces, layout_boards
 from app.util.units import format_fraction
 
 MIN_FRAME_DEPTH_IN = 1.5
@@ -83,6 +86,8 @@ def add_landing_parts(b: PartBuilder, params: Params, derived: Derived, landing:
         k += 1
 
     _add_decking(b, params, derived, landing, top)
+    if params.edge_curb:
+        _add_curbs(b, derived, landing)
 
     post = lumber_spec(POST_MATERIAL).width_in or 3.5
     if bottom > _MIN_POST_HEIGHT_IN:
@@ -111,3 +116,52 @@ def _add_decking(b: PartBuilder, params: Params, derived: Derived, landing: Land
             if span.ripped:
                 board_notes.insert(0, f"Rip to {format_fraction(span.width)} in wide")
             b.add("Landing deck board", params.decking, profile, span.width, (0.0, 0.0, z0 + span.start), board_notes, group)
+
+
+def _add_curbs(b: PartBuilder, derived: Derived, landing: Landing) -> None:
+    """Edge curbs (ADA 405.9) stand on the deck surface along every open edge of the landing."""
+    group = landing_group(landing)
+    spec = curb_spec()
+    assert spec.width_in is not None
+    t, h = spec.thickness_in, spec.width_in
+    x0, x1, z0, z1 = landing.x_min, landing.x_max, landing.z_min, landing.z_max
+    top = landing.elevation_in
+
+    # The curb on the run that leaves this landing has a slanted end (its ends are square to the slope, so its
+    # top leans back over the landing by h * tan(angle)). The landing curb is cut to the same slant so the two
+    # meet without overlapping.
+    lean = h * math.tan(derived.slope_angle_rad)
+    following = derived.runs[landing.index + 1] if landing.index + 1 < len(derived.runs) else None
+    slant_at_max = following is not None and abs(following.x_start - x1) < abs(following.x_start - x0)
+
+    def along_x(z: float) -> None:
+        pieces = equal_pieces(x1 - x0, spec.max_stock_length_in)
+        for i, (start, end) in enumerate(pieces):
+            notes = _splice_notes(len(pieces))
+            top_start, top_end = x0 + start, x0 + end
+            if following is not None and slant_at_max and i == len(pieces) - 1:
+                top_end -= lean
+                notes = [*notes, "Bevel the top end to match the run curb"]
+            elif following is not None and not slant_at_max and i == 0:
+                top_start += lean
+                notes = [*notes, "Bevel the top end to match the run curb"]
+            profile = [(x0 + start, top), (x0 + end, top), (top_end, top + h), (top_start, top + h)]
+            b.add("Edge curb", CURB_MATERIAL, profile, t, (0.0, 0.0, z), notes, group)
+
+    def across_z(x: float, za: float, zb: float) -> None:
+        pieces = equal_pieces(zb - za, spec.max_stock_length_in)
+        for start, end in pieces:
+            profile = [(x, top), (x + t, top), (x + t, top + h), (x, top + h)]
+            b.add("Edge curb", CURB_MATERIAL, profile, end - start, (0.0, 0.0, za + start), _splice_notes(len(pieces)), group)
+
+    along_x(z0)
+    along_x(z1 - t)
+    if landing.kind == "turn":
+        # The run arrives at one X end and the next run leaves from the same end, so that end is open only
+        # across the gap between them; the opposite end is open across the whole landing.
+        run, following = derived.runs[landing.index], derived.runs[landing.index + 1]
+        far_is_max = run.direction == 1
+        far_x = x1 - t if far_is_max else x0
+        across_z(far_x, z0 + t, z1 - t)
+        gap_a, gap_b = run.z_center + derived.clear_width_in / 2, following.z_center - derived.clear_width_in / 2
+        across_z(x0 if far_is_max else x1 - t, gap_a, gap_b)
