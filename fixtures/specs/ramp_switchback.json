@@ -2937,12 +2937,12 @@
       },
       {
         "key": "deck_screws_box",
-        "description": "Deck screws, box of 350 (placeholder price)",
+        "description": "Deck screws, box of 350",
         "unit": "box",
         "qty": 1,
-        "unit_price": 25.0,
-        "subtotal": 25.0,
-        "source_url": null
+        "unit_price": 36.98,
+        "subtotal": 36.98,
+        "source_url": "https://www.homedepot.ca/product/paulin-8-x-2-1-2-inch-square-drive-flat-head-deck-screw-unc-in-brown-350pcs/1000109819"
       },
       {
         "key": "joist_hanger",
@@ -2972,11 +2972,11 @@
         "source_url": null
       }
     ],
-    "subtotal": 733.62,
-    "tax": 95.37,
-    "total": 828.99,
+    "subtotal": 745.6,
+    "tax": 96.93,
+    "total": 842.53,
     "contractor_quote": 4000.0,
-    "savings": 3171.01,
+    "savings": 3157.47,
     "has_placeholder_prices": true
   }
 }
