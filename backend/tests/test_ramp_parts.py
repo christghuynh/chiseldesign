@@ -27,7 +27,7 @@ def test_known_case_part_counts():
     remainder = run.sloped_in - (n * w + (n - 1) * g)
     assert remainder >= 2 + g
     assert len(named(parts, "Deck board")) == n + 1 == 26
-    assert len(named(parts, "Edge curb")) == 4  # sloped length 144.5 in needs 2 segments per side
+    assert len(named(parts, "Edge curb")) == 2  # sloped length 144.5 in fits one 16 ft 2x6 per side
     assert {p.group for p in parts} == {"run_1", "handrail"}  # a 12 in rise needs handrails
     assert named(parts, "Stringer")[0].material == "2x6_PT"
 
@@ -169,12 +169,16 @@ def test_plywood_panels_never_exceed_a_sheet(width):
 def test_edge_curbs():
     params, derived, parts = make(total_rise_in=12)
     curbs = named(parts, "Edge curb")
-    assert all(c.material == "2x4_PT" and c.thickness == 1.5 for c in curbs)
+    assert all(c.material == "2x6_PT" and c.thickness == 1.5 for c in curbs)
     assert sorted({c.transform.pos[2] for c in curbs}) == [-18.0, 16.5]
-    assert all(c.cut_notes == ["Splice: butt joint over a stringer"] for c in curbs)
+    assert all(c.cut_notes == ["Square cut both ends"] for c in curbs)  # 144.5 in fits one 16 ft 2x6
     for c in curbs:
         (a, b, _, d) = c.profile
-        assert math.dist(a, b) <= 144 + 1e-6 and math.dist(a, d) == pytest.approx(3.5, abs=1e-2)
+        assert math.dist(a, b) <= 192 + 1e-6 and math.dist(a, d) == pytest.approx(5.5, abs=1e-2)
+    # A run longer than the longest 2x6 sold (192 in) is spliced.
+    _, _, long_run = make(total_rise_in=18, layout="straight")
+    spliced = named(long_run, "Edge curb")
+    assert len(spliced) == 4 and all(c.cut_notes == ["Splice: butt joint over a stringer"] for c in spliced)
     _, _, short = make(total_rise_in=6)
     assert all(c.cut_notes == ["Square cut both ends"] for c in named(short, "Edge curb")) and len(named(short, "Edge curb")) == 2
     _, _, none = make(edge_curb=False)
@@ -247,3 +251,17 @@ def test_random_sweep_builds_and_holds_all_invariants():
                 xs = [x for pt in world_points(s) for x in (pt[0],)]
                 assert min(xs) >= min(run.x_start, run.x_end) - 1e-3 and max(xs) <= max(run.x_start, run.x_end) + 1e-3
     assert built > 300 and skipped < 100
+
+
+def test_edge_curbs_are_tall_enough_for_the_ada_edge_protection_rule():
+    """ADA 405.9.2: a curb must stop a 4 inch sphere within 4 inches of the surface, so it must stand at least 4 in tall.
+    (The old 2x4 on edge was 3.5 in: half an inch short.)"""
+    from app.rules.constants import EDGE_CURB_MIN_HEIGHT_IN
+
+    assert EDGE_CURB_MIN_HEIGHT_IN.value == 4 and EDGE_CURB_MIN_HEIGHT_IN.source_key == "ada-405-9"
+    for kwargs in ({"total_rise_in": 12}, {"total_rise_in": 21}, {"total_rise_in": 30, "clear_width_in": 60}):
+        _, _, parts = make(**kwargs)
+        for curb in named(parts, "Edge curb"):
+            height = min(math.dist(curb.profile[0], curb.profile[3]), math.dist(curb.profile[1], curb.profile[2]))
+            assert height >= EDGE_CURB_MIN_HEIGHT_IN.value, f"{curb.id} is {height:.2f} in tall"
+

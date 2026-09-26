@@ -58,7 +58,7 @@ class Params(BaseModel):
     decking: Literal["5/4x6_PT_deck", "3/4_ext_ply"] = Field("5/4x6_PT_deck", title="Decking", description="Deck boards or exterior plywood")
     deck_gap_in: float = Field(0.125, ge=0, le=0.5, title="Deck gap (in)", description="Gap between deck boards (bounds inferred)", json_schema_extra={"unit": "in"})
     handrails: Literal["auto", "yes", "no"] = Field("auto", title="Handrails", description="auto adds handrails when the rise requires them")
-    edge_curb: bool = Field(True, title="Edge curb", description="2x4 curb on the open sides")
+    edge_curb: bool = Field(True, title="Edge curb", description="2x6 curb, at least 4 in tall, on the open sides")
 
 
 @dataclass(frozen=True)

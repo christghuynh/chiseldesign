@@ -37,6 +37,9 @@ MIN_LANDING_LENGTH_IN = RuleConstant(60.0, "ada-405-7", "in", "Minimum landing l
 HANDRAIL_RISE_THRESHOLD_IN = RuleConstant(6.0, "ada-405-8", "in", "Rise above which handrails are required")
 # chosen, ADA 505.4: top of the handrail gripping surface is 34 to 38 inches above the walking surface.
 HANDRAIL_HEIGHT_IN = RuleConstant(36.0, "ada-505-4", "in", "Height of the handrail top above the walking surface (allowed 34 to 38)")
+# stated, ADA 405.9.2: a curb or barrier must stop a 4 inch sphere wherever any part of it is within 4 inches of
+# the surface, so a curb has to stand at least 4 inches tall (a 2x4 on edge is only 3.5 inches).
+EDGE_CURB_MIN_HEIGHT_IN = RuleConstant(4.0, "ada-405-9", "in", "Minimum height of an edge curb above the walking surface")
 # Sources for checks that have no number of their own.
 EDGE_PROTECTION_SOURCE = RuleConstant(0.0, "ada-405-9", "", "Source for edge protection on open sides (ADA 405.9)")
 PERMIT_NOTICE_SOURCE = RuleConstant(0.0, "local-code-notice", "", "Source for the always-shown permit and local code notice")

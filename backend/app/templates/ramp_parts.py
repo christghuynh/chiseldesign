@@ -23,6 +23,7 @@ Decisions worth knowing:
 """
 
 from app.data import lumber_spec
+from app.rules.constants import EDGE_CURB_MIN_HEIGHT_IN
 from app.models import Part
 from app.templates.geometry import PartBuilder, Point, clip_y, normalize_profile, signed_area
 from app.templates.ramp import Derived, Params, Run
@@ -32,7 +33,7 @@ from app.templates.ramp_handrails import add_handrail_parts
 from app.templates.ramp_landings import add_landing_parts
 from app.util.units import format_fraction
 
-CURB_MATERIAL = "2x4_PT"
+CURB_MATERIAL = "2x6_PT"  # on edge: 5.5 in tall, above the 4 in minimum that ADA 405.9.2 needs
 PLYWOOD = "3/4_ext_ply"
 MAX_PANEL_LENGTH_IN = 96.0
 MAX_PANEL_WIDTH_IN = 48.0
@@ -125,9 +126,12 @@ def _add_deck_panels(b: PartBuilder, params: Params, derived: Derived, run: Run)
 
 
 def _add_curbs(b: PartBuilder, params: Params, derived: Derived, run: Run) -> None:
-    """2x4 curbs stand on the deck surface along both edges, spliced when longer than the longest 2x4."""
+    """2x6 curbs stand on edge on the deck surface along both edges, spliced when longer than the longest board.
+
+    A curb must stand at least EDGE_CURB_MIN_HEIGHT_IN tall (ADA 405.9.2); a 2x4 on edge (3.5 in) is too low.
+    """
     spec = lumber_spec(CURB_MATERIAL)
-    assert spec.width_in is not None
+    assert spec.width_in is not None and spec.width_in >= EDGE_CURB_MIN_HEIGHT_IN.value, "edge curbs must be at least 4 in tall"
     segments = equal_pieces(run.sloped_in, spec.max_stock_length_in)
     note = "Splice: butt joint over a stringer" if len(segments) > 1 else "Square cut both ends"
     width = derived.clear_width_in
