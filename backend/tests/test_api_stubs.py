@@ -90,14 +90,8 @@ def test_instructions():
     [
         ("post", "/api/voice/stt", {"files": {"audio": ("a.webm", b"x", "audio/webm")}}, "VOX-1"),
         ("post", "/api/voice/tts", {"json": {"text": "hello"}}, "VOX-2"),
-        ("get", "/api/projects", {}, "INF-6"),
-        ("post", "/api/projects", {"json": {"name": "p", "spec": SPEC}}, "INF-6"),
-        ("get", "/api/projects/1", {}, "INF-6"),
-        ("post", "/api/projects/1/versions", {"json": {"spec": SPEC, "source": "edit"}}, "INF-6"),
-        ("get", "/api/projects/1/versions/2", {}, "INF-6"),
-        ("post", "/api/export/step", {"json": {"spec": SPEC}}, "GEO-17"),
-        ("post", "/api/export/stl", {"json": {"spec": SPEC}}, "GEO-17"),
-        ("post", "/api/export/cutlist.csv", {"json": {"spec": SPEC}}, "GEO-18"),
+        # /projects (INF-6) and /export/* (GEO-17, GEO-18) are now implemented by Lane C;
+        # their behavior is covered in test_projects_api.py, test_cad_export.py and test_cutlist_csv.py.
     ],
 )
 def test_unbuilt_routes_return_501_in_the_standard_error_shape(method, path, kwargs, task):
