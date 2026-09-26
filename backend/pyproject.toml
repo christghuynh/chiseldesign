@@ -1,0 +1,29 @@
+[project]
+name = "sketchbuild-backend"
+version = "0.1.0"
+description = "SketchBuild backend: FastAPI app, templates, rules, cut list, nesting, pricing, CAD export"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "python-multipart>=0.0.9",
+    "cadquery>=2.5",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx2>=2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

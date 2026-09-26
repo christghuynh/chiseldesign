@@ -1,0 +1,1039 @@
+{
+  "$defs": {
+    "BuildStep": {
+      "properties": {
+        "cut_callouts": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CutCallout"
+          },
+          "type": "array"
+        },
+        "n": {
+          "type": "integer"
+        },
+        "part_labels": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "safety_tip": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "n",
+        "title",
+        "text",
+        "part_labels",
+        "cut_callouts",
+        "safety_tip"
+      ],
+      "title": "BuildStep",
+      "type": "object"
+    },
+    "CutCallout": {
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "spoken": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "spoken"
+      ],
+      "title": "CutCallout",
+      "type": "object"
+    },
+    "CutListRow": {
+      "properties": {
+        "actual_dims": {
+          "type": "string"
+        },
+        "cut_notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "label": {
+          "type": "string"
+        },
+        "length_display": {
+          "type": "string"
+        },
+        "length_in": {
+          "type": "number"
+        },
+        "material": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "part_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "qty": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "label",
+        "name",
+        "material",
+        "actual_dims",
+        "length_in",
+        "length_display",
+        "qty",
+        "part_ids",
+        "cut_notes"
+      ],
+      "title": "CutListRow",
+      "type": "object"
+    },
+    "EditRequest": {
+      "properties": {
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        },
+        "utterance": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "spec",
+        "utterance"
+      ],
+      "title": "EditRequest",
+      "type": "object"
+    },
+    "EditResponse": {
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "needs_clarification": {
+          "type": "boolean"
+        },
+        "patch": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "plan": {
+          "$ref": "#/$defs/Plan"
+        },
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        }
+      },
+      "required": [
+        "spec",
+        "plan",
+        "patch",
+        "message",
+        "needs_clarification"
+      ],
+      "title": "EditResponse",
+      "type": "object"
+    },
+    "ErrorBody": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ErrorBody",
+      "type": "object"
+    },
+    "ErrorResponse": {
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ErrorBody"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "ErrorResponse",
+      "type": "object"
+    },
+    "ExportRequest": {
+      "properties": {
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        }
+      },
+      "required": [
+        "spec"
+      ],
+      "title": "ExportRequest",
+      "type": "object"
+    },
+    "GenerateRequest": {
+      "properties": {
+        "meta": {
+          "additionalProperties": true,
+          "default": {},
+          "type": "object"
+        },
+        "params": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ParamValue"
+          },
+          "type": "object"
+        },
+        "template": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "template",
+        "params",
+        "meta"
+      ],
+      "title": "GenerateRequest",
+      "type": "object"
+    },
+    "GenerateResponse": {
+      "properties": {
+        "plan": {
+          "$ref": "#/$defs/Plan"
+        },
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        }
+      },
+      "required": [
+        "spec",
+        "plan"
+      ],
+      "title": "GenerateResponse",
+      "type": "object"
+    },
+    "HealthResponse": {
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ok",
+        "version"
+      ],
+      "title": "HealthResponse",
+      "type": "object"
+    },
+    "InstructionsRequest": {
+      "properties": {
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        }
+      },
+      "required": [
+        "spec"
+      ],
+      "title": "InstructionsRequest",
+      "type": "object"
+    },
+    "InstructionsResponse": {
+      "properties": {
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/BuildStep"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "steps"
+      ],
+      "title": "InstructionsResponse",
+      "type": "object"
+    },
+    "ParamValue": {
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "enum": [
+            "read",
+            "inferred",
+            "default",
+            "user"
+          ],
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "required": [
+        "value",
+        "source",
+        "confidence"
+      ],
+      "title": "ParamValue",
+      "type": "object"
+    },
+    "ParseResponse": {
+      "properties": {
+        "questions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "raw_notes": {
+          "type": "string"
+        },
+        "spec": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Spec"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "template_confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "spec",
+        "template_confidence",
+        "questions",
+        "raw_notes"
+      ],
+      "title": "ParseResponse",
+      "type": "object"
+    },
+    "Part": {
+      "properties": {
+        "cut_notes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "material": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "profile": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "thickness": {
+          "type": "number"
+        },
+        "transform": {
+          "$ref": "#/$defs/Transform"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "name",
+        "material",
+        "profile",
+        "thickness",
+        "transform",
+        "cut_notes",
+        "group"
+      ],
+      "title": "Part",
+      "type": "object"
+    },
+    "PlacedPiece": {
+      "properties": {
+        "h": {
+          "type": "number"
+        },
+        "label": {
+          "type": "string"
+        },
+        "part_id": {
+          "type": "string"
+        },
+        "rotated": {
+          "default": false,
+          "type": "boolean"
+        },
+        "w": {
+          "type": "number"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "label",
+        "part_id",
+        "x",
+        "y",
+        "w",
+        "h",
+        "rotated"
+      ],
+      "title": "PlacedPiece",
+      "type": "object"
+    },
+    "Plan": {
+      "properties": {
+        "contractor_quote": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cut_list": {
+          "items": {
+            "$ref": "#/$defs/CutListRow"
+          },
+          "type": "array"
+        },
+        "has_placeholder_prices": {
+          "default": false,
+          "type": "boolean"
+        },
+        "layouts": {
+          "items": {
+            "$ref": "#/$defs/StockLayout"
+          },
+          "type": "array"
+        },
+        "savings": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shopping": {
+          "items": {
+            "$ref": "#/$defs/ShoppingItem"
+          },
+          "type": "array"
+        },
+        "subtotal": {
+          "type": "number"
+        },
+        "tax": {
+          "type": "number"
+        },
+        "total": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "cut_list",
+        "layouts",
+        "shopping",
+        "subtotal",
+        "tax",
+        "total",
+        "contractor_quote",
+        "savings",
+        "has_placeholder_prices"
+      ],
+      "title": "Plan",
+      "type": "object"
+    },
+    "ProjectCreateRequest": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        }
+      },
+      "required": [
+        "name",
+        "spec"
+      ],
+      "title": "ProjectCreateRequest",
+      "type": "object"
+    },
+    "ProjectCreateResponse": {
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ProjectCreateResponse",
+      "type": "object"
+    },
+    "ProjectDetail": {
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "latest": {
+          "$ref": "#/$defs/Spec"
+        },
+        "name": {
+          "type": "string"
+        },
+        "versions": {
+          "items": {
+            "$ref": "#/$defs/VersionInfo"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "versions",
+        "latest"
+      ],
+      "title": "ProjectDetail",
+      "type": "object"
+    },
+    "ProjectSummary": {
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        },
+        "thumb": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "template",
+        "updated_at",
+        "thumb"
+      ],
+      "title": "ProjectSummary",
+      "type": "object"
+    },
+    "RuleCheck": {
+      "properties": {
+        "detail": {
+          "type": "string"
+        },
+        "fix": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RuleFix"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "type": "string"
+        },
+        "source_ref": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "warn",
+            "fail",
+            "info"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "status",
+        "detail",
+        "source_ref",
+        "fix"
+      ],
+      "title": "RuleCheck",
+      "type": "object"
+    },
+    "RuleFix": {
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "params_patch": {
+          "additionalProperties": true,
+          "type": "object"
+        }
+      },
+      "required": [
+        "label",
+        "params_patch"
+      ],
+      "title": "RuleFix",
+      "type": "object"
+    },
+    "ShoppingItem": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "qty": {
+          "type": "integer"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subtotal": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "unit_price": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "key",
+        "description",
+        "unit",
+        "qty",
+        "unit_price",
+        "subtotal",
+        "source_url"
+      ],
+      "title": "ShoppingItem",
+      "type": "object"
+    },
+    "SkeletonStep": {
+      "description": "One step of a template's deterministic build outline (input to /instructions).",
+      "properties": {
+        "action_key": {
+          "type": "string"
+        },
+        "part_labels": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "phase": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "phase",
+        "title",
+        "part_labels",
+        "action_key"
+      ],
+      "title": "SkeletonStep",
+      "type": "object"
+    },
+    "Spec": {
+      "properties": {
+        "assumed": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "meta": {
+          "additionalProperties": true,
+          "default": {},
+          "type": "object"
+        },
+        "params": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ParamValue"
+          },
+          "type": "object"
+        },
+        "parts": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Part"
+          },
+          "type": "array"
+        },
+        "rule_checks": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/RuleCheck"
+          },
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "template",
+        "params",
+        "assumed",
+        "parts",
+        "rule_checks",
+        "meta"
+      ],
+      "title": "Spec",
+      "type": "object"
+    },
+    "StockLayout": {
+      "properties": {
+        "kind": {
+          "enum": [
+            "board",
+            "sheet"
+          ],
+          "type": "string"
+        },
+        "length_in": {
+          "type": "number"
+        },
+        "material": {
+          "type": "string"
+        },
+        "pieces": {
+          "items": {
+            "$ref": "#/$defs/PlacedPiece"
+          },
+          "type": "array"
+        },
+        "stock_id": {
+          "type": "string"
+        },
+        "utilization": {
+          "type": "number"
+        },
+        "width_in": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "stock_id",
+        "material",
+        "kind",
+        "length_in",
+        "width_in",
+        "pieces",
+        "utilization"
+      ],
+      "title": "StockLayout",
+      "type": "object"
+    },
+    "SttResponse": {
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "SttResponse",
+      "type": "object"
+    },
+    "TemplateInfo": {
+      "properties": {
+        "defaults": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "description": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "params_schema": {
+          "additionalProperties": true,
+          "type": "object"
+        }
+      },
+      "required": [
+        "key",
+        "name",
+        "description",
+        "params_schema",
+        "defaults"
+      ],
+      "title": "TemplateInfo",
+      "type": "object"
+    },
+    "Transform": {
+      "properties": {
+        "pos": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        "rot": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        }
+      },
+      "required": [
+        "pos",
+        "rot"
+      ],
+      "title": "Transform",
+      "type": "object"
+    },
+    "TtsRequest": {
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "TtsRequest",
+      "type": "object"
+    },
+    "VersionCreateRequest": {
+      "properties": {
+        "source": {
+          "enum": [
+            "parse",
+            "edit",
+            "manual",
+            "fix"
+          ],
+          "type": "string"
+        },
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        }
+      },
+      "required": [
+        "spec",
+        "source"
+      ],
+      "title": "VersionCreateRequest",
+      "type": "object"
+    },
+    "VersionCreateResponse": {
+      "properties": {
+        "n": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "n"
+      ],
+      "title": "VersionCreateResponse",
+      "type": "object"
+    },
+    "VersionInfo": {
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "n": {
+          "type": "integer"
+        },
+        "source": {
+          "enum": [
+            "parse",
+            "edit",
+            "manual",
+            "fix"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "n",
+        "created_at",
+        "source"
+      ],
+      "title": "VersionInfo",
+      "type": "object"
+    },
+    "VersionResponse": {
+      "properties": {
+        "spec": {
+          "$ref": "#/$defs/Spec"
+        }
+      },
+      "required": [
+        "spec"
+      ],
+      "title": "VersionResponse",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SketchBuildContracts"
+}
