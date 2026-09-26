@@ -30,6 +30,12 @@ services:
     build:
       context: ..
       dockerfile: deploy/web.Dockerfile
+      # Baked into the frontend bundle at build time (FE-11). All three set = Auth0 login;
+      # any missing = login off, and the backend then needs AUTH_DISABLED=1 for saved projects.
+      args:
+        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN:-}
+        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID:-}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE:-}
     image: sketchbuild-web
     restart: unless-stopped
     depends_on:
