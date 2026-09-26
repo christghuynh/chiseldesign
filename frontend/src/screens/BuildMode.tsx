@@ -1,6 +1,6 @@
 // Owner: P4 (FE-8). Step-by-step build mode: fetches the steps on entry, shows one step at a time
 // in large text, highlights the step's parts in 3D, and moves with buttons or the keyboard
-// (← back, → next, R repeat).
+// (← back, → next, R repeat). Each step is read aloud (TTS prefetched on entry).
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api/client";
 import { BuildControls } from "../components/build/BuildControls";
@@ -8,8 +8,12 @@ import { BuildDone } from "../components/build/BuildDone";
 import { BuildProgress } from "../components/build/BuildProgress";
 import { BuildStepView } from "../components/build/BuildStepView";
 import { type BuildAction, keyToAction, navigate, partIdsForStep } from "../components/build/navigation";
+import { useBuildAudio } from "../hooks/useBuildAudio";
 import { useStore } from "../store";
 import { Scene } from "../three/Scene";
+import type { BuildStep } from "../types";
+
+const NO_STEPS: BuildStep[] = [];
 
 type LoadState = { kind: "loading" } | { kind: "ready" } | { kind: "error"; message: string };
 
@@ -27,6 +31,7 @@ export function BuildMode() {
   const [load, setLoad] = useState<LoadState>({ kind: "loading" });
   const [done, setDone] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
 
   // On entry (and on Retry): POST /instructions for the current spec.
   useEffect(() => {
@@ -52,6 +57,8 @@ export function BuildMode() {
   const total = steps.length;
   const index = Math.min(buildStep, Math.max(total - 1, 0));
   const step = steps[index];
+  const ready = load.kind === "ready";
+  const audio = useBuildAudio(ready ? steps : NO_STEPS, ready && !done ? step : undefined, autoPlay);
 
   // Highlight the current step's parts; clear the highlight when leaving build mode.
   const stepPartIds = useMemo(
@@ -71,8 +78,10 @@ export function BuildMode() {
       const next = navigate({ index, done }, action, total);
       if (next.index !== index) setBuildStep(next.index);
       if (next.done !== done) setDone(next.done);
+      if (action === "repeat" && !done) audio.repeat();
+      if (action === "stop") audio.stop();
     },
-    [setBuildStep],
+    [setBuildStep, audio],
   );
 
   useEffect(() => {
@@ -171,6 +180,15 @@ export function BuildMode() {
               nextLabel={index === total - 1 ? "Finish" : "Next"}
             />
           )}
+          <label className="flex min-h-11 items-center gap-3 text-lg">
+            <input
+              type="checkbox"
+              checked={autoPlay}
+              onChange={(e) => setAutoPlay(e.target.checked)}
+              className="size-5"
+            />
+            Read each step aloud
+          </label>
         </>
       )}
     </section>
