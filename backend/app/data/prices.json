@@ -1,0 +1,257 @@
+{
+  "_comment": "PLACEHOLDER prices, not from a retailer. Replace every entry from a retailer's website with source_url and retrieved_at, then set placeholder to false (task NC-4). Keys: lumber is <material>_<length in inches>, sheets are <material>_<width>x<length>.",
+  "items": {
+    "2x4_PT_96": {
+      "description": "2x4 pressure-treated, 8 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 8.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x4_PT_120": {
+      "description": "2x4 pressure-treated, 10 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 10.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x4_PT_144": {
+      "description": "2x4 pressure-treated, 12 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 12.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x6_PT_96": {
+      "description": "2x6 pressure-treated, 8 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 12.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x6_PT_120": {
+      "description": "2x6 pressure-treated, 10 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 15.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x6_PT_144": {
+      "description": "2x6 pressure-treated, 12 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 18.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x6_PT_168": {
+      "description": "2x6 pressure-treated, 14 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 21.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x6_PT_192": {
+      "description": "2x6 pressure-treated, 16 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 24.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x8_PT_96": {
+      "description": "2x8 pressure-treated, 8 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 16.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x8_PT_120": {
+      "description": "2x8 pressure-treated, 10 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 20.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x8_PT_144": {
+      "description": "2x8 pressure-treated, 12 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 24.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x8_PT_168": {
+      "description": "2x8 pressure-treated, 14 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 28.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x8_PT_192": {
+      "description": "2x8 pressure-treated, 16 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 32.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x10_PT_96": {
+      "description": "2x10 pressure-treated, 8 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 20.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x10_PT_120": {
+      "description": "2x10 pressure-treated, 10 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 25.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "2x10_PT_144": {
+      "description": "2x10 pressure-treated, 12 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 30.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "4x4_PT_96": {
+      "description": "4x4 pressure-treated, 8 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 20.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "4x4_PT_120": {
+      "description": "4x4 pressure-treated, 10 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 25.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "5/4x6_PT_deck_96": {
+      "description": "5/4x6 pressure-treated deck board, 8 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 14.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "5/4x6_PT_deck_120": {
+      "description": "5/4x6 pressure-treated deck board, 10 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 17.5,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "5/4x6_PT_deck_144": {
+      "description": "5/4x6 pressure-treated deck board, 12 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 21.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "5/4x6_PT_deck_168": {
+      "description": "5/4x6 pressure-treated deck board, 14 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 24.5,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "5/4x6_PT_deck_192": {
+      "description": "5/4x6 pressure-treated deck board, 16 ft (placeholder price)",
+      "unit": "each",
+      "price_cad": 28.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "3/4_ext_ply_48x96": {
+      "description": "3/4 exterior plywood, 4x8 ft sheet (placeholder price)",
+      "unit": "sheet",
+      "price_cad": 60.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "deck_screws_box": {
+      "description": "Deck screws, box of 350 (placeholder price)",
+      "unit": "box",
+      "price_cad": 25.0,
+      "units_per_pack": 350,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "structural_screws_box": {
+      "description": "Structural screws, box of 50 (placeholder price)",
+      "unit": "box",
+      "price_cad": 30.0,
+      "units_per_pack": 50,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "joist_hanger": {
+      "description": "Joist hanger (placeholder price)",
+      "unit": "each",
+      "price_cad": 2.5,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    },
+    "post_base": {
+      "description": "Post base (placeholder price)",
+      "unit": "each",
+      "price_cad": 8.0,
+      "units_per_pack": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "placeholder": true
+    }
+  }
+}
