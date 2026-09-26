@@ -119,7 +119,7 @@ def test_lumber_boards_bought_match_layouts(fixture):
 
 def test_rule_checks_have_ids_and_fixes_only_on_failures(fixture):
     ids = [c.id for c in fixture.spec.rule_checks]
-    assert ids == [f"RAMP-00{i}" for i in range(1, 9)]
+    assert ids == [f"RAMP-00{i}" for i in range(1, 10)]
     for c in fixture.spec.rule_checks:
         if c.fix is not None:
             assert c.status in ("fail", "warn")

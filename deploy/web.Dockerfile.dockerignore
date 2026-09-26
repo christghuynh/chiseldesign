@@ -1,0 +1,6 @@
+# Build context for deploy/web.Dockerfile (the repo root). Send only the frontend and the Caddyfile.
+*
+!frontend/
+frontend/node_modules
+frontend/dist
+!deploy/Caddyfile

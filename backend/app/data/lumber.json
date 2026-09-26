@@ -1,0 +1,107 @@
+{
+  "_comment": "Actual (not nominal) dimensions in inches. Starting values from the spec; verify against a retailer (task NC-4). Board stock_lengths_in are the lengths sold; sheet_size_in is [width, length].",
+  "materials": {
+    "2x4_PT": {
+      "nominal": "2x4",
+      "description": "2x4 pressure-treated",
+      "thickness_in": 1.5,
+      "width_in": 3.5,
+      "kind": "board",
+      "stock_lengths_in": [
+        96,
+        120,
+        144
+      ],
+      "sheet_size_in": null,
+      "outdoor_rated": true
+    },
+    "2x6_PT": {
+      "nominal": "2x6",
+      "description": "2x6 pressure-treated",
+      "thickness_in": 1.5,
+      "width_in": 5.5,
+      "kind": "board",
+      "stock_lengths_in": [
+        96,
+        120,
+        144,
+        168,
+        192
+      ],
+      "sheet_size_in": null,
+      "outdoor_rated": true
+    },
+    "2x8_PT": {
+      "nominal": "2x8",
+      "description": "2x8 pressure-treated",
+      "thickness_in": 1.5,
+      "width_in": 7.25,
+      "kind": "board",
+      "stock_lengths_in": [
+        96,
+        120,
+        144,
+        168,
+        192
+      ],
+      "sheet_size_in": null,
+      "outdoor_rated": true
+    },
+    "2x10_PT": {
+      "nominal": "2x10",
+      "description": "2x10 pressure-treated",
+      "thickness_in": 1.5,
+      "width_in": 9.25,
+      "kind": "board",
+      "stock_lengths_in": [
+        96,
+        120,
+        144
+      ],
+      "sheet_size_in": null,
+      "outdoor_rated": true
+    },
+    "4x4_PT": {
+      "nominal": "4x4",
+      "description": "4x4 pressure-treated",
+      "thickness_in": 3.5,
+      "width_in": 3.5,
+      "kind": "board",
+      "stock_lengths_in": [
+        96,
+        120
+      ],
+      "sheet_size_in": null,
+      "outdoor_rated": true
+    },
+    "5/4x6_PT_deck": {
+      "nominal": "5/4x6",
+      "description": "5/4x6 pressure-treated deck board",
+      "thickness_in": 1.0,
+      "width_in": 5.5,
+      "kind": "board",
+      "stock_lengths_in": [
+        96,
+        120,
+        144,
+        168,
+        192
+      ],
+      "sheet_size_in": null,
+      "outdoor_rated": true
+    },
+    "3/4_ext_ply": {
+      "nominal": "3/4 plywood",
+      "description": "3/4 exterior plywood",
+      "thickness_in": 0.703,
+      "width_in": null,
+      "kind": "sheet",
+      "stock_lengths_in": [],
+      "sheet_size_in": [
+        48,
+        96
+      ],
+      "outdoor_rated": true
+    }
+  }
+}

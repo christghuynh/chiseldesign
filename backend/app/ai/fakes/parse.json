@@ -1,0 +1,11 @@
+{
+  "template": "ramp",
+  "template_confidence": 0.92,
+  "params": [
+    {"name": "total_rise_in", "value": 21, "unit": "in", "confidence": 0.9, "source": "read"},
+    {"name": "available_length_in", "value": 12, "unit": "ft", "confidence": 0.85, "source": "read"},
+    {"name": "clear_width_in", "value": 36, "unit": "in", "confidence": 0.5, "source": "inferred"}
+  ],
+  "questions": ["Is the 12 ft the full depth of the yard, measured from the porch?"],
+  "notes": "Canned FAKE_AI parse: three steps, 21 in rise, 12 ft yard."
+}
