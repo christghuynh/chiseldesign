@@ -93,9 +93,9 @@ def test_every_source_ref_exists_and_uses_the_constant_keys():
     assert checks["RAMP-003"].source_ref == MIN_CLEAR_WIDTH_IN.source_key
     assert checks["RAMP-004"].source_ref == MIN_LANDING_LENGTH_IN.source_key
     assert checks["RAMP-005"].source_ref == HANDRAIL_RISE_THRESHOLD_IN.source_key
-    assert checks["RAMP-006"].source_ref == "tbd-edge-protection"
-    assert checks["RAMP-007"].source_ref == "tbd-site-fit"
-    assert checks["RAMP-008"].source_ref == "tbd-permit"
+    assert checks["RAMP-006"].source_ref == "ada-405-9"
+    assert checks["RAMP-007"].source_ref == "site-fit"
+    assert checks["RAMP-008"].source_ref == "local-code-notice"
     assert checks["RAMP-009"].source_ref == "lumber-stock-lengths"
 
 
