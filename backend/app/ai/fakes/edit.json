@@ -1,0 +1,6 @@
+{
+  "tool_call": {
+    "name": "set_params",
+    "args": {"patch": {"clear_width_in": 42}}
+  }
+}
