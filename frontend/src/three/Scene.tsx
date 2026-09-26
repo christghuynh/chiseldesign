@@ -1,8 +1,8 @@
 // Owner: P2. Other screens (Plan, Build mode) render this component, so SceneProps is a contract:
 // changing it must be announced.
-import { OrbitControls } from "@react-three/drei";
+import { Bounds, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Part } from "../types";
 import { PartMesh } from "./PartMesh";
 
@@ -27,30 +27,34 @@ export interface SceneProps {
 export function Scene({ parts, highlightedIds = [], selectedIds = [], onSelect, interactive = true, height = "100%" }: SceneProps) {
   const highlighted = useMemo(() => new Set(highlightedIds), [highlightedIds]);
   const selected = useMemo(() => new Set(selectedIds), [selectedIds]);
+  const [viewKey, setViewKey] = useState(0);
 
   return (
-    <div style={{ height, width: "100%" }}>
+    <div style={{ height, width: "100%", position: "relative" }}>
+      {interactive && <button type="button" className="app-button app-button--secondary absolute right-3 top-3 z-10 text-sm" onClick={() => setViewKey((key) => key + 1)}>Reset view</button>}
       <Canvas
         camera={{ position: [220, 140, 260], fov: 45, near: 1, far: 5000 }}
         gl={{ preserveDrawingBuffer: true }}
         onPointerMissed={onSelect ? () => onSelect(null) : undefined}
         aria-label="3D model of the ramp"
       >
-        <color attach="background" args={["#f1f5f9"]} />
+        <color attach="background" args={["#e7edf2"]} />
         <ambientLight intensity={0.7} />
         <directionalLight position={[200, 300, 150]} intensity={1.2} />
         <gridHelper args={[600, 50, "#94a3b8", "#cbd5e1"]} />
         <axesHelper args={[60]} />
-        {parts.map((part) => (
-          <PartMesh
-            key={part.id}
-            part={part}
-            highlighted={highlighted.has(part.id)}
-            selected={selected.has(part.id)}
-            onSelect={onSelect}
-          />
-        ))}
-        <OrbitControls target={[90, 10, 0]} enabled={interactive} makeDefault />
+        <Bounds key={viewKey} fit clip observe margin={1.3}>
+          {parts.map((part) => (
+            <PartMesh
+              key={part.id}
+              part={part}
+              highlighted={highlighted.has(part.id)}
+              selected={selected.has(part.id)}
+              onSelect={onSelect}
+            />
+          ))}
+        </Bounds>
+        <OrbitControls enabled={interactive} makeDefault enableDamping={!window.matchMedia("(prefers-reduced-motion: reduce)").matches} />
       </Canvas>
     </div>
   );

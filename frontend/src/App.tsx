@@ -1,47 +1,19 @@
+import { useEffect, useState } from "react";
 import { DEV_ROUTES } from "./dev/registry";
 import { SCREENS } from "./screens";
 import { FLOW, type ScreenKey, useStore } from "./store";
 
-const NAV: ScreenKey[] = [...FLOW, "projects", "overlay"];
+const NAV: ScreenKey[] = ["landing", ...FLOW, "projects"];
+const stepLabels: Record<string, string> = { capture: "Capture", confirm: "Confirm", design: "Design", plan: "Plan", build: "Build" };
 
-// Skeleton (F-5): screen routing driven by the store. FE-1 builds the real shell (stepper,
-// responsive layout, the rest of the accessibility baseline).
 export default function App() {
-  const screen = useStore((s) => s.screen);
-  const setScreen = useStore((s) => s.setScreen);
+  const screen = useStore((state) => state.screen); const setScreen = useStore((state) => state.setScreen);
+  const [helpOpen, setHelpOpen] = useState(false); const [theme, setTheme] = useState<"light" | "dark" | null>(() => (localStorage.getItem("theme") as "light" | "dark" | null));
   const { Component } = SCREENS[screen];
-
-  // Dev pages (src/dev/routes) replace the whole app at /dev/<name>, dev server only.
+  useEffect(() => { if (theme) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme; if (theme) localStorage.setItem("theme", theme); else localStorage.removeItem("theme"); }, [theme]);
+  useEffect(() => { const handler = (event: KeyboardEvent) => { if (event.key === "?" && !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) { event.preventDefault(); setHelpOpen(true); } if (event.key === "Escape") setHelpOpen(false); }; window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, []);
   const DevRoute = import.meta.env.DEV ? DEV_ROUTES[window.location.pathname] : undefined;
   if (DevRoute) return <DevRoute />;
-
-  return (
-    <div className="min-h-screen bg-white text-base text-slate-900">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:rounded focus:bg-white focus:p-2"
-      >
-        Skip to content
-      </a>
-      <header className="border-b border-slate-300 px-4 py-3">
-        <h1 className="text-xl font-bold">SketchBuild</h1>
-        <nav aria-label="Screens" className="mt-2 flex flex-wrap gap-2">
-          {NAV.map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setScreen(key)}
-              aria-current={key === screen ? "page" : undefined}
-              className="min-h-11 rounded border border-slate-400 px-3 py-2 hover:bg-slate-100 aria-[current=page]:bg-slate-900 aria-[current=page]:text-white"
-            >
-              {SCREENS[key].label}
-            </button>
-          ))}
-        </nav>
-      </header>
-      <main id="main" className="p-4">
-        <Component />
-      </main>
-    </div>
-  );
+  const flowIndex = FLOW.indexOf(screen);
+  return <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]"><a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-[var(--surface)] focus:p-3">Skip to content</a><header className="border-b border-[var(--border)] bg-[var(--surface)]"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3"><button type="button" onClick={() => setScreen("landing")} className="text-left text-xl font-black tracking-tight">SketchBuild</button><div className="flex gap-2"><button type="button" className="app-button app-button--secondary text-sm" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light theme" : "Dark theme"}</button><button type="button" className="app-button app-button--secondary text-sm" onClick={() => setHelpOpen(true)} aria-haspopup="dialog">Shortcuts ?</button></div></div><nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 pb-3" aria-label="Project sections">{NAV.map((key) => <button key={key} type="button" onClick={() => setScreen(key)} aria-current={key === screen ? "page" : undefined} className={`min-h-10 whitespace-nowrap rounded px-3 text-sm font-semibold ${key === screen ? "bg-[var(--brand)] text-[var(--brand-contrast)]" : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}>{SCREENS[key].label}</button>)}</nav>{flowIndex >= 0 && <ol className="mx-auto flex max-w-3xl items-center justify-between px-4 pb-3" aria-label="Build progress">{FLOW.map((key, index) => <li key={key} className={`flex items-center gap-1 text-xs font-semibold ${index <= flowIndex ? "text-[var(--brand)]" : "text-[var(--text-muted)]"}`} aria-current={index === flowIndex ? "step" : undefined}><span className="inline-grid h-5 w-5 place-items-center rounded-full border border-current">{index + 1}</span><span className="hidden sm:inline">{stepLabels[key]}</span></li>)}</ol>}</header><main id="main" className="p-4 md:p-6"><Component /></main>{helpOpen && <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="presentation"><section role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" className="app-card max-w-md p-5 shadow-xl"><div className="flex items-center justify-between"><h2 id="shortcuts-title" className="m-0 text-xl font-bold">Keyboard shortcuts</h2><button type="button" className="app-button app-button--secondary" onClick={() => setHelpOpen(false)}>Close</button></div><dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2"><dt><kbd>Space</kbd></dt><dd>Hold to talk (outside a text field)</dd><dt><kbd>Ctrl/Cmd + Z</kbd></dt><dd>Undo in Design</dd><dt><kbd>Ctrl/Cmd + Shift + Z</kbd></dt><dd>Redo in Design</dd><dt><kbd>?</kbd></dt><dd>Open this help</dd></dl></section></div>}</div>;
 }

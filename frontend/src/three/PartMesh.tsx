@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Part } from "../types";
 import { partGeometry } from "./geometry";
 
@@ -9,7 +9,14 @@ interface Props {
   onSelect?: (partId: string) => void;
 }
 
-const COLOR = "#c9a66b";
+const MATERIAL_COLORS: Record<string, string> = {
+  "2x4_PT": "#b77945",
+  "2x6_PT": "#aa6f3c",
+  "2x8_PT": "#985b2f",
+  "4x4_PT": "#79522e",
+  "5/4x6_PT_deck": "#d0a15d",
+  "3/4_ext_ply": "#d8bd7e",
+};
 const SELECTED_COLOR = "#3b82f6";
 const HIGHLIGHT_EMISSIVE = "#f59e0b";
 
@@ -17,6 +24,7 @@ const HIGHLIGHT_EMISSIVE = "#f59e0b";
 // hover states and outlines.
 export function PartMesh({ part, highlighted = false, selected = false, onSelect }: Props) {
   const geometry = useMemo(() => partGeometry(part), [part]);
+  const [hovered, setHovered] = useState(false);
   useEffect(() => () => geometry.dispose(), [geometry]);
   return (
     <mesh
@@ -31,11 +39,13 @@ export function PartMesh({ part, highlighted = false, selected = false, onSelect
             }
           : undefined
       }
+      onPointerOver={(event) => { event.stopPropagation(); setHovered(true); document.body.style.cursor = onSelect ? "pointer" : "default"; }}
+      onPointerOut={() => { setHovered(false); document.body.style.cursor = "default"; }}
     >
       <meshStandardMaterial
-        color={selected ? SELECTED_COLOR : COLOR}
-        emissive={highlighted ? HIGHLIGHT_EMISSIVE : "#000000"}
-        emissiveIntensity={highlighted ? 0.6 : 0}
+        color={selected ? SELECTED_COLOR : MATERIAL_COLORS[part.material] ?? "#c9a66b"}
+        emissive={highlighted || hovered ? HIGHLIGHT_EMISSIVE : "#000000"}
+        emissiveIntensity={highlighted ? 0.65 : hovered ? 0.3 : 0}
       />
     </mesh>
   );

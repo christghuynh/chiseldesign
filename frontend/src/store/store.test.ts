@@ -19,7 +19,7 @@ describe("combined store", () => {
     expect(s.spec).toBeNull();
     expect(s.history).toEqual([]);
     expect(s.cursor).toBe(-1);
-    expect(s.screen).toBe("capture");
+    expect(s.screen).toBe("landing");
     expect(s.selectedPartIds).toEqual([]);
     expect(s.voiceState).toBe("idle");
     expect(s.steps).toEqual([]);

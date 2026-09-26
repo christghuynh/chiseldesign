@@ -17,7 +17,7 @@ export interface UiSlice {
 }
 
 export const createUiSlice: StateCreator<AppStore, [], [], UiSlice> = (set) => ({
-  screen: "capture",
+  screen: "landing",
   setScreen: (screen) => set({ screen }),
   selectedPartIds: [],
   highlightedPartIds: [],

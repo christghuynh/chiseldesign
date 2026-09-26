@@ -1,0 +1,60 @@
+:root {
+  color-scheme: light;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-muted: #eef2f7;
+  --text: #182230;
+  --text-muted: #526176;
+  --border: #c8d1df;
+  --brand: #0f4c5c;
+  --brand-contrast: #ffffff;
+  --focus: #2563eb;
+  --warning: #a04b00;
+  --danger: #b42318;
+  --success: #087443;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101826;
+  --surface: #182230;
+  --surface-muted: #243247;
+  --text: #f8fafc;
+  --text-muted: #c2ccda;
+  --border: #536277;
+  --brand: #65d2ca;
+  --brand-contrast: #07191d;
+  --focus: #93c5fd;
+  --warning: #f8b869;
+  --danger: #ffb4ab;
+  --success: #7ce6ad;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #101826;
+    --surface: #182230;
+    --surface-muted: #243247;
+    --text: #f8fafc;
+    --text-muted: #c2ccda;
+    --border: #536277;
+    --brand: #65d2ca;
+    --brand-contrast: #07191d;
+    --focus: #93c5fd;
+    --warning: #f8b869;
+    --danger: #ffb4ab;
+    --success: #7ce6ad;
+  }
+}
+
+body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+button, input, select, textarea { font: inherit; }
+.app-card { background: var(--surface); border: 1px solid var(--border); border-radius: .75rem; }
+.app-button { min-height: 2.75rem; border-radius: .5rem; border: 1px solid var(--brand); background: var(--brand); color: var(--brand-contrast); padding: .55rem 1rem; font-weight: 650; cursor: pointer; }
+.app-button:hover:not(:disabled) { filter: brightness(1.08); }
+.app-button--secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.app-button:disabled { cursor: not-allowed; opacity: .55; }
+.app-input { min-height: 2.75rem; box-sizing: border-box; border: 1px solid var(--border); border-radius: .45rem; background: var(--surface); color: var(--text); padding: .5rem .65rem; }
+.source-tag { display: inline-block; border-radius: 999px; background: var(--surface-muted); color: var(--text-muted); font-size: .75rem; font-weight: 700; padding: .15rem .45rem; text-transform: uppercase; }
+.assumption { border-left: 3px solid var(--warning); background: color-mix(in srgb, var(--warning) 10%, var(--surface)); }

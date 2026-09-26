@@ -1,29 +1,32 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { api } from "../api/client";
+import { ParamPanel } from "../components/ParamPanel";
+import { PushToTalk } from "../components/PushToTalk";
+import { RuleBadges } from "../components/RuleBadges";
+import { TypedEditBox } from "../components/TypedEditBox";
+import { EmptyState } from "../components/common/EmptyState";
+import { ErrorState } from "../components/common/ErrorState";
+import { LoadingState } from "../components/common/LoadingState";
+import { useSpeak } from "../hooks/useSpeak";
 import { useStore } from "../store";
-import { REFERENCE_STRINGER } from "../three/referenceStringer";
+import type { ParamValue, RuleCheck, TemplateInfo } from "../types";
 import { Scene } from "../three/Scene";
 
-// Skeleton. FE-6 builds the real screen: parameter panel generated from the template's
-// JSON Schema, debounced /generate, rule badges with "Apply fix", push-to-talk and undo/redo.
 export function Design() {
-  const spec = useStore((s) => s.spec);
-  const selectedPartIds = useStore((s) => s.selectedPartIds);
-  const setSelected = useStore((s) => s.setSelected);
-  const parts = spec?.parts.length ? spec.parts : [REFERENCE_STRINGER];
-
-  return (
-    <section aria-labelledby="design-title" className="space-y-4">
-      <h2 id="design-title" className="text-2xl font-semibold">
-        Design
-      </h2>
-      <p>
-        {spec?.parts.length
-          ? `Showing ${spec.parts.length} parts from the loaded spec. Click a part to select it.`
-          : "No spec loaded: showing the hardcoded reference stringer. Load the sample from the Capture screen."}
-      </p>
-      <div className="overflow-hidden rounded border border-slate-300">
-        <Scene parts={parts} selectedIds={selectedPartIds} onSelect={(id) => setSelected(id === null ? [] : [id])} height="28rem" />
-      </div>
-      {selectedPartIds.length > 0 && <p role="status">Selected: {selectedPartIds.join(", ")}</p>}
-    </section>
-  );
+  const spec = useStore((state) => state.spec); const plan = useStore((state) => state.plan);
+  const selected = useStore((state) => state.selectedPartIds); const setSelected = useStore((state) => state.setSelected);
+  const applyGenerateResult = useStore((state) => state.applyGenerateResult); const undo = useStore((state) => state.undo); const redo = useStore((state) => state.redo); const cursor = useStore((state) => state.cursor); const history = useStore((state) => state.history); const setScreen = useStore((state) => state.setScreen);
+  const setVoiceState = useStore((state) => state.setVoiceState); const setLastReply = useStore((state) => state.setLastReply); const setLastUtterance = useStore((state) => state.setLastUtterance);
+  const { speak } = useSpeak(); const [template, setTemplate] = useState<TemplateInfo | null>(null); const [busy, setBusy] = useState(false); const [error, setError] = useState<string | null>(null); const [clamp, setClamp] = useState<string | null>(null); const [reply, setReply] = useState<string | null>(null); const generateTimer = useRef<number | null>(null);
+  useEffect(() => { void api.templates().then((items) => setTemplate(items.find((item) => item.key === spec?.template) ?? null)).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Could not load parameter controls.")); }, [spec?.template]);
+  useEffect(() => { const handler = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") { event.preventDefault(); event.shiftKey ? redo() : undo(); } }; window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, [redo, undo]);
+  useEffect(() => () => { if (generateTimer.current !== null) window.clearTimeout(generateTimer.current); }, []);
+  const selectedPart = useMemo(() => spec?.parts.find((part) => part.id === selected[0]), [selected, spec?.parts]);
+  if (!spec || !plan) return <section aria-labelledby="design-title" className="mx-auto max-w-4xl"><h2 id="design-title" className="text-3xl font-bold">Design</h2><EmptyState title="Start with a sketch or template first"><button type="button" className="app-button mt-2" onClick={() => setScreen("capture")}>Go to capture</button></EmptyState></section>;
+  const currentSpec = spec;
+  async function generate(params: Record<string, ParamValue>, source: "manual" | "fix") { setBusy(true); setError(null); try { const result = await api.generate({ template: currentSpec.template, params, meta: currentSpec.meta }); applyGenerateResult(result.spec, result.plan, source); } catch (reason) { setError(reason instanceof Error ? reason.message : "The model could not be updated."); } finally { setBusy(false); } }
+  function change(name: string, raw: number | string | boolean | null) { const property = ((template?.params_schema.properties ?? {}) as Record<string, { minimum?: number; maximum?: number }>)[name]; let value = raw; if (typeof raw === "number") { const bounded = Math.min(property?.maximum ?? Infinity, Math.max(property?.minimum ?? -Infinity, raw)); if (bounded !== raw) setClamp(`${name.replaceAll("_", " ")} was kept within its allowed range.`); value = bounded; } const params = { ...currentSpec.params, [name]: { value: value ?? 0, source: "user", confidence: null } satisfies ParamValue }; if (generateTimer.current !== null) window.clearTimeout(generateTimer.current); generateTimer.current = window.setTimeout(() => { generateTimer.current = null; void generate(params, "manual"); }, 250); }
+  function fix(rule: RuleCheck) { if (!rule.fix) return; const params = { ...currentSpec.params }; Object.entries(rule.fix.params_patch).forEach(([name, value]) => { if (typeof value === "number" || typeof value === "string" || typeof value === "boolean") params[name] = { value, source: "user", confidence: null }; }); void generate(params, "fix"); }
+  async function edit(text: string) { const keyword = text.trim().toLowerCase(); setLastUtterance(text); if (keyword === "undo") { undo(); return; } if (keyword === "redo") { redo(); return; } setBusy(true); setVoiceState("processing"); setError(null); try { const result = await api.edit({ spec: currentSpec, utterance: text }); applyGenerateResult(result.spec, result.plan, "edit"); setReply(result.message); setLastReply(result.message); setVoiceState("speaking"); await speak(result.message); setVoiceState("idle"); } catch (reason) { setVoiceState("error"); setError(reason instanceof Error ? reason.message : "The design edit could not be applied."); } finally { setBusy(false); } }
+  return <section aria-labelledby="design-title" className="mx-auto max-w-7xl space-y-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 id="design-title" className="mb-1 text-3xl font-bold">Design</h2><p className="m-0 text-[var(--text-muted)]">Adjust the plan; changes regenerate the model and checks.</p></div><div className="flex gap-2"><button type="button" className="app-button app-button--secondary" disabled={cursor <= 0 || busy} onClick={undo}>Undo</button><button type="button" className="app-button app-button--secondary" disabled={cursor >= history.length - 1 || busy} onClick={redo}>Redo</button></div></div>{busy && <LoadingState message="Updating your build plan…" />}{error && <ErrorState message={error} />}{clamp && <p className="rounded border border-[var(--warning)] p-2 text-sm" role="status">{clamp}</p>}<div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(20rem,.75fr)]"><div className="space-y-4"><div className="overflow-hidden rounded border border-[var(--border)]"><Scene parts={spec.parts} selectedIds={selected} onSelect={(id) => setSelected(id ? [id] : [])} height="34rem" /></div>{selectedPart && <aside className="app-card p-3" aria-live="polite"><strong>{selectedPart.label}: {selectedPart.name}</strong><span className="ml-2 text-sm text-[var(--text-muted)]">{selectedPart.material} · profile {selectedPart.profile.length} points · {selectedPart.thickness} in thick</span></aside>}<RuleBadges rules={spec.rule_checks} onApplyFix={fix} busy={busy} /></div><aside className="space-y-4">{template && <ParamPanel template={template} params={spec.params} onChange={change} busy={busy} />}<section className="app-card p-4" aria-labelledby="edits-title"><h3 id="edits-title" className="mt-0 text-lg font-bold">Edit by voice or text</h3><div className="flex flex-wrap gap-2"><PushToTalk disabled={busy} onTranscript={(text) => void edit(text)} /><span className="self-center text-sm text-[var(--text-muted)]">Hold Space or the button (up to 10 sec)</span></div><div className="mt-3"><TypedEditBox disabled={busy} onSubmit={(text) => void edit(text)} /></div>{reply && <p className="mt-3 rounded bg-[var(--surface-muted)] p-2" role="status">{reply}</p>}</section><button type="button" className="app-button w-full" onClick={() => setScreen("plan")}>Generate plan</button><p className="text-sm text-[var(--text-muted)]">Guidelines, not code compliance. Check local permit requirements.</p></aside></div></section>;
 }
