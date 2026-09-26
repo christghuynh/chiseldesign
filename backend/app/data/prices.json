@@ -2,22 +2,22 @@
   "_comment": "PLACEHOLDER prices, not from a retailer. Replace every entry from a retailer's website with source_url and retrieved_at, then set placeholder to false (task NC-4). Keys: lumber is <material>_<length in inches>, sheets are <material>_<width>x<length>.",
   "items": {
     "2x4_PT_96": {
-      "description": "2x4 pressure-treated, 8 ft (placeholder price)",
+      "description": "2x4 pressure-treated, 8 ft",
       "unit": "each",
-      "price_cad": 8.0,
+      "price_cad": 7.7,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-4-x-8-premium-wood-above-ground-use-only/1000789777",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x4_PT_120": {
-      "description": "2x4 pressure-treated, 10 ft (placeholder price)",
+      "description": "2x4 pressure-treated, 10 ft",
       "unit": "each",
-      "price_cad": 10.0,
+      "price_cad": 9.2,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-4-x-10-premium-wood-above-ground-use-only/1000789776",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x4_PT_144": {
       "description": "2x4 pressure-treated, 12 ft (placeholder price)",
@@ -29,31 +29,31 @@
       "placeholder": true
     },
     "2x6_PT_96": {
-      "description": "2x6 pressure-treated, 8 ft (placeholder price)",
+      "description": "2x6 pressure-treated, 8 ft",
       "unit": "each",
-      "price_cad": 12.0,
+      "price_cad": 11.25,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-8-premium-wood-above-ground-use-only/1000790084",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x6_PT_120": {
-      "description": "2x6 pressure-treated, 10 ft (placeholder price)",
+      "description": "2x6 pressure-treated, 10 ft",
       "unit": "each",
-      "price_cad": 15.0,
+      "price_cad": 14.1,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-10-premium-wood-above-ground-use-only/1000789781",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x6_PT_144": {
-      "description": "2x6 pressure-treated, 12 ft (placeholder price)",
+      "description": "2x6 pressure-treated, 12 ft",
       "unit": "each",
-      "price_cad": 18.0,
+      "price_cad": 16.95,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-12-premium-wood-above-ground-use-only/1000790082",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x6_PT_168": {
       "description": "2x6 pressure-treated, 14 ft (placeholder price)",
@@ -65,22 +65,22 @@
       "placeholder": true
     },
     "2x6_PT_192": {
-      "description": "2x6 pressure-treated, 16 ft (placeholder price)",
+      "description": "2x6 pressure-treated, 16 ft",
       "unit": "each",
-      "price_cad": 24.0,
+      "price_cad": 22.65,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-16-premium-wood-above-ground-use-only/1000790085",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x8_PT_96": {
-      "description": "2x8 pressure-treated, 8 ft (placeholder price)",
+      "description": "2x8 pressure-treated, 8 ft",
       "unit": "each",
-      "price_cad": 16.0,
+      "price_cad": 18.98,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-8-x-8-premium-wood-above-ground-use-only/1000790210",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x8_PT_120": {
       "description": "2x8 pressure-treated, 10 ft (placeholder price)",
@@ -92,13 +92,13 @@
       "placeholder": true
     },
     "2x8_PT_144": {
-      "description": "2x8 pressure-treated, 12 ft (placeholder price)",
+      "description": "2x8 pressure-treated, 12 ft",
       "unit": "each",
-      "price_cad": 24.0,
+      "price_cad": 28.55,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-8-x-12-premium-wood-above-ground-use-only/1000790208",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x8_PT_168": {
       "description": "2x8 pressure-treated, 14 ft (placeholder price)",
@@ -146,13 +146,13 @@
       "placeholder": true
     },
     "4x4_PT_96": {
-      "description": "4x4 pressure-treated, 8 ft (placeholder price)",
+      "description": "4x4 pressure-treated, 8 ft",
       "unit": "each",
-      "price_cad": 20.0,
+      "price_cad": 15.98,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-4-x-4-x-8-premium-wood-post-suitable-for-ground-contact/1000790178",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "4x4_PT_120": {
       "description": "4x4 pressure-treated, 10 ft (placeholder price)",
@@ -173,13 +173,13 @@
       "placeholder": true
     },
     "5/4x6_PT_deck_120": {
-      "description": "5/4x6 pressure-treated deck board, 10 ft (placeholder price)",
+      "description": "5/4x6 pressure-treated deck board, 10 ft",
       "unit": "each",
-      "price_cad": 17.5,
+      "price_cad": 9.5,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-5-4-x-6-x-10-premium-wood-decking-above-ground-use-only/1000680741",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "5/4x6_PT_deck_144": {
       "description": "5/4x6 pressure-treated deck board, 12 ft (placeholder price)",
@@ -200,13 +200,13 @@
       "placeholder": true
     },
     "5/4x6_PT_deck_192": {
-      "description": "5/4x6 pressure-treated deck board, 16 ft (placeholder price)",
+      "description": "5/4x6 pressure-treated deck board, 16 ft",
       "unit": "each",
-      "price_cad": 28.0,
+      "price_cad": 13.25,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-5-4-x-6-x-16-premium-wood-decking-above-ground-use-only/1000680731",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "3/4_ext_ply_48x96": {
       "description": "3/4 exterior plywood, 4x8 ft sheet (placeholder price)",

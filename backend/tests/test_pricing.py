@@ -200,8 +200,9 @@ def test_placeholder_text_is_preserved():
     items = build_shopping_list([board_layout("2x6_PT", 144), sheet_layout()], [post(), deck(), stringer()])
     assert items
     for i in items:
-        assert i.description == data.prices()[i.key].description
-        assert "placeholder price" in i.description  # while the entry is still a placeholder
+        entry = data.prices()[i.key]
+        assert i.description == entry.description
+        assert ("placeholder price" in i.description) == entry.placeholder  # the text follows the entry's state
 
 
 def test_deterministic_and_independent_of_layout_order():

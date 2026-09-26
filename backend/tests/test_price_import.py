@@ -2,7 +2,6 @@
 
 import csv
 import json
-import shutil
 from datetime import date
 
 import pytest
@@ -17,8 +16,16 @@ HEADER = "key,description,unit,price_cad,source_url,retrieved_at\n"
 
 @pytest.fixture
 def prices_file(tmp_path):
+    """A copy of the price file with EVERY entry a placeholder, whatever real prices the shipped file has by now."""
+    doc = json.loads((data.DATA_DIR / "prices.json").read_text("utf-8"))
+    for entry in doc["items"].values():
+        entry["placeholder"] = True
+        entry["source_url"] = None
+        entry["retrieved_at"] = None
+        if not entry["description"].endswith(importer.PLACEHOLDER_SUFFIX):
+            entry["description"] += importer.PLACEHOLDER_SUFFIX
     copy = tmp_path / "prices.json"
-    shutil.copy(data.DATA_DIR / "prices.json", copy)
+    copy.write_bytes((json.dumps(doc, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
     return copy
 
 
