@@ -69,6 +69,10 @@ describe("keyToAction: keyboard shortcuts", () => {
     expect(keyToAction({ key: "r", metaKey: true })).toBeNull();
   });
 
+  it("ignores auto-repeat from a held key", () => {
+    expect(keyToAction({ key: "ArrowRight", repeat: true })).toBeNull();
+  });
+
   it("ignores keys typed into a text field", () => {
     const input = { tagName: "INPUT" } as unknown as EventTarget;
     const textarea = { tagName: "textarea" } as unknown as EventTarget;
@@ -77,6 +81,8 @@ describe("keyToAction: keyboard shortcuts", () => {
     expect(keyToAction({ key: "ArrowRight", target: textarea })).toBeNull();
     expect(keyToAction({ key: "r", target: editable })).toBeNull();
     expect(keyToAction({ key: "r", target: { tagName: "BUTTON" } as unknown as EventTarget })).toBe("repeat");
+    const checkbox = { tagName: "INPUT", type: "checkbox" } as unknown as EventTarget;
+    expect(keyToAction({ key: "r", target: checkbox })).toBe("repeat");
   });
 });
 

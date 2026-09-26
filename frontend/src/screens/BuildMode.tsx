@@ -1,6 +1,7 @@
 // Owner: P4 (FE-8). Step-by-step build mode: fetches the steps on entry, shows one step at a time
 // in large text, highlights the step's parts in 3D, and moves with buttons or the keyboard
-// (← back, → next, R repeat). Each step is read aloud (TTS prefetched on entry).
+// (← back, → next, R repeat) or by voice ("next", "back", "repeat", "stop"). Each step is read
+// aloud (TTS prefetched on entry).
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api/client";
 import { BuildControls } from "../components/build/BuildControls";
@@ -8,6 +9,8 @@ import { BuildDone } from "../components/build/BuildDone";
 import { BuildProgress } from "../components/build/BuildProgress";
 import { BuildStepView } from "../components/build/BuildStepView";
 import { type BuildAction, keyToAction, navigate, partIdsForStep } from "../components/build/navigation";
+import { matchVoiceCommand, VOICE_HELP } from "../components/build/voiceCommands";
+import { PushToTalk } from "../components/PushToTalk";
 import { useBuildAudio } from "../hooks/useBuildAudio";
 import { useStore } from "../store";
 import { Scene } from "../three/Scene";
@@ -32,6 +35,7 @@ export function BuildMode() {
   const [done, setDone] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
+  const [heard, setHeard] = useState<string | null>(null);
 
   // On entry (and on Retry): POST /instructions for the current spec.
   useEffect(() => {
@@ -68,7 +72,7 @@ export function BuildMode() {
   useEffect(() => setHighlighted(stepPartIds), [stepPartIds, setHighlighted]);
   useEffect(() => () => setHighlighted([]), [setHighlighted]);
 
-  // Latest position for handlers registered once (keyboard now, voice later).
+  // Latest position, so the keyboard and voice handlers never act on a stale step.
   const posRef = useRef({ index, done, total });
   posRef.current = { index, done, total };
 
@@ -82,6 +86,16 @@ export function BuildMode() {
       if (action === "stop") audio.stop();
     },
     [setBuildStep, audio],
+  );
+
+  const onTranscript = useCallback(
+    (text: string) => {
+      const action = matchVoiceCommand(text);
+      setHeard(text);
+      if (action) onAction(action);
+      else audio.say(VOICE_HELP);
+    },
+    [onAction, audio],
   );
 
   useEffect(() => {
@@ -180,6 +194,13 @@ export function BuildMode() {
               nextLabel={index === total - 1 ? "Finish" : "Next"}
             />
           )}
+          <div className="flex flex-wrap items-center gap-4">
+            <PushToTalk onTranscript={onTranscript} label="Hold to talk (say next, back or repeat)" />
+            <p role="status" aria-live="polite" className="text-lg text-slate-700">
+              {heard !== null &&
+                (matchVoiceCommand(heard) ? `Heard: “${heard}”` : `Heard “${heard}”. ${VOICE_HELP}`)}
+            </p>
+          </div>
           <label className="flex min-h-11 items-center gap-3 text-lg">
             <input
               type="checkbox"

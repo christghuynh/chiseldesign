@@ -35,19 +35,25 @@ export interface KeyLike {
   altKey?: boolean;
   ctrlKey?: boolean;
   metaKey?: boolean;
+  /** True for auto-repeat while a key is held down. */
+  repeat?: boolean;
   target?: EventTarget | null;
 }
 
 function isTextEntry(target: EventTarget | null | undefined): boolean {
   if (!target || typeof target !== "object") return false;
-  const el = target as { tagName?: string; isContentEditable?: boolean };
+  const el = target as { tagName?: string; type?: string; isContentEditable?: boolean };
   const tag = el.tagName?.toUpperCase();
-  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el.isContentEditable === true;
+  if (tag === "INPUT") return !["checkbox", "radio", "button", "submit", "reset", "range"].includes(el.type ?? "text");
+  return tag === "TEXTAREA" || tag === "SELECT" || el.isContentEditable === true;
 }
 
-/** Keyboard shortcuts: → next, ← back, R repeat. Ignored with modifiers or while typing. */
+/**
+ * Keyboard shortcuts: → next, ← back, R repeat. Ignored with modifiers, while typing, and on
+ * auto-repeat (holding → must not skip several steps).
+ */
 export function keyToAction(e: KeyLike): BuildAction | null {
-  if (e.altKey || e.ctrlKey || e.metaKey || isTextEntry(e.target)) return null;
+  if (e.altKey || e.ctrlKey || e.metaKey || e.repeat || isTextEntry(e.target)) return null;
   switch (e.key) {
     case "ArrowRight":
       return "next";
