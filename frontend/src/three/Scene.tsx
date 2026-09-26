@@ -1,0 +1,57 @@
+// Owner: P2. Other screens (Plan, Build mode) render this component, so SceneProps is a contract:
+// changing it must be announced.
+import { OrbitControls } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { useMemo } from "react";
+import type { Part } from "../types";
+import { PartMesh } from "./PartMesh";
+
+export interface SceneProps {
+  parts: Part[];
+  /** Parts drawn with a glow. */
+  highlightedIds?: string[];
+  /** Parts drawn as selected. */
+  selectedIds?: string[];
+  /** Called with the clicked part's id, or null when the background is clicked. */
+  onSelect?: (partId: string | null) => void;
+  /** Orbit controls on or off (default true). */
+  interactive?: boolean;
+  /** CSS height of the scene (default "100%"). */
+  height?: number | string;
+}
+
+// Skeleton: fixed camera, ground grid and axes. Y is up; +X is travel up the ramp, +Z is the
+// walker's right. The axes helper draws X red, Y green, Z blue so the frame is visible.
+// preserveDrawingBuffer lets a caller capture the canvas as a project thumbnail.
+// FE-5 adds auto-framing to the model bounds.
+export function Scene({ parts, highlightedIds = [], selectedIds = [], onSelect, interactive = true, height = "100%" }: SceneProps) {
+  const highlighted = useMemo(() => new Set(highlightedIds), [highlightedIds]);
+  const selected = useMemo(() => new Set(selectedIds), [selectedIds]);
+
+  return (
+    <div style={{ height, width: "100%" }}>
+      <Canvas
+        camera={{ position: [220, 140, 260], fov: 45, near: 1, far: 5000 }}
+        gl={{ preserveDrawingBuffer: true }}
+        onPointerMissed={onSelect ? () => onSelect(null) : undefined}
+        aria-label="3D model of the ramp"
+      >
+        <color attach="background" args={["#f1f5f9"]} />
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[200, 300, 150]} intensity={1.2} />
+        <gridHelper args={[600, 50, "#94a3b8", "#cbd5e1"]} />
+        <axesHelper args={[60]} />
+        {parts.map((part) => (
+          <PartMesh
+            key={part.id}
+            part={part}
+            highlighted={highlighted.has(part.id)}
+            selected={selected.has(part.id)}
+            onSelect={onSelect}
+          />
+        ))}
+        <OrbitControls target={[90, 10, 0]} enabled={interactive} makeDefault />
+      </Canvas>
+    </div>
+  );
+}
