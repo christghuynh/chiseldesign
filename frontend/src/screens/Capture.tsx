@@ -1,39 +1,27 @@
-import { useState } from "react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { api } from "../api/client";
+import { EmptyState } from "../components/common/EmptyState";
+import { ErrorState } from "../components/common/ErrorState";
+import { LoadingState } from "../components/common/LoadingState";
 import { useStore } from "../store";
+import type { ParamValue, Spec, TemplateInfo } from "../types";
+import { setCaptureSession, ungeneratedSpec } from "./flowState";
 
-// Skeleton (F-5). FE-3 builds the real screen: upload, camera capture, measurements form,
-// contractor quote, template picker and loading state.
+type Fields = "total_rise_in" | "available_length_in" | "clear_width_in" | "contractor_quote_cad" | "note";
+const blank = { total_rise_in: "", available_length_in: "", clear_width_in: "", contractor_quote_cad: "", note: "" };
+
 export function Capture() {
-  const applyGenerateResult = useStore((s) => s.applyGenerateResult);
   const setScreen = useStore((s) => s.setScreen);
-  const [status, setStatus] = useState<string | null>(null);
-
-  async function loadSample() {
-    setStatus("Loading…");
-    try {
-      const { spec, plan } = await api.generate({ template: "ramp", params: {}, meta: {} });
-      applyGenerateResult(spec, plan, "manual");
-      setScreen("design");
-    } catch (e) {
-      setStatus(e instanceof Error ? e.message : "Something went wrong");
-    }
-  }
-
-  return (
-    <section aria-labelledby="capture-title" className="space-y-4">
-      <h2 id="capture-title" className="text-2xl font-semibold">
-        Capture
-      </h2>
-      <p>Photo upload, measurements and the template picker land here (task FE-3).</p>
-      <button
-        type="button"
-        onClick={loadSample}
-        className="min-h-11 rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700"
-      >
-        Dev: load the sample ramp
-      </button>
-      {status && <p role="status">{status}</p>}
-    </section>
-  );
+  const picker = useRef<HTMLInputElement>(null); const camera = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null); const [preview, setPreview] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<TemplateInfo[]>([]); const [templateKey, setTemplateKey] = useState("ramp");
+  const [fields, setFields] = useState(blank); const [loading, setLoading] = useState(false); const [error, setError] = useState<string | null>(null);
+  const setField = (key: Fields, value: string) => setFields((current) => ({ ...current, [key]: value }));
+  const numberOrUndefined = (value: string) => value.trim() === "" ? undefined : Number(value);
+  useEffect(() => { void api.templates().then(setTemplates).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Could not load templates.")); }, []);
+  function choose(next: File | undefined) { setError(null); if (!next) return; if (!next.type.startsWith("image/")) { setError("Please choose an image file (JPEG, PNG, HEIC, or WebP)."); return; } if (next.size > 10 * 1024 * 1024) { setError("That image is larger than 10 MB. Choose a smaller image."); return; } if (preview) URL.revokeObjectURL(preview); setFile(next); setPreview(URL.createObjectURL(next)); }
+  async function submit() { if (!file) { setError("Add a photo or choose a template instead."); return; } setLoading(true); setError(null); try { const result = await api.parse(file, { total_rise_in: numberOrUndefined(fields.total_rise_in), available_length_in: numberOrUndefined(fields.available_length_in), clear_width_in: numberOrUndefined(fields.clear_width_in), contractor_quote_cad: numberOrUndefined(fields.contractor_quote_cad) }, fields.note); if (!result.spec) { setError("We could not identify a supported project from this image. Pick a ramp template manually."); return; } setCaptureSession({ parse: result, imageUrl: preview }); setScreen("confirm"); } catch (reason) { setError(reason instanceof Error ? reason.message : "The photo could not be analyzed. Try again or pick a template."); } finally { setLoading(false); } }
+  async function startTemplate() { const template = templates.find((item) => item.key === templateKey); if (!template) return; setLoading(true); setError(null); try { const base = await api.generate({ template: template.key, params: {}, meta: {} }); const params: Record<string, ParamValue> = { ...base.spec.params }; (["total_rise_in", "available_length_in", "clear_width_in"] as const).forEach((key) => { if (fields[key].trim()) params[key] = { value: Number(fields[key]), source: "user", confidence: null }; }); const spec: Spec = { ...ungeneratedSpec(base.spec), params, meta: { ...base.spec.meta, contractor_quote_cad: numberOrUndefined(fields.contractor_quote_cad), notes: fields.note } }; setCaptureSession({ parse: { spec, template_confidence: null, questions: [], raw_notes: "Template selected manually." }, imageUrl: null }); setScreen("confirm"); } catch (reason) { setError(reason instanceof Error ? reason.message : "Could not start the selected template."); } finally { setLoading(false); } }
+  const fieldInputs: [Fields, string][] = [["total_rise_in", "Total rise (inches)"], ["available_length_in", "Available length (inches)"], ["clear_width_in", "Desired width (inches)"], ["contractor_quote_cad", "Contractor quote (CAD)"]];
+  return <section aria-labelledby="capture-title" className="mx-auto max-w-4xl space-y-5"><h2 id="capture-title" className="text-3xl font-bold">Capture</h2><p className="text-[var(--text-muted)]">Upload a sketch or porch photo, then confirm the values before we build a model.</p>{error && <ErrorState message={error} onRetry={file ? () => void submit() : undefined} />}{loading && <LoadingState message={file ? "Reading your photo and measurements…" : "Preparing your template…"} />}<div className="grid gap-5 md:grid-cols-[1.1fr_.9fr]"><div className="app-card p-4"><h3 className="mt-0">1. Add a photo</h3><input ref={picker} className="sr-only" type="file" accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} /><input ref={camera} className="sr-only" type="file" accept="image/*" capture="environment" onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} /><div className="flex flex-wrap gap-2"><button type="button" className="app-button app-button--secondary flex-1 border-dashed" onClick={() => picker.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); choose(event.dataTransfer.files[0]); }}>Drop a sketch or choose an image</button><button type="button" className="app-button app-button--secondary" onClick={() => camera.current?.click()}>Use camera</button></div><p className="text-sm text-[var(--text-muted)]">Images up to 10 MB. On a phone, “Use camera” opens the rear camera.</p>{preview ? <img src={preview} alt="Selected site or sketch" className="max-h-64 w-full rounded object-contain" /> : <EmptyState title="No image selected">A photo is optional—use the template picker below if you do not have one.</EmptyState>}</div><div className="app-card p-4"><h3 className="mt-0">2. Add what you know</h3><div className="grid gap-3">{fieldInputs.map(([key, label]) => <label key={key}>{label}<input className="app-input mt-1 w-full" type="number" min="0" value={fields[key]} onChange={(event) => setField(key, event.target.value)} /></label>)}<label>Notes<textarea className="app-input mt-1 min-h-20 w-full" value={fields.note} onChange={(event) => setField("note", event.target.value)} /></label></div><button type="button" className="app-button mt-4 w-full" disabled={loading} onClick={() => void submit()}>Analyze photo</button></div></div><div className="app-card p-4"><h3 className="mt-0">No photo? Start with a template</h3><div className="flex flex-wrap gap-3"><label className="flex-1">Template<select className="app-input mt-1 w-full" value={templateKey} onChange={(event) => setTemplateKey(event.target.value)}>{templates.map((template) => <option key={template.key} value={template.key}>{template.name}</option>)}</select></label><button type="button" className="app-button self-end" disabled={loading || !templates.length} onClick={() => void startTemplate()}>Pick template</button></div></div></section>;
 }

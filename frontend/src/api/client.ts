@@ -47,22 +47,46 @@ const postJson = <T>(url: string, body: unknown) =>
   );
 
 const fixture = <T>(path: string) => getJson<T>(`/fixtures/${path}`);
+const wait = (ms = 350) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
 // Mirrors the backend's F-4 stub: the layout param alone picks the fixture.
 const rampFixture = (layout: unknown) =>
   fixture<GenerateResponse>(layout === "switchback" ? "specs/ramp_switchback.json" : "specs/ramp_straight.json");
 
+function withRequestedParams(result: GenerateResponse, params: GenerateRequest["params"]): GenerateResponse {
+  const spec = structuredClone(result.spec);
+  spec.params = { ...spec.params, ...params };
+  spec.assumed = Object.entries(spec.params)
+    .filter(([, param]) => param.source === "inferred" || param.source === "default")
+    .map(([key]) => key);
+  return { ...result, spec };
+}
+
 export const api = {
   health: (): Promise<HealthResponse> =>
     USE_FIXTURES ? Promise.resolve({ ok: true, version: "fixtures" }) : getJson("/api/health"),
 
-  templates: (): Promise<TemplateInfo[]> => (USE_FIXTURES ? fixture("templates.json") : getJson("/api/templates")),
+  templates: async (): Promise<TemplateInfo[]> => {
+    if (!USE_FIXTURES) return getJson("/api/templates");
+    await wait(120);
+    return fixture("templates.json");
+  },
 
   parse: async (image: File, measurements?: unknown, note?: string): Promise<ParseResponse> => {
     if (USE_FIXTURES) {
+      await wait(650);
       const { spec } = await rampFixture("straight");
+      const params = structuredClone(spec.params);
+      const measurementRecord = measurements && typeof measurements === "object" ? measurements as Record<string, unknown> : undefined;
+      if (measurements && typeof measurements === "object") {
+        for (const [key, value] of Object.entries(measurements)) {
+          if (typeof value === "number" && Number.isFinite(value) && key in params) {
+            params[key] = { value, source: "user", confidence: null };
+          }
+        }
+      }
       return {
-        spec: { ...spec, parts: [], rule_checks: [] },
+        spec: { ...spec, params, parts: [], rule_checks: [], meta: { ...spec.meta, contractor_quote_cad: measurementRecord?.contractor_quote_cad } },
         template_confidence: null,
         questions: [],
         raw_notes: "Fixture response: the image was not analyzed.",
@@ -75,15 +99,53 @@ export const api = {
     return readJson(await fetch("/api/parse", { method: "POST", body: form }));
   },
 
-  generate: async (req: GenerateRequest): Promise<GenerateResponse> =>
-    USE_FIXTURES ? rampFixture(req.params.layout?.value) : postJson("/api/generate", req),
+  generate: async (req: GenerateRequest): Promise<GenerateResponse> => {
+    if (!USE_FIXTURES) return postJson("/api/generate", req);
+    await wait(300);
+    return withRequestedParams(await rampFixture(req.params.layout?.value), req.params);
+  },
 
   edit: async (req: EditRequest): Promise<EditResponse> => {
     if (!USE_FIXTURES) return postJson("/api/edit", req);
-    const { spec, plan } = await rampFixture(req.spec.params.layout?.value);
-    return { spec, plan, patch: {}, message: "Fixture mode: the edit was not applied.", needs_clarification: false };
+    await wait(420);
+    const lowered = req.utterance.toLowerCase();
+    const width = lowered.match(/(?:make it |set (?:the )?(?:width )?(?:to )?)(\d+)\s*(?:inches|inch|in|\")?\s*(?:wider|wide)?/);
+    const params = { ...req.spec.params };
+    if (width) params.clear_width_in = { value: Number(width[1]), source: "user", confidence: null };
+    if (lowered.includes("switchback")) params.layout = { value: "switchback", source: "user", confidence: null };
+    const { spec, plan } = await api.generate({ template: req.spec.template, params, meta: req.spec.meta });
+    const message = width ? `Updated the clear width to ${width[1]} inches.` : lowered.includes("switchback") ? "Changed the layout to switchback." : "Fixture mode applied your design edit.";
+    return { spec, plan, patch: {}, message, needs_clarification: false };
   },
 
   instructions: (req: InstructionsRequest): Promise<InstructionsResponse> =>
     USE_FIXTURES ? fixture("instructions/ramp_switchback.json") : postJson("/api/instructions", req),
+
+  stt: async (audio: Blob): Promise<string> => {
+    if (USE_FIXTURES) {
+      await wait(450);
+      return "make it 42 inches wider";
+    }
+    const form = new FormData();
+    form.append("audio", audio, "recording.webm");
+    const result = await readJson<{ text: string }>(await fetch("/api/voice/stt", { method: "POST", body: form }));
+    return result.text;
+  },
+
+  tts: async (text: string): Promise<Blob> => {
+    if (USE_FIXTURES) {
+      await wait(180);
+      throw new ApiError(501, "FIXTURE_BROWSER_TTS", `Browser speech will read: ${text}`);
+    }
+    const response = await fetch("/api/voice/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new ApiError(response.status, body?.error?.code ?? `HTTP_${response.status}`, body?.error?.message ?? response.statusText);
+    }
+    return response.blob();
+  },
 };

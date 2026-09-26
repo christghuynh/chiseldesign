@@ -1,12 +1,22 @@
-// Skeleton (F-5). FE-4 builds the real screen: detected template and confidence, parameters tagged
-// read/inferred/default with assumptions highlighted, ambiguity chips and the model's questions.
+import { useState } from "react";
+import { api } from "../api/client";
+import { EmptyState } from "../components/common/EmptyState";
+import { ErrorState } from "../components/common/ErrorState";
+import { LoadingState } from "../components/common/LoadingState";
+import { SourceTag } from "../components/common/SourceTag";
+import { useStore } from "../store";
+import type { ParamValue, Spec } from "../types";
+import { getCaptureSession, setCaptureSession } from "./flowState";
+
 export function Confirm() {
-  return (
-    <section aria-labelledby="confirm-title" className="space-y-4">
-      <h2 id="confirm-title" className="text-2xl font-semibold">
-        Confirm
-      </h2>
-      <p>Check the values the app read or guessed before generating the plan (task FE-4).</p>
-    </section>
-  );
+  const session = getCaptureSession();
+  const applyGenerateResult = useStore((state) => state.applyGenerateResult);
+  const setScreen = useStore((state) => state.setScreen);
+  const [spec, setSpec] = useState<Spec | null>(session?.parse.spec ?? null);
+  const [loading, setLoading] = useState(false); const [error, setError] = useState<string | null>(null);
+  if (!spec) return <section aria-labelledby="confirm-title" className="mx-auto max-w-3xl"><h2 id="confirm-title" className="text-3xl font-bold">Confirm</h2><EmptyState title="Nothing to confirm yet"><button type="button" className="app-button mt-2" onClick={() => setScreen("capture")}>Go to capture</button></EmptyState></section>;
+  const confirmedSpec = spec;
+  const update = (key: string, value: number | string) => { const params = { ...spec.params, [key]: { value, source: "user", confidence: null } satisfies ParamValue }; const assumed = Object.entries(params).filter(([, item]) => item.source === "default" || item.source === "inferred").map(([name]) => name); const next = { ...spec, params, assumed }; setSpec(next); if (session) setCaptureSession({ ...session, parse: { ...session.parse, spec: next } }); };
+  async function confirm() { setLoading(true); setError(null); try { const response = await api.generate({ template: confirmedSpec.template, params: confirmedSpec.params, meta: confirmedSpec.meta }); applyGenerateResult(response.spec, response.plan, "parse"); setScreen("design"); } catch (reason) { setError(reason instanceof Error ? reason.message : "We could not generate the design. Please try again."); } finally { setLoading(false); } }
+  return <section aria-labelledby="confirm-title" className="mx-auto max-w-4xl space-y-5"><div><h2 id="confirm-title" className="mb-1 text-3xl font-bold">Confirm what we found</h2><p className="m-0 text-[var(--text-muted)]">Values marked inferred or default are assumptions—please check them before generating a plan.</p></div>{loading && <LoadingState message="Generating the model, checks, and plan…" />}{error && <ErrorState message={error} onRetry={() => void confirm()} />}<div className="grid gap-5 md:grid-cols-[.75fr_1.25fr]"><aside className="app-card p-4"><h3 className="mt-0">Detected project</h3><p className="mb-1 font-semibold">{spec.template === "ramp" ? "Accessibility ramp" : spec.template}</p><p className="text-sm text-[var(--text-muted)]">{session?.parse.template_confidence === null ? "Selected manually" : `${Math.round((session?.parse.template_confidence ?? 0) * 100)}% confidence`}</p>{session?.imageUrl ? <img src={session.imageUrl} alt="Uploaded sketch or site" className="max-h-56 w-full rounded object-contain" /> : <p className="rounded bg-[var(--surface-muted)] p-3 text-sm">No photo attached.</p>}<label className="mt-3 block">Change type<select className="app-input mt-1 w-full" value={spec.template} onChange={(event) => update("template", event.target.value)}><option value="ramp">Accessibility ramp</option></select></label></aside><div className="app-card p-4"><h3 className="mt-0">Measurements and assumptions</h3><div className="space-y-2">{Object.entries(spec.params).map(([name, item]) => { const assumption = item.source === "default" || item.source === "inferred"; const label = name.replaceAll("_", " "); return <div key={name} className={`flex flex-wrap items-center justify-between gap-2 rounded p-2 ${assumption ? "assumption" : ""}`}><label className="font-medium capitalize">{label}{typeof item.value === "number" ? <input className="app-input ml-2 w-24" type="number" value={item.value} onChange={(event) => update(name, Number(event.target.value))} /> : <span className="ml-2">{String(item.value)}</span>}</label><SourceTag source={item.source} /></div>; })}</div><div className="mt-4"><p className="mb-2 font-semibold">Common ramp widths</p><div className="flex flex-wrap gap-2">{[36, 42, 48].map((width) => <button type="button" key={width} className="app-button app-button--secondary" onClick={() => update("clear_width_in", width)}>{width}″</button>)}</div></div>{session?.parse.questions.length ? <div className="mt-4 rounded bg-[var(--surface-muted)] p-3"><p className="m-0 font-semibold">A couple of questions</p><ul className="mb-0 mt-1">{session.parse.questions.slice(0, 3).map((question) => <li key={question}>{question}</li>)}</ul></div> : null}</div></div><button type="button" className="app-button w-full" disabled={loading} onClick={() => void confirm()}>Looks right — generate design</button></section>;
 }
