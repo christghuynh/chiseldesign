@@ -1,0 +1,10 @@
+# Build context for deploy/backend.Dockerfile (the repo root). Send only what the image needs.
+*
+!backend/pyproject.toml
+!backend/uv.lock
+!backend/.python-version
+!backend/app/
+!fixtures/
+!deploy/smoke_cadquery.py
+**/__pycache__
+**/*.py[cod]
