@@ -292,3 +292,22 @@ def test_real_text_reply_and_empty_reply(real_mode):
     real_mode.script[:] = [_response(text=None, function_calls=None)]
     with pytest.raises(AIInvalidOutput, match="neither"):
         call_with_tools([Message("user", "x")], TOOLS, call="edit")
+
+
+def test_app_imports_without_dev_only_httpx2():
+    """The production image has no dev dependencies; httpx2 comes only with the test client.
+
+    Runs in a fresh interpreter so this test's module state doesn't leak into other tests.
+    """
+    import subprocess
+    import sys
+
+    code = (
+        "import sys; sys.modules['httpx2'] = None\n"  # makes `import httpx2` raise ImportError
+        "import httpx\n"
+        "from app.ai import client\n"
+        "from app.main import app\n"
+        "assert client._TRANSPORT_ERRORS == (httpx.TransportError, TimeoutError)\n"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=60)
+    assert result.returncode == 0, result.stderr
