@@ -82,16 +82,15 @@ def test_instructions():
     r = client.post("/api/instructions", json={"spec": SPEC})
     assert r.status_code == 200
     steps = InstructionsResponse.model_validate(r.json()).steps
-    assert len(steps) == 11 and steps[0].n == 1
+    # AI-6 rewrites the engine skeleton (the stub skeleton has 10 steps); the shipped fake matches.
+    assert len(steps) == 10 and steps[0].n == 1
 
 
 @pytest.mark.parametrize(
     ("method", "path", "kwargs", "task"),
     [
-        ("post", "/api/voice/stt", {"files": {"audio": ("a.webm", b"x", "audio/webm")}}, "VOX-1"),
-        ("post", "/api/voice/tts", {"json": {"text": "hello"}}, "VOX-2"),
-        # /projects (INF-6) and /export/* (GEO-17, GEO-18) are now implemented by Lane C;
-        # their behavior is covered in test_projects_api.py, test_cad_export.py and test_cutlist_csv.py.
+        # Every route is implemented now: voice (VOX-1/2, test_voice.py), /projects (INF-6,
+        # test_projects_api.py) and /export/* (GEO-17/18, test_cad_export.py, test_cutlist_csv.py).
     ],
 )
 def test_unbuilt_routes_return_501_in_the_standard_error_shape(method, path, kwargs, task):
