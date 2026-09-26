@@ -28,7 +28,7 @@ def test_known_case_part_counts():
     assert remainder >= 2 + g
     assert len(named(parts, "Deck board")) == n + 1 == 26
     assert len(named(parts, "Edge curb")) == 4  # sloped length 144.5 in needs 2 segments per side
-    assert {p.group for p in parts} == {"run_1"}
+    assert {p.group for p in parts} == {"run_1", "handrail"}  # a 12 in rise needs handrails
     assert named(parts, "Stringer")[0].material == "2x6_PT"
 
 
@@ -205,7 +205,7 @@ def test_build_parts_is_fast():
     start = time.perf_counter()
     for _ in range(5):
         build_parts(params, derived)
-    assert (time.perf_counter() - start) / 5 < 0.5  # spec: < 150 ms; generous for a slow CI machine
+    assert (time.perf_counter() - start) / 5 < 0.15  # spec: < 150 ms (about 3 ms in practice)
 
 
 def test_random_sweep_builds_and_holds_all_invariants():

@@ -28,6 +28,7 @@ from app.templates.geometry import PartBuilder, Point, clip_y, normalize_profile
 from app.templates.ramp import Derived, Params, Run
 from app.templates.ramp_boards import equal_pieces, layout_boards
 from app.templates.ramp_geometry import deck_underside, stringer_bottom, stringer_profile, surface_point
+from app.templates.ramp_handrails import add_handrail_parts
 from app.templates.ramp_landings import add_landing_parts
 from app.util.units import format_fraction
 
@@ -161,4 +162,7 @@ def build_parts(params: Params, derived: Derived) -> list[Part]:
         add_run_parts(b, params, derived, run, is_last=run.index == len(derived.runs) - 1)
     for landing in derived.landings:
         add_landing_parts(b, params, derived, landing)
+    if derived.handrails_included:
+        for run in derived.runs:
+            add_handrail_parts(b, params, derived, run)
     return b.parts

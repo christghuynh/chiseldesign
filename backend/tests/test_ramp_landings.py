@@ -19,7 +19,7 @@ def landing_parts(parts, group="landing_1"):
 def test_switchback_builds_two_runs_and_a_landing():
     params, derived, parts = make(total_rise_in=20, layout="switchback")
     assert derived.layout == "switchback" and derived.run_count == 2
-    assert {p.group for p in parts} == {"run_1", "run_2", "landing_1"}
+    assert {p.group for p in parts} == {"run_1", "run_2", "landing_1", "handrail"}
     assert len(named(parts, "Ledger")) == 1 and named(parts, "Ledger")[0].group == "run_2"
     assert_invariants(parts)
 
