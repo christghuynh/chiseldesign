@@ -264,3 +264,31 @@ def test_parts_of_one_label_that_differ_by_a_rounding_hair_share_the_longest_len
     (row,) = build_cut_list(parts)
     assert row.qty == 2 and row.length_in == 42.648
     assert label_lengths(parts) == {parts[0].label: 42.648}
+
+
+# A notched stair stringer (2 risers of 7 in, 11 in treads, cut from a 2x10): the LONGEST EDGE is a horizontal
+# tread (11 in) but the board runs along the slope, so its length is ~19.2 in. Measuring along the longest edge
+# reported 14.5 in: a stringer cut too short.
+SAWTOOTH = [(0.0, 0.0), (7.801, 0.0), (14.5, 4.263), (14.5, 13.0), (11.0, 13.0), (11.0, 6.0), (0.0, 6.0)]
+
+
+def test_a_notched_stringers_length_is_measured_along_the_board_not_along_its_longest_edge():
+    part = make_part(name="Stringer", material="2x10_PT", profile=SAWTOOTH, thickness=1.5)
+    long_side, short_side, thick = part_extents(part)
+    assert long_side == pytest.approx(19.21, abs=0.02) and short_side == pytest.approx(9.25, abs=0.02) and thick == 1.5
+    assert part_length(part) == pytest.approx(19.21, abs=0.02)
+    assert part_length(part) > 14.5  # the old longest-edge measurement
+
+
+def test_extents_do_not_depend_on_where_the_profile_starts_or_its_winding_start():
+    base = make_part(name="Stringer", material="2x10_PT", profile=SAWTOOTH, thickness=1.5)
+    for shift in range(len(SAWTOOTH)):
+        rotated = make_part(name="Stringer", material="2x10_PT", profile=SAWTOOTH[shift:] + SAWTOOTH[:shift], thickness=1.5)
+        assert part_extents(rotated) == part_extents(base)
+
+
+def test_a_beveled_board_is_measured_by_its_real_width_not_its_horizontal_projection():
+    """A 5.5 in deck board clipped at grade: measuring horizontally gave 5.56; the board is 5.5 wide."""
+    board = make_part(name="Deck board", material="5/4x6_PT_deck", profile=[(5.669, 0.0), (11.188, 0.0), (11.111, 0.926), (5.63, 0.469)], thickness=36.0)
+    long_side, short_side, _ = part_extents(board)
+    assert long_side == pytest.approx(5.52, abs=0.02) and short_side < 1.0

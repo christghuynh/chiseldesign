@@ -4,8 +4,11 @@ Convention (see models/core.py): a Part is a counter-clockwise 2D `profile` extr
 by `thickness`. `thickness` is the extrusion depth, NOT necessarily the board thickness: stringers
 carry their length in the profile, while deck boards, ledgers, joists and posts carry a small
 cross-section in the profile and their length in `thickness`. So a part's board length is the longest
-of three extents: the profile's extent along its longest edge, the profile's extent perpendicular to
-that, and `thickness`.
+of three extents: the two sides of the profile's minimum-area bounding rectangle, and `thickness`.
+
+The board axis is found as the minimum-area bounding rectangle, NOT as the direction of the longest edge:
+for a notched stair stringer the longest edge is a horizontal tread, but the board runs along the slope,
+and measuring along the tread would report a stringer that is too short to cut.
 """
 
 import math
@@ -26,29 +29,29 @@ def _require_polygon(part: Part) -> None:
 
 
 def part_extents(part: Part) -> tuple[float, float, float]:
-    """(extent along the longest profile edge, extent perpendicular to it, thickness), each rounded to 3 decimals.
+    """(longer side, shorter side, thickness), each rounded to 3 decimals.
 
-    When several edges tie for longest (rectangles, rhombi) the one giving the largest along-extent is
-    used, so the result does not depend on which vertex the profile list starts at.
+    The two sides come from the profile's minimum-area bounding rectangle: every profile edge is tried as
+    the board axis and the orientation that encloses the least area wins. Ties (a rectangle has two equal
+    orientations) take the longer long side, so the result never depends on which vertex the list starts at.
     """
     _require_polygon(part)
     edges = _edges(part.profile)
-    lengths = [math.hypot(ex, ey) for ex, ey in edges]
-    longest = max(lengths)
-    if longest <= _EPS:
-        raise ValueError(f"Part {part.id!r} has a degenerate profile")
-    best: tuple[float, float] | None = None
-    for (ex, ey), length in zip(edges, lengths, strict=True):
-        if length < longest - 1e-6:
+    best: tuple[float, float, float] | None = None  # (area, -long side, short side) with the long side
+    for ex, ey in edges:
+        length = math.hypot(ex, ey)
+        if length <= _EPS:
             continue
         ux, uy = ex / length, ey / length
         along = [x * ux + y * uy for x, y in part.profile]
         perp = [-x * uy + y * ux for x, y in part.profile]
-        candidate = (max(along) - min(along), max(perp) - min(perp))
-        if best is None or (candidate[0], -candidate[1]) > (best[0], -best[1]):
-            best = candidate
-    assert best is not None
-    return (round(best[0], 3), round(best[1], 3), round(part.thickness, 3))
+        a, b = max(along) - min(along), max(perp) - min(perp)
+        key = (round(a * b, 6), -max(a, b), min(a, b))
+        if best is None or key < best:
+            best = key
+    if best is None:
+        raise ValueError(f"Part {part.id!r} has a degenerate profile")
+    return (round(-best[1], 3), round(best[2], 3), round(part.thickness, 3))
 
 
 def part_length(part: Part) -> float:
