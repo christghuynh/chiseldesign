@@ -9,7 +9,6 @@ extrude -> transform -> Y-up to Z-up). GEO-17 (the real STEP/STL exporter) shoul
 
 It is easy to write the Y-up -> Z-up conversion as "rotate -90 degrees about X". As an active rotation
 of the geometry that turns the ramp upside down; the correct rotation is +90 degrees about X.
-See foundation.md.
 """
 
 import json

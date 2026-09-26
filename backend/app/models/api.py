@@ -2,8 +2,8 @@
 
 These are additions to the core models in core.py so the frontend client can be
 typed end to end. Multipart bodies (`/parse`, `/voice/stt`) have no JSON request model.
-Field types that weren't specified up front (project ids, timestamps, thumbnails) are listed in
-foundation.md under "Decisions to confirm".
+Field types that weren't specified up front are choices to revisit if a task needs something
+else: project ids are ints, timestamps are ISO 8601 strings, thumbnails are PNG data URLs.
 """
 
 from typing import Any, Literal

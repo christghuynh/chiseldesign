@@ -1,6 +1,7 @@
 """Core data contracts. The backend is authoritative.
 
-Units are inches everywhere. World frame is Y-up (see foundation.md).
+Units are inches everywhere. World frame is Y-up: origin at the bottom of the ramp's centerline on
+the ground, +X up the first run, +Z to the walker's right.
 Changes here must be announced to the whole team and followed by `make types`.
 """
 

@@ -1,6 +1,6 @@
 """Loads the hand-built fixtures in /fixtures. Only the F-4 stub routes use this.
 
-Real handlers replace these as the GEO/AI/VOX/INF tasks land (see foundation.md).
+Real handlers replace these as the GEO/AI/VOX/INF tasks land.
 """
 
 import json

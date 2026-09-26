@@ -1,4 +1,4 @@
-// Part -> three.js geometry and placement (conventions are in foundation.md).
+// Part -> three.js geometry and placement.
 //
 // A Part is a CCW XY `profile` extruded along local +Z by `thickness`, rotated by Euler XYZ
 // (radians; three.js order "XYZ", i.e. matrix Rx*Ry*Rz) and then translated by `pos`.
