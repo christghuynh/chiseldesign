@@ -1,0 +1,41 @@
+# Local copy of the production stack on http://localhost:8080 (plain HTTP, no TLS, no domain).
+# Browsers treat localhost as a secure origin, so the mic still works.
+#
+#   docker compose -f deploy/docker-compose.local.yml up --build     (or `make up-local`)
+#
+# The root .env is optional here. LOCAL_PORT changes the port.
+name: sketchbuild-local
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    image: sketchbuild-backend
+    platform: linux/amd64
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_PATH: /data/sketchbuild.db
+      CORS_ORIGINS: http://localhost:${LOCAL_PORT:-8080}
+    volumes:
+      - app-data:/data
+    expose:
+      - "8000"
+
+  caddy:
+    build:
+      context: ..
+      dockerfile: deploy/web.Dockerfile
+    image: sketchbuild-web
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      SITE_ADDRESS: ":80"
+    ports:
+      - "${LOCAL_PORT:-8080}:80"
+
+volumes:
+  app-data:
