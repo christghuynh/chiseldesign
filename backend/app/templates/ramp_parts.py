@@ -10,12 +10,12 @@ Part names and groups are a contract shared with the cut list, pricing and skele
 
     Stringer, Ledger, Deck board, Deck panel, Edge curb                     group run_1, run_2, ...
     Landing rim (end), Landing rim (side), Landing joist,
-    Landing deck board, Landing deck panel, Landing post                    group landing_1, ...
+    Landing deck board, Landing deck panel, Landing post, Edge curb         group landing_1, ...
     Handrail post, Handrail                                                 group handrail
 
 Decisions worth knowing:
-- Decking, curbs and handrails are only built on runs; landings get no curbs and no handrails (they
-  are flat and the rules module reports open edges separately).
+- Decking and handrails are only built on runs. Curbs go on runs AND landings (ADA 405.9 asks for edge
+  protection on both); landings get their curbs from `ramp_landings`, and no handrails.
 - The one ledger sits on the LAST run, where the ramp meets the porch. A switchback's turn landing
   needs none because the landing frame is free-standing on its posts.
 - A run whose stringers would be too shallow (a very low ramp) has none: its decking lies on the ground.
@@ -23,17 +23,15 @@ Decisions worth knowing:
 """
 
 from app.data import lumber_spec
-from app.rules.constants import EDGE_CURB_MIN_HEIGHT_IN
 from app.models import Part
 from app.templates.geometry import PartBuilder, Point, clip_y, normalize_profile, signed_area
 from app.templates.ramp import Derived, Params, Run
-from app.templates.ramp_boards import equal_pieces, layout_boards
+from app.templates.ramp_boards import CURB_MATERIAL, curb_spec, equal_pieces, layout_boards
 from app.templates.ramp_geometry import deck_underside, stringer_bottom, stringer_profile, surface_point
 from app.templates.ramp_handrails import add_handrail_parts
 from app.templates.ramp_landings import add_landing_parts
 from app.util.units import format_fraction
 
-CURB_MATERIAL = "2x6_PT"  # on edge: 5.5 in tall, above the 4 in minimum that ADA 405.9.2 needs
 PLYWOOD = "3/4_ext_ply"
 MAX_PANEL_LENGTH_IN = 96.0
 MAX_PANEL_WIDTH_IN = 48.0
@@ -128,10 +126,10 @@ def _add_deck_panels(b: PartBuilder, params: Params, derived: Derived, run: Run)
 def _add_curbs(b: PartBuilder, params: Params, derived: Derived, run: Run) -> None:
     """2x6 curbs stand on edge on the deck surface along both edges, spliced when longer than the longest board.
 
-    A curb must stand at least EDGE_CURB_MIN_HEIGHT_IN tall (ADA 405.9.2); a 2x4 on edge (3.5 in) is too low.
+    A curb must stand at least 4 in tall (ADA 405.9.2); `curb_spec` guards that.
     """
-    spec = lumber_spec(CURB_MATERIAL)
-    assert spec.width_in is not None and spec.width_in >= EDGE_CURB_MIN_HEIGHT_IN.value, "edge curbs must be at least 4 in tall"
+    spec = curb_spec()
+    assert spec.width_in is not None
     segments = equal_pieces(run.sloped_in, spec.max_stock_length_in)
     note = "Splice: butt joint over a stringer" if len(segments) > 1 else "Square cut both ends"
     width = derived.clear_width_in

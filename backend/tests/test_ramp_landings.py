@@ -13,7 +13,12 @@ LANDING_NAMES = ("Landing rim (end)", "Landing rim (side)", "Landing joist", "La
 
 
 def landing_parts(parts, group="landing_1"):
-    return [p for p in parts if p.group == group]
+    """The landing's frame and deck (curbs are checked separately: they stand above the walking surface)."""
+    return [p for p in parts if p.group == group and p.name != "Edge curb"]
+
+
+def landing_curbs(parts, group="landing_1"):
+    return [p for p in parts if p.group == group and p.name == "Edge curb"]
 
 
 def test_switchback_builds_two_runs_and_a_landing():
@@ -201,3 +206,46 @@ def test_a_low_landing_frame_is_ripped_and_the_parts_say_so():
     assert frame and all(any(n == "Rip to 3 in wide" for n in p.cut_notes) for p in frame)
     full = Params(total_rise_in=21, layout="switchback")
     assert not any("Rip" in n for p in build_parts(full, derive(full)) if p.name.startswith("Landing rim") for n in p.cut_notes)
+
+
+def test_straight_landing_is_curbed_on_its_two_long_sides_only():
+    """ADA 405.9: edge protection on landings too. A straight ramp's landing is entered and left by the runs,
+    so only its two long sides are open."""
+    _, derived, parts = make(total_rise_in=31, layout="straight")
+    landing = derived.landings[0]
+    curbs = landing_curbs(parts)
+    assert len(curbs) == 2 and all(c.material == "2x6_PT" and c.thickness == 1.5 for c in curbs)
+    assert sorted(bbox([c])[0][2] for c in curbs) == [pytest.approx(landing.z_min), pytest.approx(landing.z_max - 1.5)]
+    for c in curbs:
+        (cx0, cy0, _), (cx1, cy1, _) = bbox([c])
+        assert cy0 == pytest.approx(landing.elevation_in) and cy1 - cy0 == pytest.approx(5.5, abs=1e-2)
+        assert cx0 == pytest.approx(landing.x_min) and cx1 == pytest.approx(landing.x_max)
+    assert_invariants(parts)
+
+
+def test_turn_landing_is_curbed_on_the_far_end_and_across_the_gap_between_the_runs():
+    _, derived, parts = make(total_rise_in=20, layout="switchback")
+    landing = derived.landings[0]
+    curbs = landing_curbs(parts)
+    assert len(curbs) == 4  # two long sides, the far end, and the 12 in gap where the runs are apart
+    far_end = [c for c in curbs if bbox([c])[1][0] - bbox([c])[0][0] == pytest.approx(1.5)]
+    assert len(far_end) == 2
+    widths = sorted(round(bbox([c])[1][2] - bbox([c])[0][2], 2) for c in far_end)
+    assert widths == [pytest.approx(12.0), pytest.approx(landing.z_max - landing.z_min - 3)]
+    assert_invariants(parts)
+
+
+def test_landing_curbs_follow_the_edge_curb_switch_and_stay_in_the_landing_group():
+    _, _, off = make(total_rise_in=20, layout="switchback", edge_curb=False)
+    assert not [p for p in off if p.name == "Edge curb"]
+    _, _, on = make(total_rise_in=20, layout="switchback")
+    assert {p.group for p in on if p.name == "Edge curb"} == {"run_1", "run_2", "landing_1"}
+
+
+@pytest.mark.parametrize("length", [60, 240])
+def test_long_landing_curbs_are_spliced_to_buyable_lengths(length):
+    _, _, parts = make(total_rise_in=20, layout="switchback", landing_length_in=length)
+    sides = [c for c in landing_curbs(parts) if bbox([c])[1][0] - bbox([c])[0][0] > 2]
+    assert all(bbox([c])[1][0] - bbox([c])[0][0] <= 192 + 1e-6 for c in sides)
+    assert (len(sides) > 2) == (length > 192)
+

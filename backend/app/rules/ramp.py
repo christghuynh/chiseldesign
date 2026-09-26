@@ -129,7 +129,7 @@ def _edge_protection(params: Params, derived: Derived) -> RuleCheck:
     title = "Edge protection on open sides"
     key = EDGE_PROTECTION_SOURCE.source_key
     if params.edge_curb:
-        return _make("RAMP-006", title, "pass", "Edge curbs are included on both sides", key)
+        return _make("RAMP-006", title, "pass", "Edge curbs 5.5 in tall (the standard asks for at least 4 in) are included on every open side", key)
     return _make("RAMP-006", title, "warn", "No edge curbs; the open sides have no edge protection", key)
 
 
