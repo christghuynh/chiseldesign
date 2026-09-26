@@ -1,0 +1,18 @@
+{
+  "_comment": "Citation key -> source. PLACEHOLDERS until task NC-3 picks one accessibility guideline source and verifies every constant in constants.py. Replace title, publisher and url with real citations, then delete the TBD markers.",
+  "tbd-slope": {"title": "TBD: ramp slope guideline", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-rise-per-run": {"title": "TBD: maximum rise per ramp run", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-clear-width": {"title": "TBD: minimum clear width", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-landing": {"title": "TBD: landing length", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-handrails": {"title": "TBD: when handrails are required", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-handrail-height": {"title": "TBD: handrail height", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-edge-protection": {"title": "TBD: edge protection on open sides", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-site-fit": {"title": "TBD: fitting the ramp to the available site", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3). Geometry, not a guideline."},
+  "tbd-permit": {"title": "TBD: permit and local building code requirements", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3). Guidelines, not code compliance."},
+  "lumber-stock-lengths": {"title": "Board lengths sold (backend/app/data/lumber.json)", "publisher": "SketchBuild data", "url": null, "notes": "The longest board a retailer sells for the chosen framing. Verify against a retailer (NC-4)."},
+  "tbd-bed-height": {"title": "TBD: accessible raised-bed height", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-bed-reach": {"title": "TBD: reach limits for raised beds", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-bed-path": {"title": "TBD: clear path around a bed", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-step-riser": {"title": "TBD: maximum step riser", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."},
+  "tbd-step-tread": {"title": "TBD: minimum step tread", "publisher": "TBD", "url": null, "notes": "Placeholder (NC-3)."}
+}
