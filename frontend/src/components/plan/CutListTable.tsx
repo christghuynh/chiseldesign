@@ -44,7 +44,7 @@ export function CutListTable({ rows, selectedLabel = null, onRowSelect }: CutLis
                 aria-current={selected ? "true" : undefined}
                 onClick={onRowSelect ? () => onRowSelect(row.label) : undefined}
                 onKeyDown={onRowSelect ? (e) => onKeyDown(e, row.label) : undefined}
-                className={`border-b border-slate-200 align-top ${onRowSelect ? "cursor-pointer hover:bg-slate-50" : ""} ${selected ? "bg-amber-100 hover:bg-amber-100" : ""}`}
+                className={`border-b border-slate-200 align-top ${onRowSelect ? "cursor-pointer" : ""} ${selected ? "bg-amber-100" : onRowSelect ? "hover:bg-slate-50" : ""}`}
               >
                 <th scope="row" className="px-2 py-2 font-bold">{row.label}</th>
                 <td className="px-2 py-2">{row.name}</td>
