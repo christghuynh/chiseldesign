@@ -1,0 +1,74 @@
+# INF-10: backend pytest and frontend type-check + tests + build, on every push and PR.
+# The same checks as `make test`, plus the production build.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (pytest)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      FAKE_AI: "1"
+      FAKE_VOICE: "1"
+      AUTH_DISABLED: "1"
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+
+      # CadQuery's OCP wheels link against libGL.so.1. The hosted image normally has it.
+      - name: Ensure libGL for CadQuery
+        run: ldconfig -p | grep -q 'libGL\.so\.1' || { sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1; }
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.16"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      # Python 3.11 comes from backend/.python-version (uv downloads it if the runner lacks it).
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: pytest
+        run: uv run pytest
+
+  frontend:
+    name: Frontend (type-check, vitest, build)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: vitest
+        run: npm test
+
+      - name: Build
+        run: npx vite build

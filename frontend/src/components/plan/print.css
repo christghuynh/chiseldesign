@@ -1,0 +1,52 @@
+/* Owner: P4. Printable plan (FE-10): only while the Plan screen is showing (#plan-screen), print the
+   summary, cut list, layouts, shopping list and safety notice, without the app's navigation chrome. */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body:has(#plan-screen) header,
+  body:has(#plan-screen) nav,
+  body:has(#plan-screen) a[href="#main"],
+  .print-hide {
+    display: none !important;
+  }
+
+  body:has(#plan-screen) main {
+    padding: 0 !important;
+  }
+
+  #plan-screen {
+    font-size: 11pt;
+    color: #000;
+  }
+
+  /* The cut list shares a grid with the 3D view on screen; on paper it takes the full width. */
+  #plan-screen .plan-cutlist {
+    display: block !important;
+  }
+
+  /* Keep the hatching and highlight colours. */
+  #plan-screen svg,
+  #plan-screen .summary-card,
+  #plan-screen .safety-notice {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  #plan-screen tr,
+  #plan-screen figure,
+  #plan-screen .summary-card,
+  #plan-screen .safety-notice {
+    break-inside: avoid;
+  }
+
+  #plan-screen h3 {
+    break-after: avoid;
+  }
+
+  #plan-screen a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

@@ -54,3 +54,21 @@ Prerequisites: [uv](https://docs.astral.sh/uv/) (Python 3.11 is pinned in `backe
 - Frontend: `cd frontend && npm install`, then `npm run dev` (proxies `/api` to the backend on :8000) or `npm run dev:fixtures` to run without a backend.
 - `make dev` and `make eval` are still stubs (tasks INF-9 and AI-8).
 - **New dependencies:** Python packages with `uv add <package>` (updates `backend/pyproject.toml` and `uv.lock`; there is no `requirements.txt`), JavaScript with `npm install <package>` inside `frontend/`. List them in your report.
+
+## Make targets (INF-9)
+
+Run from the repo root. `make` alone prints this list.
+
+| Target | What it does |
+|---|---|
+| `make install` | `uv sync` in `backend/` and `npm ci` in `frontend/`. |
+| `make dev` | Backend on :8000 with `--reload` and Vite on :5173 (proxies `/api` to :8000), in one terminal. Ctrl-C stops both. For the UI without a backend, use `npm run dev:fixtures` in `frontend/`. |
+| `make test` | `test-backend` + `test-frontend`. Must pass before you merge; CI runs the same checks. |
+| `make test-backend` | `pytest` in `backend/`. |
+| `make test-frontend` | `vitest` and `tsc --noEmit` in `frontend/`. |
+| `make types` | Regenerates `shared/schema/` and `frontend/src/types/` from the Pydantic models. Run it after any model change. |
+| `make eval` | Runs `evals/run_parse_eval.py` (AI-8). Fails with a message until that file exists. |
+| `make up-local` / `make down-local` | The production Docker stack (backend + Caddy with the built frontend) on http://localhost:8080 with no TLS (`deploy/docker-compose.local.yml`). `LOCAL_PORT` changes the port. The first build takes a few minutes (CadQuery). |
+| `make deploy` | `deploy/deploy.sh`: ssh to the VM, `git pull`, `docker compose up -d --build`, then polls `https://$DOMAIN/api/health` and fails loudly if it isn't healthy. Needs `DEPLOY_HOST` (ssh target) and `DOMAIN` in the environment or the root `.env`; the other settings are listed at the top of the script. |
+
+Docker files live in `deploy/`: `backend.Dockerfile` (Python 3.11 + CadQuery, non-root, with a smoke test at build time), `web.Dockerfile` (builds the frontend, serves it with Caddy), `Caddyfile`, `docker-compose.yml` (production, HTTPS for `$DOMAIN`) and `docker-compose.local.yml`. Build context is always the repo root, and each Dockerfile's `.dockerignore` sits next to it. Build for the VM with `--platform linux/amd64`.
