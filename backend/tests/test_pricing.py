@@ -106,9 +106,23 @@ def test_structural_screw_boxes_round_up():
     assert hardware_quantities(four_joists)["structural_screws_box"] == 2
 
 
-def test_only_4x4_parts_named_post_get_a_post_base():
-    parts = [post(), make_part(name="Handrail post", material="2x4_PT"), make_part(name="Post", material="4x4_PT"), make_part(name="Brace", material="4x4_PT")]
+def test_only_handrail_and_landing_4x4_posts_get_a_post_base():
+    parts = [post(), make_part(name="Handrail post", material="2x4_PT"), make_part(name="Landing post", material="4x4_PT"), make_part(name="Brace", material="4x4_PT")]
     assert hardware_quantities(parts)["post_base"] == 2
+
+
+def test_garden_bed_corner_posts_and_workbench_legs_need_no_post_base():
+    parts = [make_part(name="Corner post", material="4x4_PT"), make_part(name="Leg", material="4x4_PT")]
+    assert "post_base" not in hardware_quantities(parts)
+
+
+def test_step_treads_are_screwed_to_the_stringers_even_in_another_group():
+    parts = [make_part(name="Stringer", group="frame"), make_part(name="Stringer", group="frame"),
+             make_part(name="Tread board", material="5/4x6_PT_deck", group="treads"), make_part(name="Tread board", material="5/4x6_PT_deck", group="treads")]
+    assert hardware_quantities(parts)["deck_screws_box"] == 1  # 2 boards x 2 stringers x 2 screws = 8 screws, one box
+    from app.pricing.shopping import _crossings
+
+    assert _crossings(parts) == 4
 
 
 def test_lines_with_zero_quantity_are_omitted():

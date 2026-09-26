@@ -19,10 +19,16 @@ def lumber_price_key(layout: StockLayout) -> str:
     return f"{layout.material}_{int(layout.length_in)}"
 
 
+def _is_deck_board(part: Part) -> bool:
+    return any(text in part.name.lower() for text in c.DECK_BOARD_NAMES)
+
+
 def _crossings(parts: list[Part]) -> int:
-    """Deck-board-to-support crossings: each deck board crosses every support in its `group`."""
+    """Deck-board-to-support crossings: each deck board crosses every support in its `group`. A board whose
+    group has no supports of its own (step treads sit in their own group) crosses all the supports there are."""
     supports = Counter(p.group for p in parts if p.name in c.SUPPORT_NAMES)
-    return sum(supports[p.group] for p in parts if c.DECK_BOARD_TEXT in p.name.lower())
+    total = sum(supports.values())
+    return sum(supports[p.group] or total for p in parts if _is_deck_board(p))
 
 
 def _boxes(count: int, key: str, used: bool) -> int:
@@ -38,13 +44,13 @@ def hardware_quantities(parts: list[Part]) -> dict[str, int]:
 
     Deck screws: crossings x DECK_SCREWS_PER_CROSSING, in boxes; a build with any deck board buys at
     least one box even when no support is found. Joist hangers: 2 per "Landing joist". Post bases: one
-    per 4x4 part named like a post. Structural screws: per joist hanger, in boxes.
+    per handrail or landing post. Structural screws: per joist hanger, in boxes.
     """
-    has_deck = any(c.DECK_BOARD_TEXT in p.name.lower() for p in parts)
+    has_deck = any(_is_deck_board(p) for p in parts)
     screws = _crossings(parts) * c.DECK_SCREWS_PER_CROSSING
     joists = sum(1 for p in parts if p.name == c.JOIST_NAME)
     hangers = joists * c.JOIST_ENDS * c.JOIST_HANGERS_PER_JOIST_END
-    posts = sum(1 for p in parts if p.material == c.POST_MATERIAL and c.POST_TEXT in p.name.lower())
+    posts = sum(1 for p in parts if p.material == c.POST_MATERIAL and p.name in c.POST_BASE_NAMES)
     quantities = {
         c.DECK_SCREWS_KEY: _boxes(screws, c.DECK_SCREWS_KEY, has_deck),
         c.JOIST_HANGER_KEY: hangers,

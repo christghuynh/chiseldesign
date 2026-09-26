@@ -23,11 +23,12 @@ MIN_BOXES_PER_FASTENER = 1
 # Ontario HST (CAD); confirm the rate for the build's province.
 HST_RATE = 0.13
 
-# Part names the pricing rules key on (the ramp template's names; case-insensitive contains/equals).
+# Part names the pricing rules key on (the templates' names).
 SUPPORT_NAMES = ("Stringer", "Landing joist")  # members a deck board is screwed to
 JOIST_NAME = "Landing joist"
-DECK_BOARD_TEXT = "deck board"
-POST_TEXT = "post"
+DECK_BOARD_NAMES = ("deck board", "tread board")  # case-insensitive "contains": ramp decking, landing decking, step treads
+# Posts that stand on a post base. Not garden-bed corner posts or workbench legs, which need none.
+POST_BASE_NAMES = ("Handrail post", "Landing post")
 POST_MATERIAL = "4x4_PT"
 
 # prices.json keys for the hardware lines

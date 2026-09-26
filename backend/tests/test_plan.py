@@ -145,7 +145,7 @@ def test_oversize_boards_stay_in_the_cut_list_with_a_note_and_the_plan_still_bui
             make_part(name="Long stringer", thickness=250.0),  # longer than the 16' (192") 2x6 maximum
             make_part(name="Joist", thickness=60.0),
             make_part(name="Joist", thickness=60.0, pos=(0, 0, 10)),
-            make_part(name="Post", material="4x4_PT", profile=rect_profile(3.5, 3.5), thickness=130.0),  # 4x4 stops at 10'
+            make_part(name="Landing post", material="4x4_PT", profile=rect_profile(3.5, 3.5), thickness=130.0),  # 4x4 stops at 10'
         ]
     )
     plan = build_plan(parts)
@@ -153,9 +153,9 @@ def test_oversize_boards_stay_in_the_cut_list_with_a_note_and_the_plan_still_bui
     note_4x4 = "Longer than the longest board sold (10' 0\"); cannot be bought as one piece"
     rows = {row.name: row for row in plan.cut_list}
     assert rows["Long stringer"].cut_notes == [note_2x6]
-    assert rows["Post"].cut_notes == [note_4x4]
+    assert rows["Landing post"].cut_notes == [note_4x4]
     assert rows["Joist"].cut_notes == []  # only the oversize rows are annotated
-    long_id, post_id = rows["Long stringer"].part_ids[0], rows["Post"].part_ids[0]
+    long_id, post_id = rows["Long stringer"].part_ids[0], rows["Landing post"].part_ids[0]
     check_consistency(plan, parts, excluded=frozenset({long_id, post_id}))
     assert {q.part_id for layout in plan.layouts for q in layout.pieces} == set(rows["Joist"].part_ids)
     # no lumber for the oversize pieces: the two 60" joists share one 144" board (120.125"); the post base is
