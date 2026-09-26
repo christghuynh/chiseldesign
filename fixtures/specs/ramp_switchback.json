@@ -1302,7 +1302,7 @@
         "title": "Slope no steeper than 1:12",
         "status": "pass",
         "detail": "Slope is 1:12; guideline is 1:12 or gentler",
-        "source_ref": "tbd-slope",
+        "source_ref": "ada-405-2",
         "fix": null
       },
       {
@@ -1310,7 +1310,7 @@
         "title": "Rise per run within maximum",
         "status": "pass",
         "detail": "Rise per run is 7-1/2\"; guideline maximum is 2' 6\"",
-        "source_ref": "tbd-rise-per-run",
+        "source_ref": "ada-405-6",
         "fix": null
       },
       {
@@ -1318,7 +1318,7 @@
         "title": "Clear width at least the minimum",
         "status": "pass",
         "detail": "Clear width is 3' 0\"; guideline minimum is 3' 0\"",
-        "source_ref": "tbd-clear-width",
+        "source_ref": "ada-405-5",
         "fix": null
       },
       {
@@ -1326,7 +1326,7 @@
         "title": "Landings long enough",
         "status": "pass",
         "detail": "Landings are 5' 0\" long; guideline minimum is 5' 0\"",
-        "source_ref": "tbd-landing",
+        "source_ref": "ada-405-7",
         "fix": null
       },
       {
@@ -1334,7 +1334,7 @@
         "title": "Handrails present when required",
         "status": "pass",
         "detail": "Rise is 1' 3\"; handrails are included",
-        "source_ref": "tbd-handrails",
+        "source_ref": "ada-405-8",
         "fix": null
       },
       {
@@ -1342,7 +1342,7 @@
         "title": "Edge protection on open sides",
         "status": "pass",
         "detail": "Edge curbs are included on both sides",
-        "source_ref": "tbd-edge-protection",
+        "source_ref": "ada-405-9",
         "fix": null
       },
       {
@@ -1350,7 +1350,7 @@
         "title": "Fits the available length",
         "status": "pass",
         "detail": "Ramp needs 12' 6\" and 13' 4\" is available",
-        "source_ref": "tbd-site-fit",
+        "source_ref": "site-fit",
         "fix": null
       },
       {
@@ -1358,7 +1358,7 @@
         "title": "Permit and local code notice",
         "status": "info",
         "detail": "Guidelines, not code compliance. Check local permit requirements.",
-        "source_ref": "tbd-permit",
+        "source_ref": "local-code-notice",
         "fix": null
       },
       {
