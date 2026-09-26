@@ -89,15 +89,8 @@ def test_instructions():
 @pytest.mark.parametrize(
     ("method", "path", "kwargs", "task"),
     [
-        # /api/voice/stt and /api/voice/tts are implemented (VOX-1/VOX-2); tested in test_voice.py.
-        ("get", "/api/projects", {}, "INF-6"),
-        ("post", "/api/projects", {"json": {"name": "p", "spec": SPEC}}, "INF-6"),
-        ("get", "/api/projects/1", {}, "INF-6"),
-        ("post", "/api/projects/1/versions", {"json": {"spec": SPEC, "source": "edit"}}, "INF-6"),
-        ("get", "/api/projects/1/versions/2", {}, "INF-6"),
-        ("post", "/api/export/step", {"json": {"spec": SPEC}}, "GEO-17"),
-        ("post", "/api/export/stl", {"json": {"spec": SPEC}}, "GEO-17"),
-        ("post", "/api/export/cutlist.csv", {"json": {"spec": SPEC}}, "GEO-18"),
+        # Every route is implemented now: voice (VOX-1/2, test_voice.py), /projects (INF-6,
+        # test_projects_api.py) and /export/* (GEO-17/18, test_cad_export.py, test_cutlist_csv.py).
     ],
 )
 def test_unbuilt_routes_return_501_in_the_standard_error_shape(method, path, kwargs, task):
