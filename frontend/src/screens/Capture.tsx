@@ -3,8 +3,8 @@ import { api } from "../api/client";
 import { ErrorState } from "../components/common/ErrorState";
 import { LoadingState } from "../components/common/LoadingState";
 import { useStore } from "../store";
-import type { ParamValue, Spec, TemplateInfo } from "../types";
-import { setCaptureSession, ungeneratedSpec } from "./flowState";
+import type { TemplateInfo } from "../types";
+import { missingRequired, setCaptureSession, specFromDefaults } from "./flowState";
 
 type Fields = "total_rise_in" | "available_length_in" | "clear_width_in" | "contractor_quote_cad" | "note";
 const blank = { total_rise_in: "", available_length_in: "", clear_width_in: "", contractor_quote_cad: "", note: "" };
@@ -89,19 +89,21 @@ export function Capture() {
   async function startTemplate(key = templateKey) {
     const template = templates.find((item) => item.key === key);
     if (!template) return;
-    setLoading(true);
     setError(null);
+    // Start from the template's own defaults; /generate rejects a request missing required params.
+    const known = (template.params_schema.properties ?? {}) as Record<string, unknown>;
+    const values: Record<string, number | undefined> = {};
+    (["total_rise_in", "available_length_in", "clear_width_in"] as const).forEach((key) => {
+      if (key in known && fields[key].trim()) values[key] = Number(fields[key]);
+    });
+    const spec = specFromDefaults(template, values, { contractor_quote_cad: numberOrUndefined(fields.contractor_quote_cad), notes: fields.note });
+    const missing = missingRequired(template, spec);
+    if (missing.length) {
+      setError(`Enter ${missing.map((name) => name.replaceAll("_", " ").replace(/ in$/, " (inches)")).join(", ")} to start the ${template.name.toLowerCase()} template.`);
+      return;
+    }
+    setLoading(true);
     try {
-      const base = await api.generate({ template: template.key, params: {}, meta: {} });
-      const params: Record<string, ParamValue> = { ...base.spec.params };
-      (["total_rise_in", "available_length_in", "clear_width_in"] as const).forEach((key) => {
-        if (fields[key].trim()) params[key] = { value: Number(fields[key]), source: "user", confidence: null };
-      });
-      const spec: Spec = {
-        ...ungeneratedSpec(base.spec),
-        params,
-        meta: { ...base.spec.meta, contractor_quote_cad: numberOrUndefined(fields.contractor_quote_cad), notes: fields.note },
-      };
       setCurrentProjectId(null);
       setCaptureSession({ parse: { spec, template_confidence: null, questions: [], raw_notes: "Template selected manually." }, imageUrl: null });
       setScreen("confirm");

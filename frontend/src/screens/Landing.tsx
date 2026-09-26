@@ -4,7 +4,12 @@ import { HeroIllustration } from "../components/HeroIllustration";
 import { ErrorState } from "../components/common/ErrorState";
 import { LoadingState } from "../components/common/LoadingState";
 import { useStore } from "../store";
-import { setCaptureSession, ungeneratedSpec } from "./flowState";
+import { setCaptureSession, specFromDefaults } from "./flowState";
+
+// The demo scenario: 14" rise (two steps), 12 ft yard, contractor quote $4,000. A straight ramp needs
+// 14 ft, so RAMP-007 fails and its one-click fix (switchback) fits. Change these together with the demo script.
+const DEMO_VALUES = { total_rise_in: 14, available_length_in: 144, layout: "straight" };
+const DEMO_META = { contractor_quote_cad: 4000, notes: "Demo: grandmother's porch" };
 
 export function Landing() {
   const setScreen = useStore((state) => state.setScreen);
@@ -15,13 +20,14 @@ export function Landing() {
     setLoading(true);
     setError(null);
     try {
-      const result = await api.generate({ template: "ramp", params: {}, meta: {} });
+      const ramp = (await api.templates()).find((t) => t.key === "ramp");
+      if (!ramp) throw new Error("the ramp template is not available");
       setCaptureSession({
         parse: {
-          spec: ungeneratedSpec(result.spec),
+          spec: specFromDefaults(ramp, DEMO_VALUES, DEMO_META),
           template_confidence: 0.92,
           questions: ["Is the available length about 12 feet?"],
-          raw_notes: "Loaded the offline demo fixture.",
+          raw_notes: "Loaded the demo ramp.",
         },
         imageUrl: null,
       });
