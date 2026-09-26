@@ -39,7 +39,6 @@ from pathlib import Path
 from typing import Any, Literal
 
 import httpx
-import httpx2
 import jsonschema
 from pydantic import BaseModel, ValidationError
 
@@ -54,8 +53,15 @@ FAKES_DIR = Path(__file__).parent / "fakes"
 
 # HTTP statuses worth one more try: rate limited, or the server had a bad moment.
 _TRANSIENT_STATUS = {408, 429, 500, 502, 503, 504}
-# The SDK can raise from either httpx flavour depending on how it was configured.
-_TRANSPORT_ERRORS: tuple[type[BaseException], ...] = (httpx.TransportError, httpx2.TransportError, TimeoutError)
+# The SDK raises httpx errors, or httpx2 errors when httpx2 is installed. httpx2 is only a dev
+# dependency (the FastAPI test client), so it is optional here: the production image has no dev deps.
+_TRANSPORT_ERRORS: tuple[type[BaseException], ...] = (httpx.TransportError, TimeoutError)
+try:
+    import httpx2
+except ImportError:  # pragma: no cover - production image
+    pass
+else:
+    _TRANSPORT_ERRORS += (httpx2.TransportError,)
 
 
 class AIError(Exception):

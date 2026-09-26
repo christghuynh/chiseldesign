@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app import fixtures
+from app.ai.instructions import handle_instructions
 from app.models import InstructionsRequest, InstructionsResponse
 
 router = APIRouter()
@@ -8,5 +8,5 @@ router = APIRouter()
 
 @router.post("/instructions", response_model=InstructionsResponse)
 def instructions(req: InstructionsRequest) -> InstructionsResponse:
-    # STUB (F-4): always returns the switchback ramp's steps. AI-6 replaces this.
-    return fixtures.ramp_instructions()
+    """AI-6: friendly spoken build steps. AI failures fall back to skeleton steps (still 200)."""
+    return handle_instructions(req.spec)
