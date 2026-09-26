@@ -89,8 +89,7 @@ def test_instructions():
 @pytest.mark.parametrize(
     ("method", "path", "kwargs", "task"),
     [
-        ("post", "/api/voice/stt", {"files": {"audio": ("a.webm", b"x", "audio/webm")}}, "VOX-1"),
-        ("post", "/api/voice/tts", {"json": {"text": "hello"}}, "VOX-2"),
+        # /api/voice/stt and /api/voice/tts are implemented (VOX-1/VOX-2); tested in test_voice.py.
         ("get", "/api/projects", {}, "INF-6"),
         ("post", "/api/projects", {"json": {"name": "p", "spec": SPEC}}, "INF-6"),
         ("get", "/api/projects/1", {}, "INF-6"),
