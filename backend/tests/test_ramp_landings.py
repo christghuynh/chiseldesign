@@ -188,3 +188,16 @@ def test_three_run_switchback_has_two_landings():
     assert {f"landing_{i + 1}" for i in range(len(derived.landings))} <= groups
     assert len(named(parts, "Ledger")) == 1 and named(parts, "Ledger")[0].group == f"run_{derived.run_count}"
     assert_invariants(parts)
+
+
+def test_a_low_landing_frame_is_ripped_and_the_parts_say_so():
+    """At 8 in of rise the landing sits 4 in high, so its 2x6 frame is ripped to 3 in deep: every frame part must
+    carry the rip note (otherwise a builder cuts full-depth boards that do not fit)."""
+    from app.templates.ramp import Params, derive
+    from app.templates.ramp_parts import build_parts
+
+    params = Params(total_rise_in=8, layout="switchback", slope_ratio=16)
+    frame = [p for p in build_parts(params, derive(params)) if p.name in ("Landing rim (end)", "Landing rim (side)", "Landing joist")]
+    assert frame and all(any(n == "Rip to 3 in wide" for n in p.cut_notes) for p in frame)
+    full = Params(total_rise_in=21, layout="switchback")
+    assert not any("Rip" in n for p in build_parts(full, derive(full)) if p.name.startswith("Landing rim") for n in p.cut_notes)

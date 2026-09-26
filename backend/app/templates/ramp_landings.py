@@ -59,16 +59,19 @@ def add_landing_parts(b: PartBuilder, params: Params, derived: Derived, landing:
     bottom = frame_bottom(landing, derived)
     framing = params.framing
     max_frame = derived.max_stock_length_in
+    # A low landing has less height than a full board is wide, so the frame lumber is ripped down to fit.
+    depth = top - bottom
+    rip = [f"Rip to {format_fraction(depth)} in wide"] if depth < derived.framing_width_in - 1e-6 else []
 
     for x in (x0, x1 - t):
-        b.add("Landing rim (end)", framing, [(x, bottom), (x + t, bottom), (x + t, top), (x, top)], width, (0.0, 0.0, z0), ["Square cut both ends"], group)
+        b.add("Landing rim (end)", framing, [(x, bottom), (x + t, bottom), (x + t, top), (x, top)], width, (0.0, 0.0, z0), ["Square cut both ends", *rip], group)
 
     inner = (x0 + t, x1 - t)
     pieces = equal_pieces(inner[1] - inner[0], max_frame)
     for z in (z0, z1 - t):
         for start, end in pieces:
             s, e = inner[0] + start, inner[0] + end
-            b.add("Landing rim (side)", framing, [(s, bottom), (e, bottom), (e, top), (s, top)], t, (0.0, 0.0, z), _splice_notes(len(pieces)), group)
+            b.add("Landing rim (side)", framing, [(s, bottom), (e, bottom), (e, top), (s, top)], t, (0.0, 0.0, z), [*_splice_notes(len(pieces)), *rip], group)
 
     k = 1
     while True:
@@ -76,7 +79,7 @@ def add_landing_parts(b: PartBuilder, params: Params, derived: Derived, landing:
         if center + t / 2 >= x1 - t - 1e-9:  # would touch or overlap the far end rim
             break
         profile = [(center - t / 2, bottom), (center + t / 2, bottom), (center + t / 2, top), (center - t / 2, top)]
-        b.add("Landing joist", framing, profile, width - 2 * t, (0.0, 0.0, z0 + t), ["Square cut both ends"], group)
+        b.add("Landing joist", framing, profile, width - 2 * t, (0.0, 0.0, z0 + t), ["Square cut both ends", *rip], group)
         k += 1
 
     _add_decking(b, params, derived, landing, top)
