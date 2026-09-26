@@ -1012,6 +1012,12 @@ wheels = [
 ]
 
 [[package]]
+name = "rectpack"
+version = "0.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/72/b965bbfcfe5bcd486bbfc10a73345d51551971457ac2b84f786bfc6d86db/rectpack-0.2.2.tar.gz", hash = "sha256:15e383505fdfbaeb55ec640a5825d9ca2ce89019a6cdd552d6e57ec36c68ba2a", size = 17888, upload-time = "2021-11-24T21:12:56.557Z" }
+
+[[package]]
 name = "referencing"
 version = "0.37.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1129,6 +1135,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "pyjwt" },
     { name = "python-multipart" },
+    { name = "rectpack" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -1150,6 +1157,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.7" },
     { name = "pyjwt", specifier = "==2.10.1" },
     { name = "python-multipart", specifier = ">=0.0.9" },
+    { name = "rectpack", specifier = ">=0.2.2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
 ]
 
