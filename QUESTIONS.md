@@ -61,6 +61,7 @@ What I did meanwhile: A. It now posts a real PNG, sets `FAKE_AI=1`, and asserts 
 ### AI-10 — rate limiter wired to /parse only (Lane A — Parse, 2026-09-26 05:xx)
 Question: The limiter should also cover `/edit`, `/instructions`, `/voice/*` (AGENT A5), but those routes are Lane B's and don't exist in this worktree.
 What I did meanwhile: Implemented a reusable dependency in `ai/ratelimit.py` (`from app.ai.ratelimit import rate_limit`) and applied it to `/parse`. Lane B should add `dependencies=[Depends(rate_limit)]` to its routes after merge.
+Resolved (P3, 2026-09-26, at the Lane A merge): wired onto `/edit`, `/instructions`, `/voice/stt` (each `RATE_LIMIT_PER_MIN`, default 20) and `/voice/tts` (`RATE_LIMIT_TTS_PER_MIN`, default 120, because Build mode prefetches every step's audio). Each route group has its own budget.
 
 ### GEO-17 — STEP/STL export when the posted spec has no parts (Lane C, 2026-09-26)
 Question: `POST /export/step|stl` takes `{spec}`. On the Plan screen the frontend already has a generated spec (with `parts`), but a spec loaded straight from `/parse` (or an older saved version) can have `parts == []`. Exporting an empty spec would produce an empty file.

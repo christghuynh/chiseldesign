@@ -73,8 +73,8 @@ rate limiting, a demo cache and an eval harness. The AI only reads; all numbers 
 - Confirm the `test_ai_client.py` and `test_api_stubs.py` edits are acceptable to their owners
   (or let them re-do them); they were required to keep the suite green under the new fake schema.
 - Rate limiter is in-memory per process (fine for the demo VM; not multi-worker safe).
-- Lane B: apply `Depends(rate_limit)` from `app.ai.ratelimit` to `/edit`, `/instructions`,
-  `/voice/*` after merge.
+- Done at merge: the limiter now covers `/edit`, `/instructions`, `/voice/stt` and `/voice/tts`
+  (TTS has its own `RATE_LIMIT_TTS_PER_MIN`, default 120), each with a separate budget.
 - Owner (NC-5/NC-6): drop real sketches into `fixtures/sketches/`, wire `evals/parse_cases.json`
   to them, and run `evals/cache_demo.py` on the demo sketch. `RATE_LIMIT_PER_MIN` and
   `DEMO_CACHE_DIR` are configurable via env if needed.
