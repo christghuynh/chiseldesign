@@ -12,14 +12,14 @@
       "n": 2,
       "title": "Cut the stringers",
       "text": "Cut all stringers for both runs. Each has a level cut where it meets the ground and a plumb cut at the top.",
-      "part_labels": ["C", "F"],
+      "part_labels": ["B", "G"],
       "cut_callouts": [
         {
-          "label": "C",
+          "label": "B",
           "spoken": "two-by-six, ninety and three quarters inches"
         },
         {
-          "label": "F",
+          "label": "G",
           "spoken": "two-by-six, seventy-eight and a quarter inches"
         }
       ],
@@ -29,22 +29,22 @@
       "n": 3,
       "title": "Cut the ledger and landing framing",
       "text": "Cut the ledger and the landing frame: end rims, side rims and inner joists.",
-      "part_labels": ["D", "E", "G", "H"],
+      "part_labels": ["D", "F", "I", "J"],
       "cut_callouts": [
         {
           "label": "D",
           "spoken": "two-by-six, eighty-four inches"
         },
         {
-          "label": "E",
+          "label": "F",
           "spoken": "two-by-six, eighty-one inches"
         },
         {
-          "label": "G",
+          "label": "I",
           "spoken": "two-by-six, fifty-seven inches"
         },
         {
-          "label": "H",
+          "label": "J",
           "spoken": "two-by-six, thirty-six inches"
         }
       ],
@@ -54,14 +54,14 @@
       "n": 4,
       "title": "Build the landing",
       "text": "Assemble the landing frame with the inner joists 16 inches apart, then fasten the landing deck boards across it.",
-      "part_labels": ["D", "E", "G", "L", "M", "N"],
+      "part_labels": ["D", "F", "I", "O", "P", "Q"],
       "cut_callouts": [
         {
-          "label": "M",
+          "label": "P",
           "spoken": "five-quarter deck board, sixty inches"
         },
         {
-          "label": "N",
+          "label": "Q",
           "spoken": "five-quarter deck board, sixty inches"
         }
       ],
@@ -71,7 +71,7 @@
       "n": 5,
       "title": "Attach the ledger",
       "text": "Fasten the ledger to the porch at the top of the second run. Check that it is level before you drive the last fasteners.",
-      "part_labels": ["H"],
+      "part_labels": ["J"],
       "cut_callouts": [],
       "safety_tip": "Make sure the ladder is on firm ground."
     },
@@ -79,7 +79,7 @@
       "n": 6,
       "title": "Set the stringers",
       "text": "Set the stringers of both runs, spaced 16 inches on center. Fasten the tops to the landing frame and the ledger.",
-      "part_labels": ["C", "F"],
+      "part_labels": ["B", "G"],
       "cut_callouts": [],
       "safety_tip": null
     },
@@ -87,7 +87,7 @@
       "n": 7,
       "title": "Check the slope",
       "text": "Lay a level along each run and confirm the slope is 1 in 12 or gentler before decking.",
-      "part_labels": ["C", "F"],
+      "part_labels": ["B", "G"],
       "cut_callouts": [],
       "safety_tip": null
     },
@@ -95,22 +95,22 @@
       "n": 8,
       "title": "Install the decking",
       "text": "Fasten deck boards across the stringers with a small gap between boards. Rip the last board on each run to fit.",
-      "part_labels": ["O", "P", "Q", "R"],
+      "part_labels": ["R", "S", "T", "U"],
       "cut_callouts": [
         {
-          "label": "O",
-          "spoken": "five-quarter deck board, thirty-six inches"
-        },
-        {
-          "label": "P",
-          "spoken": "five-quarter deck board, thirty-six inches"
-        },
-        {
-          "label": "Q",
-          "spoken": "five-quarter deck board, thirty-six inches"
-        },
-        {
           "label": "R",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        },
+        {
+          "label": "S",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        },
+        {
+          "label": "T",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        },
+        {
+          "label": "U",
           "spoken": "five-quarter deck board, thirty-six inches"
         }
       ],
@@ -120,11 +120,23 @@
       "n": 9,
       "title": "Install the edge curbs",
       "text": "Fasten a curb along both outside edges of each run so wheels and walker feet can't slip off.",
-      "part_labels": ["A"],
+      "part_labels": ["C", "E", "H", "K"],
       "cut_callouts": [
         {
-          "label": "A",
-          "spoken": "two-by-four, ninety and five sixteenths inches"
+          "label": "C",
+          "spoken": "two-by-six, ninety and five sixteenths inches"
+        },
+        {
+          "label": "E",
+          "spoken": "two-by-six, eighty-one inches"
+        },
+        {
+          "label": "H",
+          "spoken": "two-by-six, sixty inches"
+        },
+        {
+          "label": "K",
+          "spoken": "two-by-six, twelve inches"
         }
       ],
       "safety_tip": null
@@ -133,22 +145,22 @@
       "n": 10,
       "title": "Install the handrail posts and rails",
       "text": "Set the 4x4 posts no more than 6 feet apart, then fasten a rail across the top of each row of posts.",
-      "part_labels": ["B", "I", "J", "K"],
+      "part_labels": ["A", "L", "M", "N"],
       "cut_callouts": [
         {
-          "label": "B",
+          "label": "A",
           "spoken": "two-by-four, eighty-six and thirteen sixteenths inches"
         },
         {
-          "label": "I",
+          "label": "L",
           "spoken": "four-by-four, forty-two and five eighths inches"
         },
         {
-          "label": "J",
+          "label": "M",
           "spoken": "four-by-four, thirty-nine and seven eighths inches"
         },
         {
-          "label": "K",
+          "label": "N",
           "spoken": "four-by-four, thirty-six and a quarter inches"
         }
       ],
