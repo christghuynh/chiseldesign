@@ -1,0 +1,64 @@
+{
+  "steps": [
+    {
+      "title": "Prepare the site",
+      "text": "Clear and level the ground where the ramp will sit, and mark out its footprint so you know exactly where everything goes.",
+      "part_labels": [],
+      "safety_tip": "Call before you dig to check for buried utilities."
+    },
+    {
+      "title": "Cut the stringers",
+      "text": "Cut the sloped stringers that carry the ramp. Each one gets a flat cut where it meets the ground and an angled cut at the top.",
+      "part_labels": ["C"],
+      "safety_tip": "Wear eye and ear protection while you cut."
+    },
+    {
+      "title": "Cut the ledger",
+      "text": "Cut the ledger board that ties the top of the ramp to the porch.",
+      "part_labels": ["D"],
+      "safety_tip": null
+    },
+    {
+      "title": "Attach the ledger",
+      "text": "Fasten the ledger to the porch, checking that it sits level before you drive the last screws.",
+      "part_labels": ["D"],
+      "safety_tip": "Make sure your ladder is on firm, level ground."
+    },
+    {
+      "title": "Set the stringers",
+      "text": "Set the stringers evenly spaced, then fasten their top ends to the ledger.",
+      "part_labels": ["C"],
+      "safety_tip": null
+    },
+    {
+      "title": "Check the slope",
+      "text": "Lay a level along a stringer and confirm the ramp is gentle enough before you add the decking.",
+      "part_labels": ["C"],
+      "safety_tip": null
+    },
+    {
+      "title": "Install the decking",
+      "text": "Fasten the deck boards across the stringers, leaving a small even gap between them.",
+      "part_labels": ["H", "I", "J"],
+      "safety_tip": null
+    },
+    {
+      "title": "Install the edge curbs",
+      "text": "Run a curb along each open edge so wheels and walker feet can't slip off the side.",
+      "part_labels": ["A"],
+      "safety_tip": null
+    },
+    {
+      "title": "Install the handrail posts and rails",
+      "text": "Stand the posts and fasten a rail across the top of each row so someone can steady themselves.",
+      "part_labels": ["B", "E", "F", "G"],
+      "safety_tip": "Push and pull on the finished rail to be sure it's solid before anyone leans on it."
+    },
+    {
+      "title": "Final check",
+      "text": "Walk the whole ramp slowly, tighten any loose fasteners, and sand down any splinters.",
+      "part_labels": [],
+      "safety_tip": null
+    }
+  ]
+}

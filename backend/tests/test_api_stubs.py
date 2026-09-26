@@ -82,7 +82,8 @@ def test_instructions():
     r = client.post("/api/instructions", json={"spec": SPEC})
     assert r.status_code == 200
     steps = InstructionsResponse.model_validate(r.json()).steps
-    assert len(steps) == 11 and steps[0].n == 1
+    # AI-6 rewrites the engine skeleton (the stub skeleton has 10 steps); the shipped fake matches.
+    assert len(steps) == 10 and steps[0].n == 1
 
 
 @pytest.mark.parametrize(
