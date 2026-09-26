@@ -57,21 +57,28 @@ def nest_boards(pieces: list[BoardPiece], kerf_in: float = KERF_IN) -> list[Stoc
     for piece in pieces:
         by_material.setdefault(piece.material, []).append(piece)
 
-    layouts: list[StockLayout] = []
+    specs = {}
+    too_long: list[BoardPiece] = []
     for material in sorted(by_material):
         spec = lumber_spec(material)
         if spec.kind != "board" or spec.width_in is None:
             raise ValueError(f"{material!r} is not a board material; use nest_sheets for sheets")
+        specs[material] = spec
+        too_long += sorted((p for p in by_material[material] if p.length_in > spec.stock_lengths_in[-1] + _EPS), key=lambda p: p.part_id)
+    if too_long:  # checked for ALL materials before nesting, so the error lists every offender
+        first = too_long[0]
+        longest = specs[first.material].stock_lengths_in[-1]
+        raise PieceTooLongError(
+            f"Part {first.part_id} ({first.label}, {first.material}) is {format_ft_in(first.length_in)} "
+            f"({first.length_in:g} in) long, but the longest {first.material} board sold is {format_ft_in(longest)} "
+            f"({longest:g} in)" + (f"; {len(too_long) - 1} more piece(s) are also too long" if len(too_long) > 1 else ""),
+            [p.part_id for p in too_long],
+        )
+
+    layouts: list[StockLayout] = []
+    for material in sorted(by_material):
+        spec = specs[material]
         longest = spec.stock_lengths_in[-1]
-        too_long = sorted((p for p in by_material[material] if p.length_in > longest + _EPS), key=lambda p: p.part_id)
-        if too_long:
-            first = too_long[0]
-            raise PieceTooLongError(
-                f"Part {first.part_id} ({first.label}, {material}) is {format_ft_in(first.length_in)} "
-                f"({first.length_in:g} in) long, but the longest {material} board sold is {format_ft_in(longest)} "
-                f"({longest:g} in)" + (f"; {len(too_long) - 1} more piece(s) are also too long" if len(too_long) > 1 else ""),
-                [p.part_id for p in too_long],
-            )
         bins = _first_fit_decreasing(by_material[material], longest, kerf_in)
         sized: list[tuple[float, int, _Bin]] = []
         for index, b in enumerate(bins):

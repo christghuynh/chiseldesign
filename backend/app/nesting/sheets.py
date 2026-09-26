@@ -93,23 +93,29 @@ def nest_sheets(pieces: list[SheetPiece], kerf_in: float = KERF_IN, grain_locked
     for piece in pieces:
         by_material.setdefault(piece.material, []).append(piece)
 
-    layouts: list[StockLayout] = []
+    rotate = not grain_locked
+    specs = {}
+    too_big: list[SheetPiece] = []
     for material in sorted(by_material):
         spec = lumber_spec(material)
         if spec.kind != "sheet" or spec.sheet_size_in is None:
             raise ValueError(f"{material!r} is not a sheet material; use nest_boards for boards")
-        sheet_width, sheet_length = spec.sheet_size_in
-        rotate = not grain_locked
-        too_big = sorted((p for p in by_material[material] if not _fits(p, sheet_length, sheet_width, rotate)), key=lambda p: p.part_id)
-        if too_big:
-            first = too_big[0]
-            raise PieceTooLongError(
-                f"Part {first.part_id} ({first.label}, {material}) is {first.w:g} x {first.h:g} in, which does not fit on a "
-                f"{sheet_width:g} x {sheet_length:g} in sheet" + (" (grain locked, no rotation)" if grain_locked else "")
-                + (f"; {len(too_big) - 1} more piece(s) are also too big" if len(too_big) > 1 else ""),
-                [p.part_id for p in too_big],
-            )
+        specs[material] = spec
+        width, length = spec.sheet_size_in
+        too_big += sorted((p for p in by_material[material] if not _fits(p, length, width, rotate)), key=lambda p: p.part_id)
+    if too_big:  # checked for ALL materials before nesting, so the error lists every offender
+        first = too_big[0]
+        width, length = specs[first.material].sheet_size_in
+        raise PieceTooLongError(
+            f"Part {first.part_id} ({first.label}, {first.material}) is {first.w:g} x {first.h:g} in, which does not fit on a "
+            f"{width:g} x {length:g} in sheet" + (" (grain locked, no rotation)" if grain_locked else "")
+            + (f"; {len(too_big) - 1} more piece(s) are also too big" if len(too_big) > 1 else ""),
+            [p.part_id for p in too_big],
+        )
 
+    layouts: list[StockLayout] = []
+    for material in sorted(by_material):
+        sheet_width, sheet_length = specs[material].sheet_size_in
         ordered = sorted(by_material[material], key=lambda p: (-p.w * p.h, -max(p.w, p.h), p.part_id))
         rotation_options = [False] if grain_locked else [False, True]
         best: dict[int, list[PlacedPiece]] | None = None

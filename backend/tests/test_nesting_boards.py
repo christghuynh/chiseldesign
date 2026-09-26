@@ -190,3 +190,9 @@ def test_randomized_layouts_are_always_valid(seed):
         shorter = [s for s in lumber_spec(layout.material).stock_lengths_in if s < layout.length_in]
         needed = sum(q.w for q in layout.pieces) + kerf * (len(layout.pieces) - 1)
         assert not shorter or needed > shorter[-1] - 1e-9
+
+
+def test_oversize_error_covers_every_material_not_just_the_first():
+    with pytest.raises(PieceTooLongError) as info:
+        nest_boards([piece(1, 250.0, "2x6_PT"), piece(2, 130.0, "4x4_PT"), piece(3, 10.0, "2x4_PT")])
+    assert info.value.part_ids == ["P-1", "P-2"]
