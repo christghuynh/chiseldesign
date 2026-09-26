@@ -2865,21 +2865,21 @@
     "shopping": [
       {
         "key": "2x4_PT_96",
-        "description": "2x4 pressure-treated, 8 ft (placeholder price)",
+        "description": "2x4 pressure-treated, 8 ft",
         "unit": "each",
         "qty": 4,
-        "unit_price": 8.0,
-        "subtotal": 32.0,
-        "source_url": null
+        "unit_price": 7.7,
+        "subtotal": 30.8,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-4-x-8-premium-wood-above-ground-use-only/1000789777"
       },
       {
         "key": "2x6_PT_96",
-        "description": "2x6 pressure-treated, 8 ft (placeholder price)",
+        "description": "2x6 pressure-treated, 8 ft",
         "unit": "each",
         "qty": 1,
-        "unit_price": 12.0,
-        "subtotal": 12.0,
-        "source_url": null
+        "unit_price": 11.25,
+        "subtotal": 11.25,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-8-premium-wood-above-ground-use-only/1000790084"
       },
       {
         "key": "2x6_PT_168",
@@ -2892,21 +2892,21 @@
       },
       {
         "key": "2x6_PT_192",
-        "description": "2x6 pressure-treated, 16 ft (placeholder price)",
+        "description": "2x6 pressure-treated, 16 ft",
         "unit": "each",
         "qty": 6,
-        "unit_price": 24.0,
-        "subtotal": 144.0,
-        "source_url": null
+        "unit_price": 22.65,
+        "subtotal": 135.9,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-16-premium-wood-above-ground-use-only/1000790085"
       },
       {
         "key": "4x4_PT_96",
-        "description": "4x4 pressure-treated, 8 ft (placeholder price)",
+        "description": "4x4 pressure-treated, 8 ft",
         "unit": "each",
         "qty": 4,
-        "unit_price": 20.0,
-        "subtotal": 80.0,
-        "source_url": null
+        "unit_price": 15.98,
+        "subtotal": 63.92,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-4-x-4-x-8-premium-wood-post-suitable-for-ground-contact/1000790178"
       },
       {
         "key": "4x4_PT_120",
@@ -2928,12 +2928,12 @@
       },
       {
         "key": "5/4x6_PT_deck_192",
-        "description": "5/4x6 pressure-treated deck board, 16 ft (placeholder price)",
+        "description": "5/4x6 pressure-treated deck board, 16 ft",
         "unit": "each",
         "qty": 11,
-        "unit_price": 28.0,
-        "subtotal": 308.0,
-        "source_url": null
+        "unit_price": 13.25,
+        "subtotal": 145.75,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-5-4-x-6-x-16-premium-wood-decking-above-ground-use-only/1000680731"
       },
       {
         "key": "deck_screws_box",
@@ -2972,11 +2972,11 @@
         "source_url": null
       }
     ],
-    "subtotal": 922.0,
-    "tax": 119.86,
-    "total": 1041.86,
+    "subtotal": 733.62,
+    "tax": 95.37,
+    "total": 828.99,
     "contractor_quote": 4000.0,
-    "savings": 2958.14,
+    "savings": 3171.01,
     "has_placeholder_prices": true
   }
 }

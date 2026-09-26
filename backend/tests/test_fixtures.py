@@ -154,9 +154,12 @@ def test_templates_fixture_is_valid_and_defaults_match_schema():
     assert ramp.params_schema["required"] == ["total_rise_in"]
 
 
-def test_fixture_prices_are_flagged_as_placeholders(fixture):
-    assert fixture.plan.has_placeholder_prices is True
-    assert all("placeholder price" in i.description for i in fixture.plan.shopping)
+def test_fixture_prices_say_whether_they_are_placeholders(fixture):
+    """The estimate flag agrees with the items: placeholders say so, real prices cite the page they came from."""
+    placeholders = ["placeholder price" in i.description for i in fixture.plan.shopping]
+    assert fixture.plan.has_placeholder_prices is any(placeholders)
+    for item, is_placeholder in zip(fixture.plan.shopping, placeholders, strict=True):
+        assert (item.source_url is None) == is_placeholder, item.key
 
 
 def test_skeleton_fixture_follows_the_build_order_and_references_real_labels():
