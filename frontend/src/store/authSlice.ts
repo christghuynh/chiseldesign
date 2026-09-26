@@ -14,7 +14,8 @@ export interface AuthSlice {
   token: string | null;
   projects: ProjectSummary[];
   currentProjectId: number | null;
-  setAuth: (user: AuthUser, token: string) => void;
+  /** `token` is null in dev mode (login off), where the API needs none. */
+  setAuth: (user: AuthUser, token: string | null) => void;
   clearAuth: () => void;
   setProjects: (projects: ProjectSummary[]) => void;
   setCurrentProjectId: (id: number | null) => void;

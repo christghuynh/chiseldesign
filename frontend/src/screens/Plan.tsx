@@ -8,6 +8,7 @@ import { LayoutList } from "../components/plan/LayoutList";
 import { SafetyNotice } from "../components/plan/SafetyNotice";
 import { ShoppingList } from "../components/plan/ShoppingList";
 import { SummaryCard } from "../components/plan/SummaryCard";
+import { SaveProject } from "../components/projects/SaveProject";
 import { useStore } from "../store";
 import { Scene } from "../three/Scene";
 import "../components/plan/print.css";
@@ -124,6 +125,13 @@ export function Plan() {
           Downloads
         </h3>
         <Downloads spec={spec} plan={plan} />
+      </section>
+
+      <section aria-labelledby="save-title" className="print-hide space-y-2">
+        <h3 id="save-title" className="text-xl font-semibold">
+          Save
+        </h3>
+        <SaveProject />
       </section>
 
       <SafetyNotice />
