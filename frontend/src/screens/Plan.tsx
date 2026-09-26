@@ -1,13 +1,16 @@
 // Owner: P4. Plan screen (FE-7): summary, cut list with a mini 3D view, cutting layouts, shopping list and
-// the safety notice. Selecting a cut-list row highlights its parts in the Scene (uiSlice.setHighlighted).
+// the safety notice, plus downloads and a print stylesheet (FE-10). Selecting a cut-list row highlights
+// its parts in the Scene (uiSlice.setHighlighted).
 import { useEffect, useState } from "react";
 import { CutListTable } from "../components/plan/CutListTable";
+import { Downloads } from "../components/plan/Downloads";
 import { LayoutList } from "../components/plan/LayoutList";
 import { SafetyNotice } from "../components/plan/SafetyNotice";
 import { ShoppingList } from "../components/plan/ShoppingList";
 import { SummaryCard } from "../components/plan/SummaryCard";
 import { useStore } from "../store";
 import { Scene } from "../three/Scene";
+import "../components/plan/print.css";
 
 const BUTTON = "min-h-11 rounded px-4 py-2 font-medium";
 const PRIMARY = `${BUTTON} bg-slate-900 text-white hover:bg-slate-700`;
@@ -75,7 +78,7 @@ export function Plan() {
 
       <SummaryCard spec={spec} plan={plan} />
 
-      <section aria-labelledby="cutlist-title" className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <section aria-labelledby="cutlist-title" className="plan-cutlist grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="space-y-2">
           <h3 id="cutlist-title" className="text-xl font-semibold">
             Cut list
@@ -114,6 +117,13 @@ export function Plan() {
           total={plan.total}
           estimate={plan.has_placeholder_prices}
         />
+      </section>
+
+      <section aria-labelledby="downloads-title" className="print-hide space-y-2">
+        <h3 id="downloads-title" className="text-xl font-semibold">
+          Downloads
+        </h3>
+        <Downloads spec={spec} plan={plan} />
       </section>
 
       <SafetyNotice />
