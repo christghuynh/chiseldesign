@@ -190,3 +190,77 @@ describe("BuildAudio playback", () => {
     expect(f.played).toEqual(["blob:1", "blob:1"]);
   });
 });
+
+describe("BuildAudio speech fallback (VOX-7b)", () => {
+  it("speaks the step when TTS is not implemented", async () => {
+    const f = fakes({ fail: () => new ApiError(501, "NOT_IMPLEMENTED", "VOX-2") });
+    const audio = new BuildAudio(f.deps);
+    await audio.prefetch(steps);
+    await audio.play(steps[1]);
+    expect(f.played).toEqual([]);
+    expect(f.spoken).toEqual([spokenText(steps[1])]);
+  });
+
+  it("speaks when the backend is unreachable", async () => {
+    const f = fakes({ fail: () => new TypeError("Failed to fetch") });
+    const audio = new BuildAudio(f.deps);
+    await audio.prefetch(steps);
+    await audio.play(steps[0]);
+    expect(audio.usingFallback).toBe(true);
+    expect(f.spoken).toEqual([spokenText(steps[0])]);
+  });
+
+  it("speaks only the step whose TTS failed, and plays the others", async () => {
+    const bad = spokenText(steps[1]);
+    const f = fakes({ instant: true, fail: (t) => (t === bad ? new ApiError(500, "HTTP_500", "boom") : null) });
+    const audio = new BuildAudio(f.deps);
+    await audio.prefetch(steps);
+    await audio.play(steps[1]);
+    await audio.play(steps[2]);
+    expect(f.spoken).toEqual([bad]);
+    expect(f.played).toEqual([audio.urlFor(steps[2].n)]);
+  });
+
+  it("in fixture mode never calls the server and always speaks", async () => {
+    const f = fakes({ instant: true });
+    const fetchTts = vi.fn(f.deps.fetchTts);
+    const audio = new BuildAudio({ ...f.deps, fetchTts, useTts: false });
+    await audio.prefetch(steps);
+    await audio.play(steps[0]);
+    expect(fetchTts).not.toHaveBeenCalled();
+    expect(f.spoken).toEqual([spokenText(steps[0])]);
+  });
+
+  it("speaks when the audio element refuses to play the file", async () => {
+    const f = fakes({ instant: true });
+    const audio = new BuildAudio({
+      ...f.deps,
+      player: { play: () => Promise.reject(new Error("decode error")), stop: () => {} },
+    });
+    await audio.prefetch(steps);
+    await audio.play(steps[0]);
+    expect(f.spoken).toEqual([spokenText(steps[0])]);
+  });
+
+  it("speaks when a step's audio takes longer than waitMs", async () => {
+    const f = fakes(); // never released
+    const audio = new BuildAudio({ ...f.deps, waitMs: 10 });
+    void audio.prefetch(steps.slice(0, 1));
+    await audio.play(steps[0]);
+    expect(f.spoken).toEqual([spokenText(steps[0])]);
+  });
+
+  it("stop cancels speech too", () => {
+    const f = fakes();
+    const audio = new BuildAudio(f.deps);
+    audio.stop();
+    expect(f.deps.speaker!.cancel).toHaveBeenCalled();
+  });
+
+  it("stays quiet without a speaker instead of throwing", async () => {
+    const f = fakes({ fail: () => new ApiError(501, "NOT_IMPLEMENTED", "VOX-2") });
+    const audio = new BuildAudio({ ...f.deps, speaker: null });
+    await audio.prefetch(steps);
+    await expect(audio.play(steps[0])).resolves.toBeUndefined();
+  });
+});

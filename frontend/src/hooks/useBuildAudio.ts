@@ -1,9 +1,11 @@
 // Owner: P4 (VOX-6). Connects BuildAudio to the browser and the store: prefetches every step's TTS
 // when the steps load (object URLs go to buildSlice.audioUrls), auto-plays the current step, and
-// stops the audio on navigation and when leaving build mode.
+// stops the audio on navigation and when leaving build mode. When TTS fails, or in fixture mode,
+// the browser's speechSynthesis reads the step instead (VOX-7b).
 import { useEffect, useMemo, useRef } from "react";
-import { ApiError } from "../api/client";
+import { ApiError, USE_FIXTURES } from "../api/client";
 import { type AudioPlayer, BuildAudio, type Speaker } from "../components/build/audioQueue";
+import { browserSpeaker } from "../components/build/speech";
 import { useStore } from "../store";
 import type { BuildStep, TtsRequest } from "../types";
 
@@ -40,7 +42,9 @@ function htmlAudioPlayer(): AudioPlayer {
 }
 
 export interface BuildAudioOptions {
+  /** Defaults to the browser's speechSynthesis (null when the browser has none). */
   speaker?: Speaker | null;
+  /** Defaults to false in fixture mode, where there is no backend to ask. */
   useTts?: boolean;
 }
 
@@ -69,8 +73,8 @@ export function useBuildAudio(
       createUrl: (blob) => URL.createObjectURL(blob),
       revokeUrl: (url) => URL.revokeObjectURL(url),
       player: htmlAudioPlayer(),
-      speaker: options.speaker,
-      useTts: options.useTts,
+      speaker: options.speaker !== undefined ? options.speaker : browserSpeaker(),
+      useTts: options.useTts ?? !USE_FIXTURES,
     });
   }
   const audio = audioRef.current;
