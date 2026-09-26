@@ -1,5 +1,11 @@
 # Questions
 
+### AI-5 — /edit has no history field for multi-turn clarification (p3/assist, 2026-09-26)
+Question: EditResponse can set `needs_clarification`, and a good clarification flow ("wider" → "how much wider?" → "six inches") needs the model to see the earlier turns. `EditRequest` (models/api.py, a contract I can't edit) has only `{spec, utterance}`, so there is nowhere to send the prior turns.
+Options I see: A) add an optional `history: list[{role, text}]` field to `EditRequest` (contract change, needs team announce + `make types`); B) carry the turns in `spec.meta['edit_turns']` (no contract change), the frontend appends each user utterance and each spoken reply.
+What I did meanwhile: B. `/edit` reads `spec.meta.get('edit_turns')` (list of `{role, text}`), keeps the last 5, and passes them to Gemini as prior messages; malformed entries are ignored. If the team prefers A, the reader in `ai/edit.py::_history` moves to the new field with no other change.
+
+
 ### INF-3 — Where does the TTS cache live in the container? (p4/infra, 2026-09-26 03:00)
 Question: PRD §14 has `DATABASE_PATH` but no variable for the ElevenLabs TTS cache (VOX-2, P3). In Docker only `/data` is a persistent, writable volume (the code is read-only to the non-root user), so a cache written next to the code would fail or be lost on every deploy.
 Options I see: A) P3 adds a `TTS_CACHE_DIR` variable and compose sets it to `/data/tts-cache`; B) the voice module puts its cache next to the SQLite file (the directory of `DATABASE_PATH`).

@@ -1,20 +1,24 @@
 from fastapi import APIRouter
 
-from app import engine
-from app.models import EditRequest, EditResponse
+from app.ai.edit import EditError, handle_edit
+from app.api.errors import ApiError
+from app.models import EditRequest, EditResponse, ErrorResponse
 
 router = APIRouter()
 
 
-@router.post("/edit", response_model=EditResponse)
+@router.post("/edit", response_model=EditResponse, responses={503: {"model": ErrorResponse}})
 def edit(req: EditRequest) -> EditResponse:
-    # STUB: ignores the utterance and just regenerates the posted spec through the engine.
-    # The AI edit tools (set_params, apply_fix, ask_clarification) replace this.
-    spec, plan = engine.generate(req.spec.template, req.spec.params, req.spec.meta)
-    return EditResponse(
-        spec=spec,
-        plan=plan,
-        patch={},
-        message="Fixture mode: the edit was not applied.",
-        needs_clarification=False,
-    )
+    """AI-5: interpret a spoken/typed edit into a param change, a rule fix, or a clarification.
+
+    On any AI failure the frontend falls back to its sliders and typed box, so we return
+    503 AI_UNAVAILABLE rather than a 500.
+    """
+    try:
+        return handle_edit(req.spec, req.utterance)
+    except EditError as exc:
+        raise ApiError(
+            503,
+            "AI_UNAVAILABLE",
+            "The voice editor is unavailable right now — use the sliders or the typed box to make the change.",
+        ) from exc
