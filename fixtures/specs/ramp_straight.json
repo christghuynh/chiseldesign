@@ -1789,12 +1789,12 @@
       },
       {
         "key": "deck_screws_box",
-        "description": "Deck screws, box of 350 (placeholder price)",
+        "description": "Deck screws, box of 350",
         "unit": "box",
         "qty": 1,
-        "unit_price": 25.0,
-        "subtotal": 25.0,
-        "source_url": null
+        "unit_price": 36.98,
+        "subtotal": 36.98,
+        "source_url": "https://www.homedepot.ca/product/paulin-8-x-2-1-2-inch-square-drive-flat-head-deck-screw-unc-in-brown-350pcs/1000109819"
       },
       {
         "key": "post_base",
@@ -1806,11 +1806,11 @@
         "source_url": null
       }
     ],
-    "subtotal": 430.19,
-    "tax": 55.92,
-    "total": 486.11,
+    "subtotal": 442.17,
+    "tax": 57.48,
+    "total": 499.65,
     "contractor_quote": 4000.0,
-    "savings": 3513.89,
+    "savings": 3500.35,
     "has_placeholder_prices": true
   }
 }
