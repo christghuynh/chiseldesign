@@ -10,15 +10,8 @@ STUB: the bodies return fixtures until the real engine lands (tasks GEO-2, GEO-7
 from typing import Any
 
 from app import fixtures
+from app.engine_errors import ParamValidationError, TemplateError  # noqa: F401  (public: engine.TemplateError)
 from app.models import ParamValue, Plan, SkeletonStep, Spec, TemplateInfo
-
-
-class TemplateError(Exception):
-    """The template is unknown or cannot be built."""
-
-
-class ParamValidationError(Exception):
-    """A parameter is missing, has the wrong type, or is outside its bounds."""
 
 
 def generate(template: str, params: dict[str, ParamValue], meta: dict[str, Any] | None = None) -> tuple[Spec, Plan]:
