@@ -125,7 +125,8 @@ def test_totals_and_placeholder_flag_are_consistent(template, values):
     assert plan.tax == pytest.approx(round(plan.subtotal * 0.13, 2), abs=0.005)
     assert plan.total == pytest.approx(plan.subtotal + plan.tax, abs=0.005)
     assert plan.savings == pytest.approx(4000 - plan.total, abs=0.005)
-    assert plan.has_placeholder_prices is True  # every price is a placeholder until real ones are filled in (NC-4)
+    # The estimate flag is on exactly while some item in the list still has a placeholder price (NC-4).
+    assert plan.has_placeholder_prices is any("placeholder price" in i.description for i in plan.shopping)
     assert all(i.qty > 0 for i in plan.shopping)
 
 

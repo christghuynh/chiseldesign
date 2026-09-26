@@ -83,13 +83,13 @@
       "placeholder": false
     },
     "2x8_PT_120": {
-      "description": "2x8 pressure-treated, 10 ft (placeholder price)",
+      "description": "2x8 pressure-treated, 10 ft",
       "unit": "each",
-      "price_cad": 20.0,
+      "price_cad": 23.75,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-8-x-10-premium-wood-above-ground-use-only/1000790209",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x8_PT_144": {
       "description": "2x8 pressure-treated, 12 ft",
@@ -209,22 +209,22 @@
       "placeholder": false
     },
     "3/4_ext_ply_48x96": {
-      "description": "3/4 exterior plywood, 4x8 ft sheet (placeholder price)",
+      "description": "3/4 exterior plywood, 4x8 ft sheet",
       "unit": "sheet",
-      "price_cad": 60.0,
+      "price_cad": 94.98,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-3-4-4-x-8-plywood/1000829228",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "deck_screws_box": {
-      "description": "Deck screws, box of 350 (placeholder price)",
+      "description": "Deck screws, box of 350",
       "unit": "box",
-      "price_cad": 25.0,
+      "price_cad": 36.98,
       "units_per_pack": 350,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/paulin-8-x-2-1-2-inch-square-drive-flat-head-deck-screw-unc-in-brown-350pcs/1000109819",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "structural_screws_box": {
       "description": "Structural screws, box of 50 (placeholder price)",
