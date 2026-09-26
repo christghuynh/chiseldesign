@@ -48,18 +48,28 @@ def test_generate_with_an_unknown_template_is_a_readable_422():
     assert r.json() == {"error": {"code": "TEMPLATE_ERROR", "message": "Unknown template: 'nope'"}}
 
 
-def test_parse_accepts_multipart_and_returns_params_without_parts():
+def test_parse_accepts_multipart_and_returns_params_without_parts(monkeypatch):
+    # AI-3 (Lane A / p3-parse) replaced the F-4 stub: /parse validates the image and calls the
+    # (fake) parser. A real PNG is required; the shipped fake returns the ramp reading.
+    monkeypatch.setenv("FAKE_AI", "1")
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGB", (120, 90), (40, 50, 60)).save(buf, format="PNG")
     r = client.post(
         "/api/parse",
-        files={"image": ("sketch.jpg", b"not really a jpeg", "image/jpeg")},
+        files={"image": ("sketch.png", buf.getvalue(), "image/png")},
         data={"measurements": '{"total_rise_in": 15}', "note": "porch"},
     )
-    assert r.status_code == 200
+    assert r.status_code == 200, r.text
     result = ParseResponse.model_validate(r.json())
     assert result.spec is not None
     assert result.spec.parts == [] and result.spec.rule_checks == []
-    assert result.spec.params["total_rise_in"].source == "inferred"
-    assert result.template_confidence is None
+    # The user measurement (15) overrides the fake reading, so its source is "user".
+    assert result.spec.params["total_rise_in"].source == "user"
+    assert result.template_confidence == 0.92
 
 
 def test_parse_requires_an_image():
