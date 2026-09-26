@@ -1,6 +1,7 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 from fastapi.responses import Response
 
+from app.ai.ratelimit import stt_rate_limit, tts_rate_limit
 from app.api.errors import ApiError
 from app.models import ErrorResponse, SttResponse, TtsRequest
 from app.voice.client import VoiceUnavailable
@@ -15,7 +16,13 @@ _VOICE_UNAVAILABLE = "The voice service is unavailable right now — type your r
 @router.post(
     "/stt",
     response_model=SttResponse,
-    responses={413: {"model": ErrorResponse}, 415: {"model": ErrorResponse}, 503: {"model": ErrorResponse}},
+    responses={
+        413: {"model": ErrorResponse},
+        415: {"model": ErrorResponse},
+        429: {"model": ErrorResponse},
+        503: {"model": ErrorResponse},
+    },
+    dependencies=[Depends(stt_rate_limit)],
 )
 async def stt(audio: UploadFile = File(...)) -> SttResponse:
     """VOX-1: transcribe a short recorded clip. Failures fall back to typed input on the client."""
@@ -36,8 +43,10 @@ async def stt(audio: UploadFile = File(...)) -> SttResponse:
     responses={
         200: {"content": {"audio/mpeg": {}}},
         422: {"model": ErrorResponse},
+        429: {"model": ErrorResponse},
         503: {"model": ErrorResponse},
     },
+    dependencies=[Depends(tts_rate_limit)],
 )
 def tts(req: TtsRequest) -> Response:
     """VOX-2: synthesize a short spoken line to MP3 (disk-cached). Failures fall back to the browser."""

@@ -1,0 +1,29 @@
+{
+  "description": "AI-8 parse eval set. Each case points at an image and lists the expected template and params (in inches) with per-param tolerances. The owner replaces the placeholder image paths with real sketches/photos on Saturday (NC-5). Run with `make eval`, or `--fake` for a network-free smoke run against the shipped fake reading.",
+  "tolerances_default_in": 1.0,
+  "cases": [
+    {
+      "name": "three_step_porch_21in",
+      "image": "fixtures/sketches/three_step_porch.jpg",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {"value": 21, "tol": 2.0},
+          "available_length_in": {"value": 144, "tol": 6.0},
+          "clear_width_in": {"value": 36, "tol": 2.0}
+        }
+      }
+    },
+    {
+      "name": "small_stoop_switchback",
+      "image": "fixtures/sketches/small_stoop.jpg",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {"value": 21, "tol": 2.0},
+          "layout": {"value": "switchback"}
+        }
+      }
+    }
+  ]
+}
