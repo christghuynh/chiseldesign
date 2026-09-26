@@ -1,19 +1,128 @@
 import { useEffect, useState } from "react";
+import { AuthButton } from "./components/auth/AuthButton";
 import { DEV_ROUTES } from "./dev/registry";
 import { SCREENS } from "./screens";
 import { FLOW, type ScreenKey, useStore } from "./store";
 
 const NAV: ScreenKey[] = ["landing", ...FLOW, "projects"];
-const stepLabels: Record<string, string> = { capture: "Capture", confirm: "Confirm", design: "Design", plan: "Plan", build: "Build" };
 
 export default function App() {
-  const screen = useStore((state) => state.screen); const setScreen = useStore((state) => state.setScreen);
-  const [helpOpen, setHelpOpen] = useState(false); const [theme, setTheme] = useState<"light" | "dark" | null>(() => (localStorage.getItem("theme") as "light" | "dark" | null));
+  const screen = useStore((state) => state.screen);
+  const setScreen = useStore((state) => state.setScreen);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [sectionsOpen, setSectionsOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
   const { Component } = SCREENS[screen];
-  useEffect(() => { if (theme) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme; if (theme) localStorage.setItem("theme", theme); else localStorage.removeItem("theme"); }, [theme]);
-  useEffect(() => { const handler = (event: KeyboardEvent) => { if (event.key === "?" && !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) { event.preventDefault(); setHelpOpen(true); } if (event.key === "Escape") setHelpOpen(false); }; window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "?" && !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) {
+        event.preventDefault();
+        setHelpOpen(true);
+      }
+      if (event.key === "Escape") setHelpOpen(false);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   const DevRoute = import.meta.env.DEV ? DEV_ROUTES[window.location.pathname] : undefined;
   if (DevRoute) return <DevRoute />;
-  const flowIndex = FLOW.indexOf(screen);
-  return <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]"><a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-[var(--surface)] focus:p-3">Skip to content</a><header className="border-b border-[var(--border)] bg-[var(--surface)]"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3"><button type="button" onClick={() => setScreen("landing")} className="text-left text-xl font-black tracking-tight">SketchBuild</button><div className="flex gap-2"><button type="button" className="app-button app-button--secondary text-sm" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light theme" : "Dark theme"}</button><button type="button" className="app-button app-button--secondary text-sm" onClick={() => setHelpOpen(true)} aria-haspopup="dialog">Shortcuts ?</button></div></div><nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 pb-3" aria-label="Project sections">{NAV.map((key) => <button key={key} type="button" onClick={() => setScreen(key)} aria-current={key === screen ? "page" : undefined} className={`min-h-10 whitespace-nowrap rounded px-3 text-sm font-semibold ${key === screen ? "bg-[var(--brand)] text-[var(--brand-contrast)]" : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}>{SCREENS[key].label}</button>)}</nav>{flowIndex >= 0 && <ol className="mx-auto flex max-w-3xl items-center justify-between px-4 pb-3" aria-label="Build progress">{FLOW.map((key, index) => <li key={key} className={`flex items-center gap-1 text-xs font-semibold ${index <= flowIndex ? "text-[var(--brand)]" : "text-[var(--text-muted)]"}`} aria-current={index === flowIndex ? "step" : undefined}><span className="inline-grid h-5 w-5 place-items-center rounded-full border border-current">{index + 1}</span><span className="hidden sm:inline">{stepLabels[key]}</span></li>)}</ol>}</header><main id="main" className="p-4 md:p-6"><Component /></main>{helpOpen && <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="presentation"><section role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" className="app-card max-w-md p-5 shadow-xl"><div className="flex items-center justify-between"><h2 id="shortcuts-title" className="m-0 text-xl font-bold">Keyboard shortcuts</h2><button type="button" className="app-button app-button--secondary" onClick={() => setHelpOpen(false)}>Close</button></div><dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2"><dt><kbd>Space</kbd></dt><dd>Hold to talk (outside a text field)</dd><dt><kbd>Ctrl/Cmd + Z</kbd></dt><dd>Undo in Design</dd><dt><kbd>Ctrl/Cmd + Shift + Z</kbd></dt><dd>Redo in Design</dd><dt><kbd>?</kbd></dt><dd>Open this help</dd></dl></section></div>}</div>;
+
+  return (
+    <div className="theme-transition min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-[var(--surface)] focus:p-3">
+        Skip to content
+      </a>
+      <header className="app-header sticky top-0 z-30">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button flex items-center gap-2 text-left text-xl font-black tracking-tight" aria-label="Go to SketchBuild welcome screen">
+              <span className="relative h-11 w-16 overflow-hidden" aria-hidden="true">
+                <img src="/brand/logo.png" alt="" className="absolute left-1/2 top-1/2 h-20 max-w-none -translate-x-1/2 -translate-y-1/2" />
+              </span>
+              <span className="app-brand-name"><span>Sketch</span><span className="app-brand-name__build">Build</span></span>
+            </button>
+            <div className="app-sections-menu relative">
+              <button
+                type="button"
+                className="app-button app-button--secondary text-sm"
+                onClick={() => setSectionsOpen((open) => !open)}
+                aria-expanded={sectionsOpen}
+                aria-controls="project-sections"
+              >
+                Sections
+                <svg aria-hidden="true" viewBox="0 0 20 20" className={`ml-1 inline-block h-4 w-4 transition-transform ${sectionsOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m5 7 5 5 5-5" />
+                </svg>
+              </button>
+              <nav id="project-sections" className={`app-segmented-nav ${sectionsOpen ? "" : "app-segmented-nav--collapsed"}`} aria-label="Project sections" aria-hidden={!sectionsOpen}>
+                {NAV.map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => { setScreen(key); setSectionsOpen(false); }}
+                    aria-current={key === screen ? "page" : undefined}
+                    className={`min-h-11 whitespace-nowrap rounded-xl px-4 text-left text-[.95rem] font-semibold ${key === screen ? "bg-[var(--brand)] text-[var(--brand-contrast)]" : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}
+                  >
+                    {SCREENS[key].label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <AuthButton />
+            <button
+              type="button"
+              className="app-button app-button--secondary app-icon-button"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+            >
+              {theme === "dark" ? (
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="block h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="3.5" />
+                  <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" />
+                </svg>
+              ) : (
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="block h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z" />
+                </svg>
+              )}
+            </button>
+            <button type="button" className="app-button app-button--secondary text-sm" onClick={() => setHelpOpen(true)} aria-haspopup="dialog">
+              Shortcuts ?
+            </button>
+          </div>
+        </div>
+      </header>
+      <main id="main" className={`mx-auto w-full max-w-7xl px-4 py-7 md:px-6 ${screen === "capture" ? "md:py-5" : "md:py-10"}`}><Component /></main>
+      {helpOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="presentation">
+          <section role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" className="app-card max-w-md p-5 shadow-xl">
+            <div className="flex items-center justify-between">
+              <h2 id="shortcuts-title" className="m-0 text-xl font-bold">Keyboard shortcuts</h2>
+              <button type="button" className="app-button app-button--secondary" onClick={() => setHelpOpen(false)}>Close</button>
+            </div>
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+              <dt><kbd>Space</kbd></dt><dd>Hold to talk (outside a text field)</dd>
+              <dt><kbd>Ctrl/Cmd + Z</kbd></dt><dd>Undo in Design</dd>
+              <dt><kbd>Ctrl/Cmd + Shift + Z</kbd></dt><dd>Redo in Design</dd>
+              <dt><kbd>?</kbd></dt><dd>Open this help</dd>
+            </dl>
+          </section>
+        </div>
+      )}
+    </div>
+  );
 }
