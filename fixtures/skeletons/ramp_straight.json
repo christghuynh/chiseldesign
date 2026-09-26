@@ -8,49 +8,49 @@
   {
     "phase": "cut",
     "title": "Cut all stringers",
-    "part_labels": ["C"],
+    "part_labels": ["D"],
     "action_key": "cut_stringers"
   },
   {
     "phase": "cut",
     "title": "Cut the ledger",
-    "part_labels": ["D"],
+    "part_labels": ["E"],
     "action_key": "cut_ledger"
   },
   {
     "phase": "assemble",
     "title": "Attach the ledger",
-    "part_labels": ["D"],
+    "part_labels": ["E"],
     "action_key": "attach_ledger"
   },
   {
     "phase": "assemble",
     "title": "Set the stringers",
-    "part_labels": ["C"],
+    "part_labels": ["D"],
     "action_key": "set_stringers"
   },
   {
     "phase": "check",
     "title": "Check the slope with a level",
-    "part_labels": ["C"],
+    "part_labels": ["D"],
     "action_key": "check_slope"
   },
   {
     "phase": "install",
     "title": "Install the decking",
-    "part_labels": ["H", "I", "J"],
+    "part_labels": ["I", "J", "K", "L", "M"],
     "action_key": "install_decking"
   },
   {
     "phase": "install",
     "title": "Install the edge curbs",
-    "part_labels": ["A"],
+    "part_labels": ["B"],
     "action_key": "install_curbs"
   },
   {
     "phase": "install",
     "title": "Install the handrail posts and rails",
-    "part_labels": ["B", "E", "F", "G"],
+    "part_labels": ["A", "C", "F", "G", "H"],
     "action_key": "install_handrails"
   },
   {

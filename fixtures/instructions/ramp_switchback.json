@@ -54,14 +54,14 @@
       "n": 4,
       "title": "Build the landing",
       "text": "Assemble the landing frame with the inner joists 16 inches apart, then fasten the landing deck boards across it.",
-      "part_labels": ["D", "E", "G", "L", "M"],
+      "part_labels": ["D", "E", "G", "L", "M", "N"],
       "cut_callouts": [
         {
-          "label": "L",
+          "label": "M",
           "spoken": "five-quarter deck board, sixty inches"
         },
         {
-          "label": "M",
+          "label": "N",
           "spoken": "five-quarter deck board, sixty inches"
         }
       ],
@@ -95,18 +95,22 @@
       "n": 8,
       "title": "Install the decking",
       "text": "Fasten deck boards across the stringers with a small gap between boards. Rip the last board on each run to fit.",
-      "part_labels": ["N", "O", "P"],
+      "part_labels": ["O", "P", "Q", "R"],
       "cut_callouts": [
-        {
-          "label": "N",
-          "spoken": "five-quarter deck board, thirty-six inches"
-        },
         {
           "label": "O",
           "spoken": "five-quarter deck board, thirty-six inches"
         },
         {
           "label": "P",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        },
+        {
+          "label": "Q",
+          "spoken": "five-quarter deck board, thirty-six inches"
+        },
+        {
+          "label": "R",
           "spoken": "five-quarter deck board, thirty-six inches"
         }
       ],
@@ -133,7 +137,7 @@
       "cut_callouts": [
         {
           "label": "B",
-          "spoken": "two-by-four, ninety and five sixteenths inches"
+          "spoken": "two-by-four, eighty-six and thirteen sixteenths inches"
         },
         {
           "label": "I",

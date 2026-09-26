@@ -65,8 +65,9 @@ describe("LayoutSvg", () => {
   it("shows utilization and labels the drawing", () => {
     const layout = FIXTURES.straight.plan.layouts[0];
     render(h(LayoutSvg, { layout }));
-    expect(screen.getByText("94% used")).toBeTruthy();
-    expect(screen.getByRole("img").getAttribute("aria-label")).toContain("A");
+    // Read from the fixture: it is regenerated from the real engine, so no literal percentages or labels.
+    expect(screen.getByText(`${Math.round(layout.utilization * 100)}% used`)).toBeTruthy();
+    expect(screen.getByRole("img").getAttribute("aria-label")).toContain(layout.pieces[0].label);
   });
 });
 
@@ -142,14 +143,17 @@ describe("SummaryCard", () => {
     expect(screen.getByTestId("summary-total").textContent).toBe(`~${formatCad(plan.total)}`);
     expect(screen.getByText(/Estimated total/)).toBeTruthy();
     expect(screen.getByTestId("summary-savings").textContent).toBe(`~${formatCad(plan.savings!)}`);
-    expect(screen.getByText("All checks pass (7 of 7 passed)")).toBeTruthy();
+    const counted = spec.rule_checks.filter((c) => c.status !== "info").length;
+    expect(screen.getByText(`All checks pass (${counted} of ${counted} passed)`)).toBeTruthy();
     expect(screen.getByText(`1' 3"`)).toBeTruthy(); // total rise, 15 in
   });
 
   it("lists failing rules and drops the estimate label for real prices", () => {
     const { spec, plan } = FIXTURES.straight;
     render(h(SummaryCard, { spec, plan: { ...plan, has_placeholder_prices: false } }));
-    expect(screen.getByText("Some checks fail (6 of 7 passed)")).toBeTruthy();
+    const counted = spec.rule_checks.filter((c) => c.status !== "info");
+    const passed = counted.filter((c) => c.status === "pass").length;
+    expect(screen.getByText(`Some checks fail (${passed} of ${counted.length} passed)`)).toBeTruthy();
     expect(screen.getByText("Fails: Fits the available length")).toBeTruthy();
     expect(screen.getByTestId("summary-total").textContent).toBe(formatCad(plan.total));
     expect(screen.queryByText("Estimate")).toBeNull();
