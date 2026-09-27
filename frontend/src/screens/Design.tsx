@@ -35,6 +35,9 @@ export function Design() {
   const [reply, setReply] = useState<string | null>(null);
   const [sceneKey, setSceneKey] = useState(0);
   const [adjustOpen, setAdjustOpen] = useState(false);
+  // Side panels can be collapsed to their header so more of the model is visible.
+  const [collapsed, setCollapsed] = useState({ parameters: false, details: false });
+  const togglePanel = (panel: keyof typeof collapsed) => setCollapsed((current) => ({ ...current, [panel]: !current[panel] }));
   const generateTimer = useRef<number | null>(null);
   const pendingPatch = useRef<Record<string, number | string | boolean | null>>({});
   const generation = useRef(0);
@@ -169,8 +172,9 @@ export function Design() {
       {busy && <div className="design-workspace__status"><LoadingState message="Updating your build plan…" /></div>}
       {error && <div className="design-workspace__status"><ErrorState message={error} /></div>}
 
-      <aside className="design-workspace__panel design-workspace__panel--parameters" aria-label="Design parameters">
-        <div className="design-workspace__panel-scroll">
+      <aside className={`design-workspace__panel design-workspace__panel--parameters${collapsed.parameters ? " is-collapsed" : ""}`} aria-label="Design parameters">
+        <PanelToggle label="Parameters" controls="design-panel-parameters" expanded={!collapsed.parameters} onToggle={() => togglePanel("parameters")} />
+        <div id="design-panel-parameters" className="design-workspace__panel-scroll" hidden={collapsed.parameters}>
           <div className="design-workspace__panel-intro">
             <p>03 · Shape your design</p>
             <h2 id="design-title">Design workspace</h2>
@@ -180,9 +184,9 @@ export function Design() {
         </div>
       </aside>
 
-      <aside className="design-workspace__panel design-workspace__panel--details" aria-label="Design details">
-        <div className="design-workspace__panel-scroll">
-          <p className="design-workspace__panel-label">Details &amp; checks</p>
+      <aside className={`design-workspace__panel design-workspace__panel--details${collapsed.details ? " is-collapsed" : ""}`} aria-label="Design details">
+        <PanelToggle label="Details & checks" controls="design-panel-details" expanded={!collapsed.details} onToggle={() => togglePanel("details")} />
+        <div id="design-panel-details" className="design-workspace__panel-scroll" hidden={collapsed.details}>
           {selectedPart && (
             <section className="app-card design-workspace__selection" aria-live="polite">
               <p>Selected part</p>
@@ -213,5 +217,15 @@ export function Design() {
         </div>
       )}
     </section>
+  );
+}
+
+/** Header button that collapses or expands a Design side panel. */
+function PanelToggle({ label, controls, expanded, onToggle }: { label: string; controls: string; expanded: boolean; onToggle: () => void }) {
+  return (
+    <button type="button" className="design-workspace__panel-toggle" aria-expanded={expanded} aria-controls={controls} onClick={onToggle} title={expanded ? `Collapse ${label.toLowerCase()}` : `Expand ${label.toLowerCase()}`}>
+      <span>{label}</span>
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+    </button>
   );
 }
