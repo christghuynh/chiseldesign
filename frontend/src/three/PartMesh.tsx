@@ -17,8 +17,8 @@ const MATERIAL_COLORS: Record<string, string> = {
   "5/4x6_PT_deck": "#d0a15d",
   "3/4_ext_ply": "#d8bd7e",
 };
-const SELECTED_COLOR = "#7d80da"; // palette: soft periwinkle
-const HIGHLIGHT_EMISSIVE = "#b0a3d4"; // palette: wisteria
+const SELECTED_COLOR = "#77b6ea"; // palette: cool sky
+const HIGHLIGHT_EMISSIVE = "#c7d3dd"; // palette: pale sky
 
 // Skeleton: geometry, placement and basic highlight/select. FE-5 adds materials by lumber type,
 // hover states and outlines.
