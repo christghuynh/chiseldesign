@@ -5,6 +5,7 @@ import { LoadingState } from "../components/common/LoadingState";
 import { useStore } from "../store";
 import type { TemplateInfo } from "../types";
 import { missingRequired, setCaptureSession, specFromDefaults } from "./flowState";
+import { IMAGE_ACCEPT, IMAGE_TYPES_TEXT, isAcceptedImage } from "./uploadImage";
 
 type Fields = "total_rise_in" | "available_length_in" | "clear_width_in" | "contractor_quote_cad" | "note";
 const blank = { total_rise_in: "", available_length_in: "", clear_width_in: "", contractor_quote_cad: "", note: "" };
@@ -42,6 +43,8 @@ export function Capture() {
   const cameraStream = useRef<MediaStream | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  // Most browsers other than Safari can't display HEIC; the server still reads it.
+  const [previewFailed, setPreviewFailed] = useState(false);
   const [templates, setTemplates] = useState<TemplateInfo[]>([]);
   const [templateKey, setTemplateKey] = useState("ramp");
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
@@ -68,10 +71,11 @@ export function Capture() {
     setError(null);
     setPhotoAttention(false);
     if (!next) return;
-    if (!next.type.startsWith("image/")) { setError("Please choose an image file (JPEG, PNG, HEIC, or WebP)."); return; }
+    if (!isAcceptedImage(next)) { setError(`Please choose an image file (${IMAGE_TYPES_TEXT}).`); return; }
     if (next.size > 10 * 1024 * 1024) { setError("That image is larger than 10 MB. Choose a smaller image."); return; }
     if (preview) URL.revokeObjectURL(preview);
     setFile(next);
+    setPreviewFailed(false);
     setPreview(URL.createObjectURL(next));
   }
 
@@ -204,9 +208,9 @@ export function Capture() {
             <h3><span className="capture-step">1</span>Add a photo</h3>
             <p className="capture-card__intro">A sketch or a photo of the space works. Images up to 10 MB.</p>
           </div>
-          <input ref={picker} className="sr-only" type="file" accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} />
-          <input ref={camera} className="sr-only" type="file" accept="image/*" capture="environment" onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} />
-          {preview ? <img src={preview} alt="Selected site or sketch" className="capture-preview" /> : <div className="capture-dropzone"><p>No image selected yet. A photo is optional if you would rather begin with a template.</p></div>}
+          <input ref={picker} className="sr-only" type="file" accept={IMAGE_ACCEPT} onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} />
+          <input ref={camera} className="sr-only" type="file" accept={IMAGE_ACCEPT} capture="environment" onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} />
+          {preview && previewFailed ? <div className="capture-dropzone" role="status"><p>Selected <strong>{file?.name}</strong>. This browser can't preview this format, but it will be read when you analyze it.</p></div> : preview ? <img src={preview} alt="Selected site or sketch" className="capture-preview" onError={() => setPreviewFailed(true)} /> : <div className="capture-dropzone"><p>No image selected yet. A photo is optional if you would rather begin with a template.</p></div>}
           {photoAttention && !preview && <p className="capture-photo__required" role="status">Add or take a photo here before analyzing.</p>}
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" className="app-button app-button--secondary flex flex-1 items-center justify-center gap-2 border-dashed" onClick={() => picker.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); choose(event.dataTransfer.files[0]); }}>
