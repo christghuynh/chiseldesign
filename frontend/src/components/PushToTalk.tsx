@@ -67,7 +67,7 @@ export function PushToTalk({ onTranscript, disabled = false, label = "Hold to ta
   }, [begin, finish, hotkey]);
 
   return (
-    <div>
+    <div className="push-to-talk">
       <button type="button" disabled={disabled} aria-pressed={isRecording} onPointerDown={() => void begin()} onPointerUp={() => void finish()} onPointerLeave={() => void finish()} className="app-button app-button--secondary">
         {isRecording ? "Listening… release to send" : label}
       </button>
