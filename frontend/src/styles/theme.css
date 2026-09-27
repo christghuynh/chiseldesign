@@ -121,7 +121,7 @@ html { overscroll-behavior-y: none; }
 
 @media (min-width: 801px) {
   html:has(.app-shell--landing),
-  body:has(.app-shell--landing) { min-height: 100%; height: auto; overflow-y: auto; }
+  body:has(.app-shell--landing) { min-height: 100%; height: 100%; overflow: hidden; }
 }
 
 .app-shell--landing main {
@@ -483,6 +483,7 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 .landing-story__progress > i { display: block; height: 2px; overflow: hidden; background: color-mix(in srgb, var(--brand) 22%, transparent); }
 .landing-story__progress b { display: block; width: 100%; height: 100%; transform-origin: left; background: var(--brand); transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
 .landing-story__visual-track { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.landing-story__swap-panel { position: absolute; top: -12%; bottom: -12%; z-index: 2; width: min(45vw, 48rem); border-right: 1px solid color-mix(in srgb, var(--brand) 34%, transparent); border-left: 1px solid color-mix(in srgb, var(--brand) 16%, transparent); background: linear-gradient(90deg, color-mix(in srgb, var(--surface-solid) 10%, transparent), color-mix(in srgb, var(--brand) 14%, transparent) 48%, color-mix(in srgb, var(--surface-solid) 10%, transparent)); box-shadow: 0 0 3rem color-mix(in srgb, var(--brand) 14%, transparent); pointer-events: none; }
 .landing-story__visual { position: absolute; top: 50%; z-index: 1; display: grid; width: min(43rem, 55vw); height: min(39rem, 72vh); place-items: center; translate: 0 -50%; }
 .landing-story__visual--0, .landing-story__visual--2 { right: clamp(1rem, 5vw, 7rem); }
 .landing-story__visual--1, .landing-story__visual--3 { left: clamp(1rem, 5vw, 7rem); }
@@ -553,6 +554,40 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 .story-checklist i { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; border: 1px solid color-mix(in srgb, var(--brand) 38%, var(--border)); border-radius: 999px; color: var(--brand); font-size: .68rem; font-style: normal; }
 .story-checklist span:first-of-type i { border-color: color-mix(in srgb, var(--success) 48%, var(--border)); background: color-mix(in srgb, var(--success) 14%, transparent); color: var(--success); }
 
+/* The landing story is a virtual scroll: the browser stays in place while both
+   neighbouring stages interpolate directly with the user's wheel position. */
+.landing-story__visual { --landing-image-ratio: 1.9; display: block; top: 50%; width: min(47vw, 63rem, calc(min(70vh, 46rem) * var(--landing-image-ratio))); height: auto; margin: 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--border) 82%, transparent); border-radius: clamp(1rem, 1.8vw, 1.75rem); background: var(--surface-solid); box-shadow: 0 2rem 5rem rgb(20 35 46 / 20%); transition: visibility 0s linear .01s; will-change: opacity, transform; }
+.landing-story__visual--left { right: clamp(1.5rem, 5vw, 7rem); left: auto; }
+.landing-story__visual--right { right: auto; left: clamp(1.5rem, 5vw, 7rem); }
+.landing-story__visual--capture { --landing-image-ratio: 1.8333; rotate: -3deg; box-shadow: 0 2.2rem 5.3rem rgb(20 35 46 / 24%); }
+.landing-story__visual--design { --landing-image-ratio: 1.9021; }
+.landing-story__visual--plan { --landing-image-ratio: 1.9042; }
+.landing-story__visual--build { --landing-image-ratio: 1.8897; }
+.landing-story__visual img { display: block; width: 100%; height: auto; user-select: none; }
+.landing-story__visual.is-stable { box-shadow: 0 0 1.1rem color-mix(in srgb, var(--brand) 22%, transparent), 0 0 3.8rem color-mix(in srgb, var(--accent-sage) 18%, transparent), 0 2rem 5rem rgb(20 35 46 / 20%); }
+.landing-story__visual--capture:not(.is-intro-ready) img { opacity: 0; }
+.landing-story__visual--capture.is-intro-ready img { animation: landing-workbench-settle .88s cubic-bezier(.22, 1, .36, 1) both; }
+.landing-story__visual--capture.is-intro-ready::after { position: absolute; inset: 0; z-index: 2; background: linear-gradient(90deg, transparent 42%, color-mix(in srgb, var(--brand) 46%, transparent) 50%, transparent 58%); content: ""; mix-blend-mode: screen; pointer-events: none; animation: landing-sketch-scan .68s .45s cubic-bezier(.22, 1, .36, 1) both; }
+.landing-story__cursor { display: inline-block; color: var(--brand); font-weight: 500; opacity: 0; }
+.landing-story__cursor.is-typing { animation: landing-cursor-blink .72s steps(1, end) infinite; opacity: 1; }
+@keyframes landing-workbench-settle {
+  from { opacity: 0; transform: translate3d(13%, -14%, 0) rotate(5deg); }
+  68% { opacity: 1; transform: translate3d(-1%, 1%, 0) rotate(-.8deg); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); }
+}
+@keyframes landing-sketch-scan {
+  from { opacity: 0; transform: translateX(-120%); }
+  22% { opacity: .78; }
+  to { opacity: 0; transform: translateX(120%); }
+}
+@keyframes landing-cursor-blink { 50% { opacity: 0; } }
+.landing-story__copy-track { display: block; padding: 0; }
+.landing-story__copy { position: absolute; top: 50%; display: grid; width: min(25rem, 30vw); gap: 1.1rem; padding: 0; pointer-events: auto; translate: 0 -50%; will-change: opacity, transform; }
+.landing-story__copy--left { left: clamp(2rem, 7vw, 9rem); }
+.landing-story__copy--right { right: clamp(2rem, 7vw, 9rem); }
+.landing-story__copy > p { margin: 0; color: var(--text-muted); font-size: clamp(1rem, 1.3vw, 1.18rem); }
+.landing-story__copy .app-button { justify-self: start; margin-top: .35rem; }
+
 @media (max-width: 800px) {
   .app-shell--landing { display: flex; height: 100dvh; min-height: 100dvh; max-height: 100dvh; overflow: hidden; }
   .app-shell--landing main { display: block; min-height: 0; flex: 1 1 auto; overflow: hidden; }
@@ -570,6 +605,10 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
   .story-window__design-body { grid-template-columns: 1fr; }
   .story-cut-list, .story-layout, .story-checklist { padding: .85rem; }
   .story-sketch { max-width: 28rem; }
+  .landing-story__visual { top: calc(43% - 1rem); right: 1rem; left: 1rem; width: min(calc(54svh * var(--landing-image-ratio)), calc(100vw - 2rem)); height: auto; }
+  .landing-story__visual--capture { rotate: -2deg; }
+  .landing-story__copy { top: auto; right: 1.25rem; bottom: 3.7rem; left: 1.25rem; width: auto; gap: .7rem; translate: none; }
+  .landing-story__copy--left, .landing-story__copy--right { right: 1.25rem; left: 1.25rem; }
 }
 
 .landing-hero {
