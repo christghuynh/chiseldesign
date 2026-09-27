@@ -90,6 +90,7 @@ interface ParamFieldProps {
 
 function ParamField({ name, property, current, busy, onChange }: ParamFieldProps) {
   const id = `parameter-${name}`;
+  const titleId = `${id}-title`;
   const title = property.title ?? name.replaceAll("_", " ");
   const types = typesOf(property);
   const assumption = current?.source === "inferred" || current?.source === "default";
@@ -97,7 +98,7 @@ function ParamField({ name, property, current, busy, onChange }: ParamFieldProps
   let control = null;
   if (property.enum) {
     control = (
-      <div className="flex flex-wrap gap-2" role="group" aria-label={title}>
+      <div className="flex flex-wrap gap-2" role="group" aria-labelledby={titleId}>
         {property.enum.map((choice) => (
           <button
             key={choice}
@@ -136,9 +137,17 @@ function ParamField({ name, property, current, busy, onChange }: ParamFieldProps
   return (
     <div className={`rounded-lg p-3 ${assumption ? "assumption" : ""}`}>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-        <label htmlFor={id} className="font-semibold">
-          {title}
-        </label>
+        {/* Only text/number/checkbox fields have an element with `id`; a choice group is labelled by
+            the title instead, so no <label for> points at a missing element. */}
+        {property.enum || control === null ? (
+          <span id={titleId} className="font-semibold">
+            {title}
+          </span>
+        ) : (
+          <label htmlFor={id} className="font-semibold">
+            {title}
+          </label>
+        )}
         {current ? <SourceTag source={current.source} /> : !types.includes("null") && <span className="source-tag">required</span>}
       </div>
       {property.description && <p className="mb-2 text-sm text-[var(--text-muted)]">{property.description}</p>}
