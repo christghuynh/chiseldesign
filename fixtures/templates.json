@@ -5,7 +5,7 @@
     "description": "Wooden ramp with optional switchback, landings, curbs and handrails.",
     "params_schema": {
       "additionalProperties": false,
-      "description": "Ramp parameters. Bounds not stated in the original spec are marked (inferred).\n\nSchema hints for the parameter panel (in `json_schema_extra`): `group` is \"key\" for the few dimensions\na homeowner measures and \"advanced\" for construction choices, which the panel folds away;\n`enum_labels` gives readable names for the choices; `unit` is the unit of a number.",
+      "description": "Ramp parameters. Bounds not stated in the original spec were inferred: available_length_in, slope_ratio,\nlanding_length_in, stringer_spacing_in and deck_gap_in.\n\nSchema hints for the parameter panel (in `json_schema_extra`): `group` is \"key\" for the few dimensions\na homeowner measures and \"advanced\" for construction choices, which the panel folds away;\n`enum_labels` gives readable names for the choices; `unit` is the unit of a number.",
       "properties": {
         "total_rise_in": {
           "description": "From the ground to the top of the porch or doorway, measured straight up. Three standard steps are about 21 in.",
@@ -28,7 +28,7 @@
         },
         "available_length_in": {
           "default": null,
-          "description": "How far the yard extends out from the porch. Leave empty if space isn't a limit; if a straight ramp won't fit, Chisel suggests a switchback. (bounds inferred)",
+          "description": "How far the yard extends out from the porch. Leave empty if space isn't a limit; if a straight ramp won't fit, Chisel suggests a switchback.",
           "group": "key",
           "title": "Space in front (optional)",
           "unit": "in",
@@ -58,7 +58,7 @@
         },
         "slope_ratio": {
           "default": 12,
-          "description": "12 means 1:12, the usual guideline for wheelchairs; higher is gentler and longer. (bounds inferred)",
+          "description": "12 means 1:12, the usual guideline for wheelchairs; higher is gentler and longer.",
           "group": "advanced",
           "maximum": 40,
           "minimum": 2,
@@ -67,7 +67,7 @@
         },
         "landing_length_in": {
           "default": 60,
-          "description": "Length of each flat landing between runs, where people rest or turn. (bounds inferred)",
+          "description": "Length of each flat landing between runs, where people rest or turn.",
           "group": "advanced",
           "maximum": 240,
           "minimum": 12,
@@ -92,7 +92,7 @@
         },
         "stringer_spacing_in": {
           "default": 16,
-          "description": "Distance between the sloped supports under the deck, center to center. Closer is stiffer. (bounds inferred)",
+          "description": "Distance between the sloped supports under the deck, center to center. Closer is stiffer.",
           "group": "advanced",
           "maximum": 24,
           "minimum": 8,
@@ -117,7 +117,7 @@
         },
         "deck_gap_in": {
           "default": 0.125,
-          "description": "Gap between deck boards for drainage. (bounds inferred)",
+          "description": "Gap between deck boards for drainage.",
           "group": "advanced",
           "maximum": 0.5,
           "minimum": 0,
