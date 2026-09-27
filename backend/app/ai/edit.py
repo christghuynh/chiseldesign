@@ -29,7 +29,7 @@ from app.ai.client import AIError, Message, Text, Tool, ToolCall, call_with_tool
 from app.models import EditResponse, ParamValue, Spec
 
 _PROMPT_PATH = Path(__file__).parent / "prompts" / "edit.md"
-_MAX_HISTORY = 5
+_MAX_HISTORY = 10  # messages: the last 5 user/model exchanges
 
 
 class EditError(Exception):
@@ -273,10 +273,14 @@ def handle_edit(spec: Spec, utterance: str) -> EditResponse:
 
     Raises EditError on any AI failure (the route maps it to AI_UNAVAILABLE / 503).
     """
+    messages_spec = spec
+    # The conversation is request-only context: never regenerate (and so persist) it into the spec.
+    if isinstance(spec.meta, dict) and "edit_turns" in spec.meta:
+        spec = spec.model_copy(update={"meta": {k: v for k, v in spec.meta.items() if k != "edit_turns"}})
     schema = _template_schema(spec.template)
     rule_ids = [rc.id for rc in spec.rule_checks if rc.fix is not None]
     tools = _tools_for(schema, rule_ids)
-    messages = _build_messages(spec, schema, utterance)
+    messages = _build_messages(messages_spec, schema, utterance)
 
     try:
         turn = call_with_tools(messages, tools, call="edit", force_tool=True)
