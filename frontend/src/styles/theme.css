@@ -68,11 +68,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 7% -12%, color-mix(in srgb, var(--accent-peach) 38%, transparent), transparent 34rem),
-    radial-gradient(circle at 94% 4%, color-mix(in srgb, var(--accent-cream) 70%, transparent), transparent 28rem),
-    radial-gradient(circle at 82% 88%, color-mix(in srgb, var(--accent-sage) 18%, transparent), transparent 30rem),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.011em;
@@ -155,25 +151,16 @@ label { line-height: 1.35; }
 }
 
 .app-brand-name__build {
-  background: linear-gradient(125deg, var(--accent-sage-deep), var(--brand));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--brand);
 }
 
 .app-brand-name--chisel {
-  background: linear-gradient(125deg, var(--text) 2%, var(--brand-deep) 55%, var(--accent-sage-deep));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--brand);
   text-shadow: 0 1px 0 color-mix(in srgb, var(--surface-solid) 76%, transparent);
 }
 
 :root[data-theme="dark"] .app-brand-name--chisel {
-  background: linear-gradient(125deg, var(--text) 2%, var(--accent-sage) 58%, var(--brand));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--text);
   text-shadow: 0 1px 0 rgb(0 0 0 / 36%);
 }
 
@@ -195,7 +182,6 @@ label { line-height: 1.35; }
 .design-main { width: 100%; min-height: calc(100dvh - 5rem); height: calc(100dvh - 5rem); padding: 0; }
 .design-workspace { --design-edge: clamp(1rem, 2.5vw, 2rem); --design-left-panel: 23rem; --design-right-panel: 20rem; --text: #0a2e40; --text-muted: #3f5460; --surface-solid: #ffffff; --surface: rgb(255 251 252 / 54%); --surface-muted: rgb(238 229 233 / 82%); --border: rgb(8 65 92 / 26%); --design-glass: rgb(255 255 255 / 88%); --design-glass-shadow: 0 22px 58px rgb(8 45 64 / 20%); --design-glass-filter: blur(22px) saturate(1.15); position: relative; min-height: 100%; height: 100%; overflow: hidden; background: #ffffff; color: #0a2e40; }
 .design-workspace__canvas { position: absolute; inset: 0; }
-.design-workspace__canvas::after { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(255 255 255 / 22%), transparent 27%, transparent 68%, rgb(255 255 255 / 30%)); content: ""; pointer-events: none; }
 .design-workspace__topbar { position: absolute; top: var(--design-edge); right: var(--design-edge); z-index: 4; display: flex; align-items: start; justify-content: end; pointer-events: none; }
 .design-workspace__topbar > * { pointer-events: auto; }
 .design-workspace__panel-intro p, .design-workspace__composer p { margin: 0; color: var(--brand); font-size: .73rem; font-weight: 780; letter-spacing: .08em; text-transform: uppercase; }
@@ -244,7 +230,7 @@ label { line-height: 1.35; }
 .workflow-empty-page__heading { margin: 0 0 1rem; }
 .workflow-empty-page__heading p { margin: 0 0 .25rem; color: var(--brand); font-size: .76rem; font-weight: 780; letter-spacing: .09em; text-transform: uppercase; }
 .workflow-empty-page__heading h2 { margin: 0; font-size: clamp(2.1rem, 4vw, 3.2rem); }
-.empty-state { --empty-accent: var(--brand); --empty-accent-deep: var(--brand-deep); display: grid; grid-template-columns: minmax(8.5rem, .72fr) minmax(0, 1.28fr); align-items: center; gap: clamp(1.25rem, 4vw, 3.5rem); min-height: 17rem; overflow: hidden; padding: clamp(1.5rem, 4vw, 3rem); background: linear-gradient(130deg, color-mix(in srgb, var(--surface-solid) 88%, transparent), color-mix(in srgb, var(--empty-accent) 10%, var(--surface))); }
+.empty-state { --empty-accent: var(--brand); --empty-accent-deep: var(--brand-deep); display: grid; grid-template-columns: minmax(8.5rem, .72fr) minmax(0, 1.28fr); align-items: center; gap: clamp(1.25rem, 4vw, 3.5rem); min-height: 17rem; overflow: hidden; padding: clamp(1.5rem, 4vw, 3rem); background: color-mix(in srgb, var(--empty-accent) 6%, var(--surface)); }
 .empty-state--confirm { --empty-accent: var(--accent-sage); --empty-accent-deep: var(--accent-sage-deep); }
 .empty-state--plan { --empty-accent: var(--accent-tomato); --empty-accent-deep: color-mix(in srgb, var(--accent-tomato) 55%, var(--brand-deep)); }
 .empty-state--build { --empty-accent: var(--accent-peach); --empty-accent-deep: var(--warning); }
@@ -278,7 +264,7 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
   min-height: 2.75rem;
   border: 1px solid transparent;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--brand), var(--brand-deep) 74%, var(--accent-sage-deep));
+  background: var(--brand);
   box-shadow: 0 5px 14px color-mix(in srgb, var(--brand) 25%, transparent), 0 1px 0 rgb(255 255 255 / 28%) inset;
   color: var(--brand-contrast);
   padding: .55rem 1rem;
@@ -372,7 +358,7 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 .template-selector__preview p { color: var(--text-muted); font-size: .92rem; }
 .template-selector__defaults { display: flex; flex-wrap: wrap; gap: .35rem; }
 .template-selector__defaults span { border-radius: 999px; background: var(--surface-muted); color: var(--text-muted); font-size: .72rem; padding: .25rem .5rem; }
-.template-preview-art { position: relative; border: 1px solid color-mix(in srgb, var(--brand) 30%, var(--border)); border-radius: .8rem; background: linear-gradient(140deg, color-mix(in srgb, var(--accent-sage) 16%, transparent), color-mix(in srgb, var(--accent-lilac) 10%, transparent)); color: var(--brand); overflow: hidden; }
+.template-preview-art { position: relative; border: 1px solid color-mix(in srgb, var(--brand) 30%, var(--border)); border-radius: .8rem; background: color-mix(in srgb, var(--accent-sage) 12%, transparent); color: var(--brand); overflow: hidden; }
 .template-preview-art svg { display: block; width: 100%; height: auto; }
 .template-preview-art > span { position: absolute; right: .55rem; bottom: .45rem; color: color-mix(in srgb, var(--brand) 68%, var(--text)); font-size: .65rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 .template-preview-art__grid { fill: none; stroke: currentColor; stroke-dasharray: 3 7; stroke-opacity: .16; }
@@ -451,7 +437,7 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
   z-index: -1;
   border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-radius: 2rem;
-  background: linear-gradient(130deg, color-mix(in srgb, var(--surface) 88%, transparent), color-mix(in srgb, var(--accent-sage) 12%, var(--surface)));
+  background: var(--surface);
   box-shadow: var(--shadow-card);
   content: "";
 }
@@ -486,7 +472,7 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 }
 
 /* Bring components that predate the shared system into the same palette. */
-.theme-transition .bg-slate-900 { background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: var(--brand-contrast); }
+.theme-transition .bg-slate-900 { background: var(--brand); color: var(--brand-contrast); }
 .theme-transition .text-slate-700 { color: var(--text-muted); }
 .theme-transition .border-slate-200,
 .theme-transition .border-slate-300,
