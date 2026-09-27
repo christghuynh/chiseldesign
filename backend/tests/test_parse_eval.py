@@ -55,3 +55,19 @@ def test_eval_runs_in_fake_mode_without_network(capsys):
     assert "[FAKE]" in out
     # The shipped fake reads a ramp, so at least the template line should PASS somewhere.
     assert "template" in out
+
+
+def test_synthetic_cases_point_at_committed_images():
+    """AI-8: every synthetic eval case has its image and a known template (or null)."""
+    import json
+    from pathlib import Path
+
+    from app import engine
+
+    repo = Path(__file__).resolve().parents[2]
+    data = json.loads((repo / "evals" / "synthetic_cases.json").read_text(encoding="utf-8"))
+    keys = {t.key for t in engine.list_templates()}
+    assert len(data["cases"]) >= 10
+    for case in data["cases"]:
+        assert (repo / case["image"]).is_file(), case["image"]
+        assert case["expect"]["template"] in keys | {None}, case["name"]
