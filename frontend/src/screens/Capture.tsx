@@ -11,22 +11,42 @@ type Fields = "total_rise_in" | "available_length_in" | "clear_width_in" | "cont
 const blank = { total_rise_in: "", available_length_in: "", clear_width_in: "", contractor_quote_cad: "", note: "" };
 
 function TemplateBlueprint({ template }: { template: TemplateInfo }) {
-  const isRamp = template.key.toLowerCase().includes("ramp");
+  const key = template.key.toLowerCase();
+  const kind = key.includes("ramp") ? "ramp" : key.includes("step") ? "step-platform" : key.includes("workbench") ? "workbench" : "garden-bed";
   return (
-    <div className="template-preview-art" aria-hidden="true">
+    <div className={`template-preview-art template-preview-art--${kind}`} aria-hidden="true">
       <svg viewBox="0 0 360 210" role="presentation">
         <path d="M27 42H333M27 84H333M27 126H333M27 168H333M74 21V189M122 21V189M170 21V189M218 21V189M266 21V189" className="template-preview-art__grid" />
-        {isRamp ? <>
+        {kind === "ramp" && <>
           <path d="M44 154H110L221 62H306" className="template-preview-art__main" />
           <path d="M44 172H118L229 80H306" className="template-preview-art__thin" />
           <path d="M66 154v18M110 154v18M147 123v18M184 92v18M221 62v18M264 62v18M306 62v18" className="template-preview-art__detail" />
           <path d="M75 140V99h34M129 111V70h34M183 70V38h34" className="template-preview-art__rail" />
-        </> : <>
+          <circle cx="44" cy="154" r="7" className="template-preview-art__node" />
+          <circle cx="306" cy="62" r="7" className="template-preview-art__node" />
+        </>}
+        {kind === "garden-bed" && <>
           <rect x="70" y="56" width="220" height="104" rx="12" className="template-preview-art__main template-preview-art__shape" />
           <path d="M100 160V101l80-55 80 55v59M150 160v-38h60v38M118 105h26M216 105h26" className="template-preview-art__detail" />
+          <circle cx="44" cy="160" r="7" className="template-preview-art__node" />
+          <circle cx="306" cy="160" r="7" className="template-preview-art__node" />
         </>}
-        <circle cx="44" cy={isRamp ? "154" : "160"} r="7" className="template-preview-art__node" />
-        <circle cx="306" cy={isRamp ? "62" : "160"} r="7" className="template-preview-art__node" />
+        {kind === "step-platform" && <>
+          <path d="M48 160h78v-31h66V98h66V67h54" className="template-preview-art__main" />
+          <path d="M48 177h86v-31h66v-31h66V84h46" className="template-preview-art__thin" />
+          <path d="M79 160v17M126 129v17M192 98v17M258 67v17M302 67v17" className="template-preview-art__detail" />
+          <path d="M126 129h66M192 98h66M258 67h54" className="template-preview-art__rail" />
+          <circle cx="48" cy="160" r="7" className="template-preview-art__node" />
+          <circle cx="312" cy="67" r="7" className="template-preview-art__node" />
+        </>}
+        {kind === "workbench" && <>
+          <rect x="66" y="61" width="228" height="31" rx="6" className="template-preview-art__main template-preview-art__shape" />
+          <path d="M88 92v78M272 92v78M119 92v61M241 92v61M88 129h184M119 153h122" className="template-preview-art__detail" />
+          <path d="M66 77h228M104 128h152M119 153h122" className="template-preview-art__rail" />
+          <path d="M81 170h207" className="template-preview-art__thin" />
+          <circle cx="66" cy="77" r="7" className="template-preview-art__node" />
+          <circle cx="294" cy="77" r="7" className="template-preview-art__node" />
+        </>}
       </svg>
       <span>Preview</span>
     </div>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api/client";
 import { KeyFacts } from "../components/KeyFacts";
 import { ParamPanel } from "../components/ParamPanel";
+import { projectHealthSummary, type ProjectHealthSummary } from "../components/ProjectHealth";
 import { PushToTalk } from "../components/PushToTalk";
 import { RuleBadges } from "../components/RuleBadges";
 import { TypedEditBox } from "../components/TypedEditBox";
@@ -10,9 +11,27 @@ import { ErrorState } from "../components/common/ErrorState";
 import { LoadingState } from "../components/common/LoadingState";
 import { useSpeak } from "../hooks/useSpeak";
 import { useStore } from "../store";
-import type { ParamValue, RuleCheck, TemplateInfo } from "../types";
+import type { ParamValue, Plan, RuleCheck, TemplateInfo } from "../types";
 import { Scene } from "../three/Scene";
 import { type EditTurn, recordExchange, withTurns } from "./editMemory";
+
+type DesignFeedback = { change: string; materials: string };
+
+function titleFor(name: string) {
+  return name.replace(/_in$/, "").replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function describeStockDelta(previous: Plan, next: Plan) {
+  const count = (plan: Plan, kind: "board" | "sheet") => plan.layouts.filter((layout) => layout.kind === kind).length;
+  const description = (kind: "board" | "sheet") => {
+    const delta = count(next, kind) - count(previous, kind);
+    if (delta === 0) return null;
+    const noun = Math.abs(delta) === 1 ? kind : `${kind}s`;
+    return `${Math.abs(delta)} ${noun} ${delta > 0 ? "added" : "removed"}`;
+  };
+  const changes = [description("board"), description("sheet")].filter((value): value is string => value !== null);
+  return changes.length ? changes.join(" · ") : "Material count unchanged";
+}
 
 export function Design() {
   const spec = useStore((state) => state.spec);
@@ -35,10 +54,12 @@ export function Design() {
   const [reply, setReply] = useState<string | null>(null);
   const [sceneKey, setSceneKey] = useState(0);
   const [adjustOpen, setAdjustOpen] = useState(false);
+  const [feedback, setFeedback] = useState<DesignFeedback | null>(null);
   // Side panels can be collapsed to their header so more of the model is visible.
   const [collapsed, setCollapsed] = useState({ parameters: false, details: false });
   const togglePanel = (panel: keyof typeof collapsed) => setCollapsed((current) => ({ ...current, [panel]: !current[panel] }));
   const generateTimer = useRef<number | null>(null);
+  const feedbackTimer = useRef<number | null>(null);
   const pendingPatch = useRef<Record<string, number | string | boolean | null>>({});
   const generation = useRef(0);
   const editTurns = useRef<EditTurn[]>([]);
@@ -62,6 +83,7 @@ export function Design() {
 
   useEffect(() => () => {
     if (generateTimer.current !== null) window.clearTimeout(generateTimer.current);
+    if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
   }, []);
 
   const selectedPart = useMemo(() => spec?.parts.find((part) => part.id === selected[0]), [selected, spec?.parts]);
@@ -78,15 +100,25 @@ export function Design() {
   }
 
   const currentSpec = spec;
+  const health = projectHealthSummary(spec, plan);
 
-  async function generate(params: Record<string, ParamValue>, source: "manual" | "fix") {
+  function showFeedback(change: string, previous: Plan, next: Plan) {
+    setFeedback({ change, materials: describeStockDelta(previous, next) });
+    if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
+    feedbackTimer.current = window.setTimeout(() => setFeedback(null), 7000);
+  }
+
+  async function generate(params: Record<string, ParamValue>, source: "manual" | "fix", change = "Design updated") {
     const request = ++generation.current;
+    const previousPlan = useStore.getState().plan;
     setBusy(true);
     setError(null);
+    setFeedback(null);
     try {
       const result = await api.generate({ template: currentSpec.template, params, meta: currentSpec.meta });
       if (request !== generation.current) return;
       applyGenerateResult(result.spec, result.plan, source);
+      if (previousPlan) showFeedback(change, previousPlan, result.plan);
     } catch (reason) {
       if (request !== generation.current) return;
       setError(reason instanceof Error ? reason.message : "The model could not be updated.");
@@ -106,8 +138,9 @@ export function Design() {
         if (value === null) delete params[key];
         else params[key] = { value, source: "user", confidence: null };
       }
+      const changed = Object.keys(pendingPatch.current);
       pendingPatch.current = {};
-      void generate(params, "manual");
+      void generate(params, "manual", changed.length === 1 ? titleFor(changed[0]) : "Design updated");
     }, 150);
   }
 
@@ -119,7 +152,7 @@ export function Design() {
         params[name] = { value, source: "user", confidence: null };
       }
     });
-    void generate(params, "fix");
+    void generate(params, "fix", rule.title);
   }
 
   async function edit(text: string) {
@@ -130,10 +163,15 @@ export function Design() {
     setBusy(true);
     setVoiceState("processing");
     setError(null);
+    setFeedback(null);
+    const previousPlan = useStore.getState().plan;
     try {
       const result = await api.edit({ spec: withTurns(currentSpec, editTurns.current), utterance: text });
       editTurns.current = recordExchange(editTurns.current, text, result.message);
-      if (!result.needs_clarification) applyGenerateResult(result.spec, result.plan, "edit");
+      if (!result.needs_clarification) {
+        applyGenerateResult(result.spec, result.plan, "edit");
+        if (previousPlan) showFeedback("Adjustment applied", previousPlan, result.plan);
+      }
       setReply(result.message);
       setLastReply(result.message);
       setVoiceState("speaking");
@@ -171,6 +209,7 @@ export function Design() {
 
       {busy && <div className="design-workspace__status"><LoadingState message="Updating your build plan…" /></div>}
       {error && <div className="design-workspace__status"><ErrorState message={error} /></div>}
+      {feedback && <div className="design-workspace__feedback" role="status"><span>Changed</span><strong>{feedback.change}</strong><span>{feedback.materials}</span></div>}
 
       <aside className={`design-workspace__panel design-workspace__panel--parameters${collapsed.parameters ? " is-collapsed" : ""}`} aria-label="Design parameters">
         <PanelToggle label="Parameters" controls="design-panel-parameters" expanded={!collapsed.parameters} onToggle={() => togglePanel("parameters")} />
@@ -185,7 +224,7 @@ export function Design() {
       </aside>
 
       <aside className={`design-workspace__panel design-workspace__panel--details${collapsed.details ? " is-collapsed" : ""}`} aria-label="Design details">
-        <PanelToggle label="Details & checks" controls="design-panel-details" expanded={!collapsed.details} onToggle={() => togglePanel("details")} />
+        <PanelToggle label="Details & checks" status={health} controls="design-panel-details" expanded={!collapsed.details} onToggle={() => togglePanel("details")} />
         <div id="design-panel-details" className="design-workspace__panel-scroll" hidden={collapsed.details}>
           {selectedPart && (
             <section className="app-card design-workspace__selection" aria-live="polite">
@@ -221,10 +260,11 @@ export function Design() {
 }
 
 /** Header button that collapses or expands a Design side panel. */
-function PanelToggle({ label, controls, expanded, onToggle }: { label: string; controls: string; expanded: boolean; onToggle: () => void }) {
+function PanelToggle({ label, status, controls, expanded, onToggle }: { label: string; status?: ProjectHealthSummary; controls: string; expanded: boolean; onToggle: () => void }) {
   return (
     <button type="button" className="design-workspace__panel-toggle" aria-expanded={expanded} aria-controls={controls} onClick={onToggle} title={expanded ? `Collapse ${label.toLowerCase()}` : `Expand ${label.toLowerCase()}`}>
       <span>{label}</span>
+      {status && <span aria-hidden="true" className={`design-workspace__panel-status design-workspace__panel-status--${status.tone}`}>{status.label}</span>}
       <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
     </button>
   );
