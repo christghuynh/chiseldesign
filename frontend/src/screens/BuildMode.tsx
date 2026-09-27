@@ -125,9 +125,10 @@ export function BuildMode() {
   return (
     <section aria-labelledby="build-title" className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="build-title" className="text-2xl font-semibold">
-          Build mode
-        </h2>
+        <div>
+          <p className="m-0 text-sm font-semibold uppercase tracking-[.08em] text-[var(--brand)]">05 · Build mode</p>
+          <h2 id="build-title" className="mb-0 mt-1 text-2xl font-semibold">Build mode</h2>
+        </div>
         <button
           type="button"
           onClick={() => setScreen("plan")}

@@ -69,9 +69,10 @@ export function Plan() {
   return (
     <section id="plan-screen" aria-labelledby="plan-title" className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="plan-title" className="text-2xl font-semibold">
-          Plan
-        </h2>
+        <div>
+          <p className="m-0 text-sm font-semibold uppercase tracking-[.08em] text-[var(--brand)]">04 · Plan</p>
+          <h2 id="plan-title" className="mb-0 mt-1 text-2xl font-semibold">Plan</h2>
+        </div>
         {nav}
       </div>
 
