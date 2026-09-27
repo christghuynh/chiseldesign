@@ -272,3 +272,15 @@ def test_parse_measurements_ignores_empty_values():
     overrides, quote = parse_measurements({"total_rise": "", "contractor_quote": None})
     assert overrides == {}
     assert quote is None
+
+
+def test_typed_width_goes_to_the_templates_own_width_param():
+    # The form sends the ramp's name (clear_width_in); a garden bed calls it width_in.
+    reading = _reading(template="garden_bed", params=[{"name": "length_in", "value": 6, "unit": "ft", "source": "read"}])
+    with fake_responses("parse", reading):
+        out = parse_image(b"x", measurements={"clear_width_in": 30, "total_rise_in": 21})
+    assert out.spec.template == "garden_bed"
+    assert out.spec.params["width_in"].value == pytest.approx(30.0) and out.spec.params["width_in"].source == "user"
+    assert out.spec.params["length_in"].value == pytest.approx(72.0)
+    assert out.spec.params["height_in"].value == 30 and out.spec.params["height_in"].source == "default"
+    assert "clear_width_in" not in out.spec.params and "total_rise_in" not in out.spec.params
