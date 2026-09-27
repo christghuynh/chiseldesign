@@ -19,7 +19,7 @@ from dataclasses import dataclass
 import jwt
 from fastapi import Request
 
-from app.api.errors import ApiError
+from app.api_error import ApiError
 
 DEV_USER_SUB = "dev|local"
 _JWKS_TIMEOUT = 5.0
