@@ -57,15 +57,16 @@ def test_schema_and_defaults():
     info = next(i for i in templates.template_infos() if i.key == KEY)
     props = info.params_schema["properties"]
     assert info.params_schema["required"] == ["total_rise_in"]
-    assert info.defaults == {"width_in": 36, "tread_depth_in": 11, "max_riser_in": 7}
+    assert info.defaults == {"width_in": 36, "tread_depth_in": 11, "max_riser_in": 7, "step_count": None}
     assert (props["total_rise_in"]["minimum"], props["total_rise_in"]["maximum"]) == (1, 60)
     assert (props["width_in"]["minimum"], props["width_in"]["maximum"]) == (24, 72)
     assert (props["tread_depth_in"]["minimum"], props["tread_depth_in"]["maximum"]) == (8, 16)
     assert (props["max_riser_in"]["minimum"], props["max_riser_in"]["maximum"]) == (4, 9)
     for name in props:
-        assert props[name]["unit"] == "in"
         assert props[name]["description"]
-    assert "inferred" in props["width_in"]["description"]
+        if name != "step_count":
+            assert props[name]["unit"] == "in"
+    assert "inferred" in sp.Params.__doc__
 
 
 @pytest.mark.parametrize(

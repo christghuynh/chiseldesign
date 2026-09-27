@@ -97,3 +97,8 @@ What I did meanwhile: B. The Projects screen has it, and "Save" on the Plan and 
 Question: `currentProjectId` stays set after opening a project, so if the user then starts a fresh design in Capture, "Save new version" would add it to the old project.
 Options I see: A) Capture calls `setCurrentProjectId(null)` when it applies a new parse result (P2's screen). B) Keep the current safeguard only.
 What I did meanwhile: B. Whenever a project is open, Save offers both "Save new version" and "Save as new project".
+
+### GEO-20 — Forced step counts: very tall risers, uncuttable stringers, and the "No limit" hint (p4/tpl-step-platform, 2026-09-27)
+Question: `step_count` can force risers taller than any riser board (e.g. 2 steps at 21 in = 10-1/2 in, over the 9-1/4 in 2x10), and the task needs that design to derive so STEP-001 can fail with a fix.
+What I did: such a riser is built from equal stacked strips of 2x10 (`Derived.riser_boards_per_riser`, 1 in every design without a forced count), so the model still builds and the rule fails with `{"step_count": <smallest passing>}`. The fix is only offered when that count is within 1–12 and builds.
+Still open: (A) a forced count whose notches leave too little wood in the stringer (e.g. 2 steps at 30 in) still raises the existing "stringers cannot be cut" ParamValidationError instead of a rule failure; (B) the ParamPanel shows a nullable number's placeholder as "No limit" and its range hint as "leave empty for no limit", which reads oddly for "Number of steps" (empty means automatic). Options for B: a schema hint such as `empty_label: "Automatic"` read by the panel. I left both as they are.

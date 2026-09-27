@@ -8,7 +8,9 @@ Frame: the origin is on the ground at the front face of the FIRST riser, centere
 
 Layout decisions made here (they matter for the rules and the demo):
 - The top step surface is the porch, so no top tread is built: n risers and n - 1 treads, where
-  n = ceil(total rise / max riser). The stringers end in a plumb cut against the porch edge.
+  n = `step_count` when it is set, otherwise ceil(total rise / max riser) (the fewest steps that keep
+  every riser within the maximum). A forced `step_count` can give risers taller than the maximum:
+  that still derives, and the riser rule (STEP-001) flags it. The stringers end in a plumb cut against the porch edge.
   A single riser (rise no taller than one riser) is just the riser board: no treads, no stringers.
 - `tread_depth_in` is the pitch, the distance between the front faces of two successive risers. That
   is what a person walking up sees: the top of a riser board plus the tread behind it. `run_in` is
@@ -21,7 +23,9 @@ Layout decisions made here (they matter for the rules and the demo):
   They are not ripped, so the rearmost board can run past the notch floor by up to one board width;
   the excess hides behind the next riser (trim on site).
 - Risers are 2x8 on edge, ripped to the riser height. A riser taller than the 2x8 (7-1/4 in) uses
-  a 2x10 instead. Stringers are 2x10 (a 9-1/4 in board cut into a sawtooth).
+  a 2x10 instead. A riser taller than a 2x10 (only possible with a forced `step_count`) is built from
+  equal strips stacked on edge, the fewest that fit the widest board. Stringers are 2x10 (a 9-1/4 in
+  board cut into a sawtooth).
 - A rise that would need a stringer longer than the longest 2x10 sold raises ParamValidationError.
 """
 
@@ -34,7 +38,7 @@ from app.data import lumber_spec
 from app.engine_errors import ParamValidationError
 from app.models import Part, SkeletonStep
 from app.templates.step_platform_geometry import profile_board_length, stringer_profile, throat
-from app.util.units import format_ft_in
+from app.util.units import format_fraction, format_ft_in
 
 KEY = "step_platform"
 NAME = "Step platform"
@@ -48,14 +52,20 @@ RIP_TOLERANCE_IN = 1 / 16  # a riser this close to the board width is not ripped
 
 
 class Params(BaseModel):
-    """Step platform parameters. Bounds not stated in the original spec are marked (inferred)."""
+    """Step platform parameters. Bounds not stated in the original spec were inferred: width_in,
+    tread_depth_in, max_riser_in and step_count.
+
+    Schema hints for the parameter panel (see `ramp.Params`): `group` "key" for what a homeowner measures
+    or decides, "advanced" for construction choices; `unit` is the unit of a number.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    total_rise_in: float = Field(..., ge=1, le=60, title="Total rise (in)", description="Height from the ground to the top step surface (the porch)", json_schema_extra={"unit": "in"})
-    width_in: float = Field(36, ge=24, le=72, title="Width (in)", description="Overall width of the steps (bounds inferred)", json_schema_extra={"unit": "in"})
-    tread_depth_in: float = Field(11, ge=8, le=16, title="Tread depth (in)", description="Horizontal distance from one riser to the next (bounds inferred)", json_schema_extra={"unit": "in"})
-    max_riser_in: float = Field(7, ge=4, le=9, title="Maximum riser height (in)", description="Tallest riser allowed; sets how many steps are built (bounds inferred)", json_schema_extra={"unit": "in"})
+    total_rise_in: float = Field(..., ge=1, le=60, title="Rise (height to climb)", description="From the ground to the top of the porch or doorway, measured straight up. The top step is the porch itself.", json_schema_extra={"unit": "in", "group": "key"})
+    width_in: float = Field(36, ge=24, le=72, title="Step width", description="Width of every step, from one side edge to the other.", json_schema_extra={"unit": "in", "group": "key"})
+    tread_depth_in: float = Field(11, ge=8, le=16, title="Step depth", description="How far each step goes back, from the front of one step to the front of the next. 11 in is the usual minimum.", json_schema_extra={"unit": "in", "group": "advanced"})
+    max_riser_in: float = Field(7, ge=4, le=9, title="Tallest step allowed", description="The most any one step may rise, top of one step to the top of the next. Sets how many steps are built when the number of steps is left empty.", json_schema_extra={"unit": "in", "group": "advanced"})
+    step_count: int | None = Field(None, ge=1, le=12, title="Number of steps", description="How many times you step up, counting the step onto the porch. Leave empty for the fewest steps that keep each riser under the tallest step allowed.", json_schema_extra={"group": "key"})
 
 
 @dataclass(frozen=True)
@@ -70,8 +80,10 @@ class Derived:
     tread_boards_per_tread: int
     tread_span_in: float  # front-to-back length of one tread's boards including gaps
     riser_material: str
-    riser_rip_width_in: float | None  # None when the riser fills the whole board width
+    riser_rip_width_in: float | None  # width of each riser board; None when it fills the whole board width
+    riser_boards_per_riser: int  # 1, or more when a forced step count makes a riser taller than the widest board
     stringer_length_in: float  # board length one stringer needs; 0.0 when there are no stringers
+    stringer_stock_length_in: float  # longest stringer board sold
     stringer_diagonal_in: float  # hypot(run, rise): the slope length the stringer follows
     stringer_throat_in: float  # wood left under the notches, square to the slope; 0.0 without stringers
     slope_angle_deg: float
@@ -85,24 +97,28 @@ class Derived:
         return self.tread_count > 0
 
 
-def _riser_material(height: float) -> str:
+def _riser_boards(height: float) -> tuple[str, int]:
+    """The riser board and how many strips of it are stacked: the narrowest board that is wide enough,
+    or equal strips of the widest board when no single board is."""
     for material in RISER_MATERIALS:
         if height <= (lumber_spec(material).width_in or 0.0) + 1e-9:
-            return material
-    raise ParamValidationError(f"A riser of {format_ft_in(height)} is taller than the widest board this template uses")
+            return material, 1
+    widest = RISER_MATERIALS[-1]
+    return widest, math.ceil(height / (lumber_spec(widest).width_in or 0.0) - 1e-9)
 
 
 def derive(params: Params) -> Derived:
     """Compute the layout. Raises ParamValidationError when a board would be longer than the longest one sold."""
-    n = max(1, math.ceil(params.total_rise_in / params.max_riser_in - 1e-9))
+    n = params.step_count or max(1, math.ceil(params.total_rise_in / params.max_riser_in - 1e-9))
     height = params.total_rise_in / n
     tread = lumber_spec(TREAD_MATERIAL)
     per_tread = math.ceil(params.tread_depth_in / ((tread.width_in or 0.0) + TREAD_GAP_IN) - 1e-9)
     span = per_tread * (tread.width_in or 0.0) + (per_tread - 1) * TREAD_GAP_IN
 
-    riser_material = _riser_material(height)
+    riser_material, riser_boards = _riser_boards(height)
     riser_width = lumber_spec(riser_material).width_in or 0.0
-    rip = None if abs(riser_width - height) < RIP_TOLERANCE_IN else height
+    board_height = height / riser_boards
+    rip = None if abs(riser_width - board_height) < RIP_TOLERANCE_IN else board_height
 
     for material in (riser_material, TREAD_MATERIAL):
         longest = lumber_spec(material).max_stock_length_in
@@ -110,10 +126,10 @@ def derive(params: Params) -> Derived:
             raise ParamValidationError(f"The width {format_ft_in(params.width_in)} is longer than the longest {material} sold ({format_ft_in(longest)})")
 
     run = (n - 1) * params.tread_depth_in
+    stringer = lumber_spec(STRINGER_MATERIAL)
     length = 0.0
     wood = 0.0
     if n >= 2:
-        stringer = lumber_spec(STRINGER_MATERIAL)
         board_width = stringer.width_in or 0.0
         try:
             profile = stringer_profile(n, height, params.tread_depth_in, tread.thickness_in, board_width)
@@ -138,11 +154,54 @@ def derive(params: Params) -> Derived:
         tread_span_in=span,
         riser_material=riser_material,
         riser_rip_width_in=rip,
+        riser_boards_per_riser=riser_boards,
         stringer_length_in=length,
+        stringer_stock_length_in=stringer.max_stock_length_in,
         stringer_diagonal_in=math.hypot(run, params.total_rise_in),
         stringer_throat_in=wood,
         slope_angle_deg=math.degrees(math.atan2(height, params.tread_depth_in)),
     )
+
+
+def _in(inches: float) -> str:
+    return f'{format_fraction(inches)}"'
+
+
+def summarize(params: Params, derived: Derived) -> list[dict[str, str]]:
+    """The numbers a builder wants at a glance, as display text (`label`, `value`, optional `detail`).
+
+    Optional template hook (see `ramp.summarize`): every value is formatted here from `derive`.
+    """
+    n = derived.riser_count
+    if params.step_count is None:
+        count_detail = f"the fewest with no step taller than {_in(params.max_riser_in)}"
+    else:
+        count_detail = "the number you chose"
+    facts: list[dict[str, str]] = [
+        {"label": "Steps", "value": f"{n} step{'s' if n > 1 else ''}", "detail": count_detail},
+    ]
+    if derived.has_treads:
+        facts.append({
+            "label": "Each step",
+            "value": f"{_in(derived.riser_height_in)} high, {_in(derived.tread_depth_in)} deep",
+            "detail": "the top step is the porch",
+        })
+    else:
+        facts.append({"label": "Each step", "value": f"{_in(derived.riser_height_in)} high", "detail": "one step straight onto the porch"})
+    if derived.has_treads:
+        facts.append({
+            "label": "Space needed",
+            "value": f"{format_ft_in(derived.run_in)} long × {format_ft_in(derived.width_in)} wide",
+            "detail": "from the front of the first step to the porch",
+        })
+    facts.append({"label": "Total rise", "value": format_ft_in(derived.total_rise_in)})
+    if derived.has_stringers:
+        facts.append({
+            "label": "Stringer length",
+            "value": format_ft_in(derived.stringer_length_in),
+            "detail": f"longest board sold is {format_ft_in(derived.stringer_stock_length_in)}",
+        })
+    return facts
 
 
 def generate_parts(params: Params) -> list[Part]:
