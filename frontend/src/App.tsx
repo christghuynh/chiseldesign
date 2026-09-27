@@ -84,7 +84,7 @@ export default function App() {
           </div>
         </div>
       </header>
-      <main id="main" className={screen === "design" ? "design-main" : `mx-auto w-full max-w-7xl px-4 py-7 md:px-6 ${screen === "capture" ? "md:py-5" : "md:py-10"}`}><Component /></main>
+      <main id="main" className={screen === "design" ? "design-main" : screen === "landing" ? "landing-main" : `mx-auto w-full max-w-7xl px-4 py-7 md:px-6 ${screen === "capture" ? "md:py-5" : "md:py-10"}`}><Component /></main>
       {helpOpen && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="presentation">
           <section role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" className="app-card max-w-md p-5 shadow-xl">

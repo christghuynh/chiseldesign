@@ -48,7 +48,6 @@ function TemplateBlueprint({ template }: { template: TemplateInfo }) {
           <circle cx="294" cy="77" r="7" className="template-preview-art__node" />
         </>}
       </svg>
-      <span>Preview</span>
     </div>
   );
 }
