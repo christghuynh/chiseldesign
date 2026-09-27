@@ -7,10 +7,17 @@ Frame: the origin is on the ground at the front face of the FIRST riser, centere
 +X is the direction of travel up the steps, +Z the walker's right, Y is up.
 
 Layout decisions made here (they matter for the rules and the demo):
-- The top step surface is the porch, so no top tread is built: n risers and n - 1 treads, where
+- With `top_platform` on (the default) the steps climb onto a flat platform built with them: a 2x6
+  frame (side and end rims, joists at 16 in on center), 4x4 corner posts, and deck boards whose top is
+  the total rise. It starts at the back face of the top riser (which faces the platform's front rim) and
+  runs back `platform_depth_in`, rounded up to whole deck boards. The stringers end in a plumb cut
+  against it. The frame is ripped narrower, with no posts, when the platform is lower than a 2x6 is wide.
+  With it off, the steps end at an existing porch.
+- The top step surface is the platform (or the porch), so no top tread is built: n risers and n - 1 treads, where
   n = `step_count` when it is set, otherwise ceil(total rise / max riser) (the fewest steps that keep
   every riser within the maximum). A forced `step_count` can give risers taller than the maximum:
-  that still derives, and the riser rule (STEP-001) flags it. The stringers end in a plumb cut against the porch edge.
+  that still derives, and the riser rule (STEP-001) flags it. Without a platform the stringers run 3-1/2 in
+  under the porch edge before their plumb cut.
   A single riser (rise no taller than one riser) is just the riser board: no treads, no stringers.
 - `tread_depth_in` is the pitch, the distance between the front faces of two successive risers. That
   is what a person walking up sees: the top of a riser board plus the tread behind it. `run_in` is
@@ -37,7 +44,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.data import lumber_spec
 from app.engine_errors import ParamValidationError
 from app.models import Part, SkeletonStep
-from app.templates.step_platform_geometry import MIN_THROAT_IN, profile_board_length, stringer_profile, throat
+from app.templates.step_platform_geometry import LEDGE_IN, MIN_THROAT_IN, profile_board_length, stringer_profile, throat
 from app.util.units import format_fraction, format_ft_in
 
 KEY = "step_platform"
@@ -49,11 +56,15 @@ TREAD_MATERIAL = "5/4x6_PT_deck"
 RISER_MATERIALS = ("2x8_PT", "2x10_PT")  # narrowest first; the first one wide enough is used
 TREAD_GAP_IN = 0.125  # gap between the boards of a tread (same as the ramp deck gap default)
 RIP_TOLERANCE_IN = 1 / 16  # a riser this close to the board width is not ripped
+PLATFORM_FRAME_MATERIAL = "2x6_PT"
+PLATFORM_POST_MATERIAL = "4x4_PT"
+PLATFORM_JOIST_SPACING_IN = 16.0  # on center, like the ramp's landing joists
+MIN_PLATFORM_FRAME_IN = 1.5  # a platform lower than this plus the deck can't hold a frame
 
 
 class Params(BaseModel):
     """Step platform parameters. Bounds not stated in the original spec were inferred: width_in,
-    tread_depth_in, max_riser_in and step_count.
+    tread_depth_in, max_riser_in, step_count and platform_depth_in.
 
     Schema hints for the parameter panel (see `ramp.Params`): `group` "key" for what a homeowner measures
     or decides, "advanced" for construction choices; `unit` is the unit of a number; `empty_label` is
@@ -62,11 +73,13 @@ class Params(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    total_rise_in: float = Field(..., ge=1, le=60, title="Rise (height to climb)", description="From the ground to the top of the porch or doorway, measured straight up. The top step is the porch itself.", json_schema_extra={"unit": "in", "group": "key"})
+    total_rise_in: float = Field(..., ge=1, le=60, title="Rise (height to climb)", description="From the ground to the top of the porch, deck or doorway, measured straight up. The top step is the platform (or the porch) itself.", json_schema_extra={"unit": "in", "group": "key"})
     width_in: float = Field(36, ge=24, le=72, title="Step width", description="Width of every step, from one side edge to the other.", json_schema_extra={"unit": "in", "group": "key"})
     tread_depth_in: float = Field(11, ge=8, le=16, title="Step depth", description="How far each step goes back, from the front of one step to the front of the next. 11 in is the usual minimum.", json_schema_extra={"unit": "in", "group": "advanced"})
     max_riser_in: float = Field(7, ge=4, le=9, title="Tallest step allowed", description="The most any one step may rise, top of one step to the top of the next. Sets how many steps are built when the number of steps is left empty.", json_schema_extra={"unit": "in", "group": "advanced"})
-    step_count: int | None = Field(None, ge=1, le=12, title="Number of steps", description="How many times you step up, counting the step onto the porch. Leave empty for the fewest steps that keep each riser under the tallest step allowed.", json_schema_extra={"group": "key", "empty_label": "Automatic"})
+    step_count: int | None = Field(None, ge=1, le=12, title="Number of steps", description="How many times you step up, counting the step onto the top. Leave empty for the fewest steps that keep each riser under the tallest step allowed.", json_schema_extra={"group": "key", "empty_label": "Automatic"})
+    top_platform: bool = Field(True, title="Top platform", description="Builds a flat platform with its own frame and posts at the top of the steps. Turn it off when the steps end at an existing porch or deck.", json_schema_extra={"group": "key"})
+    platform_depth_in: float = Field(36, ge=24, le=96, title="Platform depth", description="How far the top platform goes back from the top step, rounded up to whole deck boards. 36 in leaves room to stand and open a door.", json_schema_extra={"unit": "in", "group": "advanced"})
 
 
 @dataclass(frozen=True)
@@ -88,6 +101,17 @@ class Derived:
     stringer_diagonal_in: float  # hypot(run, rise): the slope length the stringer follows
     stringer_throat_in: float  # wood left under the notches, square to the slope; 0.0 without stringers
     slope_angle_deg: float
+    has_platform: bool
+    platform_depth_in: float  # front to back, whole deck boards; 0.0 without a platform
+    platform_deck_boards: int
+    platform_frame_width_in: float  # height of the rims and joists (a 2x6 on edge, ripped when the platform is low)
+    platform_frame_rip_in: float | None  # set when the frame boards are ripped narrower
+    platform_post_height_in: float  # ground to the underside of the deck; 0.0 when the frame sits on the ground
+    platform_joist_count: int  # joists between the side rims
+
+    @property
+    def platform_post_count(self) -> int:
+        return 4 if self.platform_post_height_in > 0 else 0
 
     @property
     def has_stringers(self) -> bool:
@@ -143,7 +167,7 @@ def derive(params: Params) -> Derived:
     if n >= 2:
         board_width = stringer.width_in or 0.0
         try:
-            profile = stringer_profile(n, height, params.tread_depth_in, tread.thickness_in, board_width)
+            profile = stringer_profile(n, height, params.tread_depth_in, tread.thickness_in, board_width, ledge_in=0.0 if params.top_platform else LEDGE_IN)
         except ValueError as exc:
             if params.step_count is not None:
                 raise ParamValidationError(_uncuttable_count_message(params, n, height, board_width)) from None
@@ -155,6 +179,7 @@ def derive(params: Params) -> Derived:
                 f"The stringers would need a board {format_ft_in(length)} long, but the longest {STRINGER_MATERIAL} sold is "
                 f"{format_ft_in(stringer.max_stock_length_in)}. Reduce the total rise or the tread depth."
             )
+    platform = _platform(params, tread.thickness_in, tread.width_in or 0.0)
     return Derived(
         total_rise_in=params.total_rise_in,
         width_in=params.width_in,
@@ -173,6 +198,36 @@ def derive(params: Params) -> Derived:
         stringer_diagonal_in=math.hypot(run, params.total_rise_in),
         stringer_throat_in=wood,
         slope_angle_deg=math.degrees(math.atan2(height, params.tread_depth_in)),
+        **platform,
+    )
+
+
+def _platform(params: Params, deck_t: float, deck_w: float) -> dict[str, float | int | bool | None]:
+    """The top platform's sizes (see the module docstring), or zeros when it is off."""
+    if not params.top_platform:
+        return dict(has_platform=False, platform_depth_in=0.0, platform_deck_boards=0, platform_frame_width_in=0.0, platform_frame_rip_in=None, platform_post_height_in=0.0, platform_joist_count=0)
+    frame = lumber_spec(PLATFORM_FRAME_MATERIAL)
+    under_deck = params.total_rise_in - deck_t
+    if under_deck < MIN_PLATFORM_FRAME_IN - 1e-9:
+        raise ParamValidationError(
+            f"A top platform needs at least {format_fraction(MIN_PLATFORM_FRAME_IN + deck_t)} in of rise for its frame. "
+            "Turn Top platform off for a step this low."
+        )
+    boards = math.ceil((params.platform_depth_in + TREAD_GAP_IN) / (deck_w + TREAD_GAP_IN) - 1e-9)
+    depth = boards * deck_w + (boards - 1) * TREAD_GAP_IN
+    if depth > frame.max_stock_length_in + 1e-9:
+        raise ParamValidationError(f"The platform's side rims would be {format_ft_in(depth)} long, longer than the longest {PLATFORM_FRAME_MATERIAL} sold")
+    frame_w = min(frame.width_in or 0.0, under_deck)
+    ripped = frame_w < (frame.width_in or 0.0) - RIP_TOLERANCE_IN
+    inside = params.width_in - 2 * frame.thickness_in
+    return dict(
+        has_platform=True,
+        platform_depth_in=depth,
+        platform_deck_boards=boards,
+        platform_frame_width_in=frame_w,
+        platform_frame_rip_in=frame_w if ripped else None,
+        platform_post_height_in=under_deck if under_deck > frame_w + 1e-9 else 0.0,
+        platform_joist_count=max(0, math.ceil(inside / PLATFORM_JOIST_SPACING_IN - 1e-9) - 1),
     )
 
 
@@ -193,20 +248,21 @@ def summarize(params: Params, derived: Derived) -> list[dict[str, str]]:
     facts: list[dict[str, str]] = [
         {"label": "Steps", "value": f"{n} step{'s' if n > 1 else ''}", "detail": count_detail},
     ]
+    top = "the top platform" if derived.has_platform else "the porch"
     if derived.has_treads:
-        facts.append({
-            "label": "Each step",
-            "value": f"{_in(derived.riser_height_in)} high, {_in(derived.tread_depth_in)} deep",
-            "detail": "the top step is the porch",
-        })
+        facts.append({"label": "Each step", "value": f"{_in(derived.riser_height_in)} high, {_in(derived.tread_depth_in)} deep", "detail": f"the top step is {top}"})
     else:
-        facts.append({"label": "Each step", "value": f"{_in(derived.riser_height_in)} high", "detail": "one step straight onto the porch"})
-    if derived.has_treads:
-        facts.append({
-            "label": "Space needed",
-            "value": f"{format_ft_in(derived.run_in)} long × {format_ft_in(derived.width_in)} wide",
-            "detail": "from the front of the first step to the porch",
-        })
+        facts.append({"label": "Each step", "value": f"{_in(derived.riser_height_in)} high", "detail": f"one step straight onto {top}"})
+    riser_t = lumber_spec(derived.riser_material).thickness_in
+    if derived.has_platform:
+        frame = f"{derived.platform_deck_boards} deck boards on a 2x6 frame"
+        frame += f" ripped to {_in(derived.platform_frame_rip_in)}" if derived.platform_frame_rip_in is not None else ""
+        frame += f", {derived.platform_post_count} posts" if derived.platform_post_count else ", sitting on the ground"
+        facts.append({"label": "Top platform", "value": f"{format_ft_in(derived.platform_depth_in)} deep × {format_ft_in(derived.width_in)} wide", "detail": frame})
+        length = derived.run_in + riser_t + derived.platform_depth_in
+        facts.append({"label": "Space needed", "value": f"{format_ft_in(length)} long × {format_ft_in(derived.width_in)} wide", "detail": "from the front of the first step to the back of the platform"})
+    elif derived.has_treads:
+        facts.append({"label": "Space needed", "value": f"{format_ft_in(derived.run_in)} long × {format_ft_in(derived.width_in)} wide", "detail": "from the front of the first step to the porch"})
     facts.append({"label": "Total rise", "value": format_ft_in(derived.total_rise_in)})
     if derived.has_stringers:
         facts.append({

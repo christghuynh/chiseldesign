@@ -21,7 +21,10 @@ KEY = "step_platform"
 
 
 def params(**values) -> sp.Params:
+    """These tests cover the steps themselves, up to an existing porch; the top platform has its own tests
+    (test_step_platform_top.py)."""
     values.setdefault("total_rise_in", 21)
+    values.setdefault("top_platform", False)
     return sp.Params(**values)
 
 
@@ -57,14 +60,14 @@ def test_schema_and_defaults():
     info = next(i for i in templates.template_infos() if i.key == KEY)
     props = info.params_schema["properties"]
     assert info.params_schema["required"] == ["total_rise_in"]
-    assert info.defaults == {"width_in": 36, "tread_depth_in": 11, "max_riser_in": 7, "step_count": None}
+    assert info.defaults == {"width_in": 36, "tread_depth_in": 11, "max_riser_in": 7, "step_count": None, "top_platform": True, "platform_depth_in": 36}
     assert (props["total_rise_in"]["minimum"], props["total_rise_in"]["maximum"]) == (1, 60)
     assert (props["width_in"]["minimum"], props["width_in"]["maximum"]) == (24, 72)
     assert (props["tread_depth_in"]["minimum"], props["tread_depth_in"]["maximum"]) == (8, 16)
     assert (props["max_riser_in"]["minimum"], props["max_riser_in"]["maximum"]) == (4, 9)
     for name in props:
         assert props[name]["description"]
-        if name != "step_count":
+        if name not in ("step_count", "top_platform"):
             assert props[name]["unit"] == "in"
     assert "inferred" in sp.Params.__doc__
 
@@ -425,12 +428,13 @@ def test_randomized_sweep_of_valid_params_builds_valid_plans():
             "width_in": round(rng.uniform(24, 72), 1),
             "tread_depth_in": round(rng.uniform(8, 16), 2),
             "max_riser_in": round(rng.uniform(4, 9), 2),
+            "top_platform": rng.random() < 0.5,
         }
         p = templates.validate_params(KEY, values)
         try:
             parts = sp.generate_parts(p)
-        except ParamValidationError as exc:  # only the documented too-long-stringer rejection
-            assert "stringers would need a board" in str(exc)
+        except ParamValidationError as exc:  # only the documented rejections: a too-long stringer, or a platform too low for its frame
+            assert "stringers would need a board" in str(exc) or "top platform needs at least" in str(exc)
             rejected += 1
             continue
         labelled = label_parts(parts)

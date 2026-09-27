@@ -45,10 +45,12 @@ def stringer_profile(
     tread_depth: float,
     tread_t: float,
     board_width: float,
+    ledge_in: float = LEDGE_IN,
 ) -> list[Point]:
     """Counter-clockwise sawtooth outline of one stringer, 3-decimal rounded, starting at the
     front-bottom corner (0, 0). Needs at least two risers (one tread). Raises ValueError when the
-    notches leave less than MIN_THROAT_IN of wood."""
+    notches leave less than MIN_THROAT_IN of wood. `ledge_in` is how far the stringer runs past the last
+    riser's back face before its plumb cut: under a porch edge, or 0 when it butts against a top platform."""
     n, h, T, t = riser_count, riser_h, tread_depth, tread_t
     if n < 2:
         raise ValueError("a stringer needs at least two risers")
@@ -61,10 +63,14 @@ def stringer_profile(
     def lower(x: float) -> float:
         return (h / T) * x - t - drop
 
-    x_end = (n - 1) * T + LEDGE_IN
-    raw: list[Point] = [(0.0, lower(0.0)), (x_end, lower(x_end)), (x_end, n * h - t)]
+    x_end = (n - 1) * T + ledge_in
+    raw: list[Point] = [(0.0, lower(0.0)), (x_end, lower(x_end))]
+    if ledge_in > 1e-9:  # the seat that runs under the porch edge
+        raw.append((x_end, n * h - t))
     for k in range(n - 1, -1, -1):
-        raw.append((k * T, (k + 1) * h - t))  # tooth tip
+        # Butting a platform, the plumb cut stops at the last notch: the platform carries the top step.
+        if not (k == n - 1 and ledge_in <= 1e-9):
+            raw.append((k * T, (k + 1) * h - t))  # tooth tip
         if k >= 1:
             raw.append((k * T, k * h - t))  # notch corner
     clipped = clip_y(raw, 0.0)
