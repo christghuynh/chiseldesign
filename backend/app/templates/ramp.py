@@ -44,7 +44,8 @@ ResolvedLayout = Literal["straight", "switchback"]
 
 
 class Params(BaseModel):
-    """Ramp parameters. Bounds not stated in the original spec are marked (inferred).
+    """Ramp parameters. Bounds not stated in the original spec were inferred: available_length_in, slope_ratio,
+    landing_length_in, stringer_spacing_in and deck_gap_in.
 
     Schema hints for the parameter panel (in `json_schema_extra`): `group` is "key" for the few dimensions
     a homeowner measures and "advanced" for construction choices, which the panel folds away;
@@ -55,14 +56,14 @@ class Params(BaseModel):
 
     total_rise_in: float = Field(..., ge=1, le=60, title="Rise (height to climb)", description="From the ground to the top of the porch or doorway, measured straight up. Three standard steps are about 21 in.", json_schema_extra={"unit": "in", "group": "key"})
     clear_width_in: float = Field(36, ge=30, le=60, title="Ramp width", description="Walking width of the whole ramp, edge to edge inside the curbs. Every run and landing gets this width; 36 in fits a wheelchair.", json_schema_extra={"unit": "in", "group": "key"})
-    available_length_in: float | None = Field(None, ge=12, le=1200, title="Space in front (optional)", description="How far the yard extends out from the porch. Leave empty if space isn't a limit; if a straight ramp won't fit, Chisel suggests a switchback. (bounds inferred)", json_schema_extra={"unit": "in", "group": "key"})
+    available_length_in: float | None = Field(None, ge=12, le=1200, title="Space in front (optional)", description="How far the yard extends out from the porch. Leave empty if space isn't a limit; if a straight ramp won't fit, Chisel suggests a switchback.", json_schema_extra={"unit": "in", "group": "key"})
     layout: Layout = Field("auto", title="Layout", description="Automatic uses a straight ramp when it fits the space and the lumber, otherwise a switchback (two runs side by side with a turn landing).", json_schema_extra={"group": "advanced", "enum_labels": {"auto": "Automatic", "straight": "Straight", "switchback": "Switchback"}})
-    slope_ratio: float = Field(12, ge=2, le=40, title="Slope (inches of ramp per inch of rise)", description="12 means 1:12, the usual guideline for wheelchairs; higher is gentler and longer. (bounds inferred)", json_schema_extra={"group": "advanced"})
-    landing_length_in: float = Field(60, ge=12, le=240, title="Landing length", description="Length of each flat landing between runs, where people rest or turn. (bounds inferred)", json_schema_extra={"unit": "in", "group": "advanced"})
+    slope_ratio: float = Field(12, ge=2, le=40, title="Slope (inches of ramp per inch of rise)", description="12 means 1:12, the usual guideline for wheelchairs; higher is gentler and longer.", json_schema_extra={"group": "advanced"})
+    landing_length_in: float = Field(60, ge=12, le=240, title="Landing length", description="Length of each flat landing between runs, where people rest or turn.", json_schema_extra={"unit": "in", "group": "advanced"})
     framing: Literal["2x6_PT", "2x8_PT"] = Field("2x6_PT", title="Framing lumber", description="Boards for the stringers (the sloped supports) and the landing frames.", json_schema_extra={"group": "advanced", "enum_labels": {"2x6_PT": "2x6 pressure-treated", "2x8_PT": "2x8 pressure-treated"}})
-    stringer_spacing_in: float = Field(16, ge=8, le=24, title="Stringer spacing", description="Distance between the sloped supports under the deck, center to center. Closer is stiffer. (bounds inferred)", json_schema_extra={"unit": "in", "group": "advanced"})
+    stringer_spacing_in: float = Field(16, ge=8, le=24, title="Stringer spacing", description="Distance between the sloped supports under the deck, center to center. Closer is stiffer.", json_schema_extra={"unit": "in", "group": "advanced"})
     decking: Literal["5/4x6_PT_deck", "3/4_ext_ply"] = Field("5/4x6_PT_deck", title="Decking", description="The walking surface.", json_schema_extra={"group": "advanced", "enum_labels": {"5/4x6_PT_deck": "5/4x6 deck boards", "3/4_ext_ply": "3/4 exterior plywood"}})
-    deck_gap_in: float = Field(0.125, ge=0, le=0.5, title="Deck board gap", description="Gap between deck boards for drainage. (bounds inferred)", json_schema_extra={"unit": "in", "group": "advanced"})
+    deck_gap_in: float = Field(0.125, ge=0, le=0.5, title="Deck board gap", description="Gap between deck boards for drainage.", json_schema_extra={"unit": "in", "group": "advanced"})
     handrails: Literal["auto", "yes", "no"] = Field("auto", title="Handrails", description="Automatic adds handrails on both sides when the rise needs them.", json_schema_extra={"group": "advanced", "enum_labels": {"auto": "Automatic", "yes": "Always", "no": "None"}})
     edge_curb: bool = Field(True, title="Edge curb", description="A 2x6 curb along the open sides so wheels and canes can't slip off the edge.", json_schema_extra={"group": "advanced"})
 
