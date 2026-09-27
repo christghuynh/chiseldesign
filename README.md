@@ -83,52 +83,6 @@ The backend's Pydantic models are the contract between the two halves: `make typ
 | **Hosting** | Vultr VM, Docker Compose, Caddy (automatic HTTPS) |
 | **CI** | GitHub Actions: pytest, type-check, vitest, build, Docker image builds |
 
-## Run it locally
-
-Prerequisites: [uv](https://docs.astral.sh/uv/), Node 24 and GNU Make. On Linux, CadQuery also needs `libgl1`.
-
-```bash
-make install     # uv sync (backend) + npm ci (frontend)
-make dev         # backend on :8000 with reload + Vite on :5173 (proxies /api)
-make test        # backend pytest, frontend vitest and type-check
-```
-
-To run the UI with no backend at all: `cd frontend && npm run dev:fixtures`.
-
-Settings go in a `.env` file at the repo root, which is never committed:
-
-| Variable | Needed for |
-|---|---|
-| `GEMINI_API_KEY`, `GEMINI_MODEL` | Sketch parsing, voice edits, instruction wording |
-| `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID` | Speech-to-text and text-to-speech |
-| `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` | Verifying logins on the backend (`AUTH_DISABLED=1` uses a local dev user instead) |
-| `VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`, `VITE_AUTH0_AUDIENCE` | Login in the frontend (for `npm run dev`, put them in `frontend/.env.development.local`) |
-| `DATABASE_PATH`, `TTS_CACHE_DIR`, `CORS_ORIGINS` | Optional: where projects and cached audio are stored, and allowed origins |
-| `RATE_LIMIT_PER_MIN`, `RATE_LIMIT_TTS_PER_MIN` | Optional: per-IP limits on the AI and voice routes (default 20 and 120) |
-| `FAKE_AI=1`, `FAKE_VOICE=1` | Canned responses with no API calls (the test suite always uses them) |
-
-Without the AI or voice keys the app still runs; those features fall back as described above.
-
-To run the production stack locally (backend and Caddy with the built frontend) on http://localhost:8080: `make up-local`. To deploy to the VM: set `DEPLOY_HOST` and `DOMAIN` in `.env` and run `make deploy`, which pulls `main` on the VM, rebuilds, restarts and checks `/api/health`.
-
-## Testing and evals
-
-- `make test` runs the backend pytest suite and the frontend vitest suite and type-check. Tests never call the paid APIs.
-- `make eval` runs the sketch-parsing eval (`evals/run_parse_eval.py`) against real Gemini. `--cases evals/synthetic_cases.json --repeat 3` runs the 17 synthetic phone-photo-style sketches in `fixtures/sketches/synthetic/` three times each and reports cases that answer inconsistently.
-
-## Repository layout
-
-```text
-backend/app/       FastAPI app: templates, rules, cutlist, nesting, pricing, cad, ai, voice, store, auth
-backend/tests/     pytest suite
-frontend/src/      React app: screens, components, three (3D), store, api client
-shared/schema/     JSON Schema generated from the Pydantic models
-fixtures/          example specs and plans, test sketches, cached demo data
-evals/             sketch-parsing eval sets and runner
-deploy/            Dockerfiles, docker-compose, Caddyfile, deploy script
-.github/           CI workflows
-```
-
 ## Accessibility of the app itself
 
 The app is built to be usable by everyone: 16px minimum text, 44px tap targets, WCAG AA text contrast in light and dark mode, full keyboard navigation with visible focus, labels on every control, voice as an alternative to every edit with a typed fallback, and support for `prefers-reduced-motion`.
