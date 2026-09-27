@@ -94,7 +94,7 @@ def test_a_riser_taller_than_any_board_is_stacked_strips_and_still_builds(rise, 
     assert len(risers) == count * strips
     assert max(q.transform.pos[1] + max(y for _, y in q.profile) for q in risers) == pytest.approx(rise)
     build_plan(parts)
-    assert [c.id for c in check_design(sp.KEY, p, d, parts)] == ["STEP-001", "STEP-002", "STEP-003"]
+    assert [c.id for c in check_design(sp.KEY, p, d, parts)] == ["STEP-001", "STEP-002", "STEP-003", "STEP-004"]
 
 
 def test_a_forced_count_the_stringer_cannot_be_cut_from_names_the_count_that_works():

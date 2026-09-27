@@ -58,10 +58,14 @@ BED_MAX_WIDTH_ONE_SIDE_IN = RuleConstant(24.0, "ada-308-reach", "in", "Maximum b
 BED_MAX_WIDTH_BOTH_SIDES_IN = RuleConstant(48.0, "ada-308-reach", "in", "Maximum bed width when reachable from both sides")
 # stated, ADA 403.5.1: walking surfaces on an accessible route are 36 inches minimum wide.
 BED_PATH_CLEARANCE_IN = RuleConstant(36.0, "ada-403-5-1", "in", "Clear path to leave around a bed")
+# practice, not a guideline: the narrowest ripped top course worth building (see "thin-rip" in sources.json).
+BED_MIN_RIP_IN = RuleConstant(3.0, "thin-rip", "in", "Narrowest practical ripped top course")
 
 # --- Step platform (stretch) --------------------------------------------------------------------
-# stated, ADA 504.2: risers 4 to 7 inches high (the app checks the 7 inch maximum).
+# stated, ADA 504.2: risers 4 to 7 inches high.
 STEP_MAX_RISER_IN = RuleConstant(7.0, "ada-504-2", "in", "Maximum riser height")
+# stated, ADA 504.2: risers 4 inches high minimum (a very short step is a trip hazard).
+STEP_MIN_RISER_IN = RuleConstant(4.0, "ada-504-2", "in", "Minimum riser height")
 # stated, ADA 504.2: treads 11 inches deep minimum.
 STEP_MIN_TREAD_IN = RuleConstant(11.0, "ada-504-2", "in", "Minimum tread depth")
 
