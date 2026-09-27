@@ -2,7 +2,8 @@
 //
 // Schema hints the templates may set on a property: `group` ("key" for the few dimensions people measure,
 // "advanced" for construction choices, which fold away under "Advanced settings"), `enum_labels` (readable
-// names for choices) and `unit`. A template without `group` hints shows every parameter.
+// names for choices), `unit` and `empty_label` (what leaving an optional value empty means, "No limit" when
+// not given). A template without `group` hints shows every parameter.
 //
 // Each field keeps a local draft while you type or drag and only sends a value when you finish (Enter,
 // leaving the field, or releasing the slider). Out-of-range values show a message instead of snapping, and
@@ -22,6 +23,8 @@ export type SchemaProperty = {
   maximum?: number;
   unit?: string;
   group?: "key" | "advanced";
+  /** What an empty optional value means, e.g. "Automatic"; "No limit" when not given. */
+  empty_label?: string;
 };
 
 type Value = number | string | boolean | null;
@@ -116,7 +119,18 @@ function ParamField({ name, property, current, busy, onChange }: ParamFieldProps
     );
   } else if (types.includes("number") || types.includes("integer")) {
     const value = typeof current?.value === "number" ? current.value : null;
-    control = <NumberField id={id} title={title} property={property} value={value} nullable={types.includes("null")} busy={busy} onCommit={(v) => onChange(name, v)} />;
+    control = (
+      <NumberField
+        id={id}
+        title={title}
+        property={property}
+        value={value}
+        nullable={types.includes("null")}
+        integer={types.includes("integer")}
+        busy={busy}
+        onCommit={(v) => onChange(name, v)}
+      />
+    );
   }
 
   return (
@@ -139,15 +153,18 @@ interface NumberFieldProps {
   property: SchemaProperty;
   value: number | null;
   nullable: boolean;
+  /** Whole numbers only (schema type "integer"), like a count of steps. */
+  integer?: boolean;
   busy: boolean;
   onCommit: (value: number | null) => void;
 }
 
 const show = (value: number | null) => (value === null ? "" : String(Number(value.toFixed(3))));
 
-export function NumberField({ id, title, property, value, nullable, busy, onCommit }: NumberFieldProps) {
+export function NumberField({ id, title, property, value, nullable, integer = false, busy, onCommit }: NumberFieldProps) {
   const { minimum: min, maximum: max } = property;
   const inches = property.unit === "in";
+  const empty = property.empty_label ?? "No limit";
   const [draft, setDraft] = useState(show(value));
   const [error, setError] = useState<string | null>(null);
   // While dragging, the slider shows this; after a commit, `pending` holds the sent value until the model answers.
@@ -190,6 +207,10 @@ export function NumberField({ id, title, property, value, nullable, busy, onComm
       setError(inches ? `Enter a length, like 36 or 3' 0".` : "Enter a number.");
       return;
     }
+    if (integer && !Number.isInteger(n)) {
+      setError("Enter a whole number.");
+      return;
+    }
     if ((min !== undefined && n < min) || (max !== undefined && n > max)) {
       setError(`Must be between ${min ?? "…"} and ${max ?? "…"}${inches ? " in" : ""}.`);
       return;
@@ -221,7 +242,7 @@ export function NumberField({ id, title, property, value, nullable, busy, onComm
             type="range"
             min={min}
             max={max}
-            step={max - min > 20 ? 1 : 0.125}
+            step={integer || max - min > 20 ? 1 : 0.125}
             value={shown ?? min}
             onChange={(event) => {
               const n = Number(event.target.value);
@@ -240,10 +261,10 @@ export function NumberField({ id, title, property, value, nullable, busy, onComm
           id={id}
           className="app-input w-24"
           type="text"
-          inputMode="decimal"
+          inputMode={integer ? "numeric" : "decimal"}
           autoComplete="off"
           value={draft}
-          placeholder={nullable ? "No limit" : value === null ? "Required" : undefined}
+          placeholder={nullable ? empty : value === null ? "Required" : undefined}
           aria-invalid={error !== null}
           aria-describedby={error ? errorId : undefined}
           onFocus={() => {
@@ -273,7 +294,7 @@ export function NumberField({ id, title, property, value, nullable, busy, onComm
           <span>
             {min}–{max}
             {inches ? " in" : ""}
-            {nullable ? " · leave empty for no limit" : ""}
+            {nullable ? ` · leave empty for ${empty.toLowerCase()}` : ""}
           </span>
         )}
       </div>
