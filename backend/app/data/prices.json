@@ -119,13 +119,13 @@
       "placeholder": true
     },
     "2x10_PT_96": {
-      "description": "2x10 pressure-treated, 8 ft (placeholder price)",
+      "description": "2x10 pressure-treated, 8 ft",
       "unit": "each",
-      "price_cad": 20.0,
+      "price_cad": 25.75,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-10-x-8-premium-wood-above-ground-use-only/1000790721",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "2x10_PT_120": {
       "description": "2x10 pressure-treated, 10 ft (placeholder price)",
@@ -155,13 +155,13 @@
       "placeholder": false
     },
     "4x4_PT_120": {
-      "description": "4x4 pressure-treated, 10 ft (placeholder price)",
+      "description": "4x4 pressure-treated, 10 ft",
       "unit": "each",
-      "price_cad": 25.0,
+      "price_cad": 20.7,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-4-x-4-x-10-premium-wood-post-suitable-for-ground-contact/1000790080",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "5/4x6_PT_deck_96": {
       "description": "5/4x6 pressure-treated deck board, 8 ft (placeholder price)",
@@ -191,13 +191,13 @@
       "placeholder": true
     },
     "5/4x6_PT_deck_168": {
-      "description": "5/4x6 pressure-treated deck board, 14 ft (placeholder price)",
+      "description": "5/4x6 pressure-treated deck board, 14 ft",
       "unit": "each",
-      "price_cad": 24.5,
+      "price_cad": 13.25,
       "units_per_pack": null,
-      "source_url": null,
-      "retrieved_at": null,
-      "placeholder": true
+      "source_url": "https://www.homedepot.ca/product/pressure-treated-5-4-x-6-x-14-premium-wood-decking-above-ground-use-only/1000680732",
+      "retrieved_at": "2026-09-26",
+      "placeholder": false
     },
     "5/4x6_PT_deck_192": {
       "description": "5/4x6 pressure-treated deck board, 16 ft",
