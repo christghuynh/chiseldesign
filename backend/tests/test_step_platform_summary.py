@@ -14,6 +14,7 @@ from app.templates import step_platform as sp
 
 
 def _generate(**params):
+    params.setdefault("top_platform", False)  # the steps up to a porch; the platform's summary is tested in test_step_platform_top.py
     spec, _ = engine.generate("step_platform", {k: ParamValue(value=v, source="user") for k, v in params.items()})
     return spec
 
@@ -30,8 +31,8 @@ def test_schema_groups_and_labels():
     props = params_schema(sp.Params)["properties"]
     key = [name for name, prop in props.items() if prop.get("group") == "key"]
     advanced = [name for name, prop in props.items() if prop.get("group") == "advanced"]
-    assert key == ["total_rise_in", "width_in", "step_count"]
-    assert advanced == ["tread_depth_in", "max_riser_in"]
+    assert key == ["total_rise_in", "width_in", "step_count", "top_platform"]
+    assert advanced == ["tread_depth_in", "max_riser_in", "platform_depth_in"]
     assert "rise" in props["total_rise_in"]["title"].lower()
     assert props["step_count"]["title"] == "Number of steps"
     assert "leave empty for the fewest steps" in props["step_count"]["description"].lower()
@@ -94,7 +95,7 @@ def test_a_riser_taller_than_any_board_is_stacked_strips_and_still_builds(rise, 
     assert len(risers) == count * strips
     assert max(q.transform.pos[1] + max(y for _, y in q.profile) for q in risers) == pytest.approx(rise)
     build_plan(parts)
-    assert [c.id for c in check_design(sp.KEY, p, d, parts)] == ["STEP-001", "STEP-002", "STEP-003"]
+    assert [c.id for c in check_design(sp.KEY, p, d, parts)] == ["STEP-001", "STEP-002", "STEP-003", "STEP-004"]
 
 
 def test_a_forced_count_the_stringer_cannot_be_cut_from_names_the_count_that_works():

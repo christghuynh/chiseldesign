@@ -282,5 +282,5 @@ def test_typed_width_goes_to_the_templates_own_width_param():
     assert out.spec.template == "garden_bed"
     assert out.spec.params["width_in"].value == pytest.approx(30.0) and out.spec.params["width_in"].source == "user"
     assert out.spec.params["length_in"].value == pytest.approx(72.0)
-    assert out.spec.params["height_in"].value == 30 and out.spec.params["height_in"].source == "default"
+    assert out.spec.params["height_in"].value == 29.25 and out.spec.params["height_in"].source == "default"
     assert "clear_width_in" not in out.spec.params and "total_rise_in" not in out.spec.params

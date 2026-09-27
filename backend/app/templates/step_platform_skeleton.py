@@ -15,7 +15,11 @@ def build_skeleton_steps(params: Params, parts: list[Part]) -> list[SkeletonStep
     stringers = _labels(parts, "Stringer")
     treads = _labels(parts, "Tread board")
     risers = _labels(parts, "Riser")
+    frame = _labels(parts, "Landing rim (side)", "Landing rim (end)", "Landing joist", "Landing post")
+    deck = _labels(parts, "Landing deck board")
     steps: list[SkeletonStep] = []
+    if frame:
+        steps.append(SkeletonStep(phase="assemble", title="Build the top platform frame", part_labels=frame, action_key="build_platform_frame"))
     if stringers:
         steps.append(SkeletonStep(phase="cut", title="Cut the stringers", part_labels=stringers, action_key="cut_stringers"))
     if treads or risers:
@@ -26,5 +30,7 @@ def build_skeleton_steps(params: Params, parts: list[Part]) -> list[SkeletonStep
         steps.append(SkeletonStep(phase="install", title="Install the risers", part_labels=risers, action_key="install_risers"))
     if treads:
         steps.append(SkeletonStep(phase="install", title="Install the treads", part_labels=treads, action_key="install_treads"))
+    if deck:
+        steps.append(SkeletonStep(phase="install", title="Deck the top platform", part_labels=deck, action_key="deck_platform"))
     steps.append(SkeletonStep(phase="check", title="Check every step is level and solid", part_labels=sorted(set(treads + risers), key=lambda s: (len(s), s)), action_key="final_check"))
     return steps

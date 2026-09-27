@@ -11,8 +11,8 @@ def _summary(**params):
     return {fact["label"]: fact for fact in spec.meta["summary"]}
 
 
-def test_default_bed():
-    s = _summary()
+def test_thin_rip_bed():
+    s = _summary(height_in=30)  # the old default: rips a 3/4 in strip
     assert s["Outer size"]["value"] == "6' 0\" × 2' 0\" × 2' 6\""
     assert s["Outer size"]["detail"].endswith("including the cap rail")
     # 30 - 1-1/2 cap = 28-1/2 of courses: three 9-1/4 boards and a 3/4 rip
@@ -30,7 +30,7 @@ def test_default_bed():
 
 
 def test_both_sides_bed_halves_the_reach():
-    s = _summary(access="both_sides", width_in=36)
+    s = _summary(access="both_sides", width_in=36, height_in=30)
     assert s["Reach"]["value"] == "1' 6\" from each long side"
     assert s["Reach"]["detail"].startswith("within")
     # inside 69 x 33 x 28-1/2 = 64894.5 cu in = 37.6 cu ft = 1.39 cu yd
@@ -70,3 +70,14 @@ def test_schema_marks_key_dimensions_and_labels_choices():
             assert set(prop["enum_labels"]) == set(prop["enum"])
     assert props["access"]["enum_labels"]["one_side"] == "One side (against a wall)"
     assert props["board"]["enum_labels"]["2x10_PT"] == "2x10 pressure-treated"
+
+
+def test_default_bed_is_three_full_courses():
+    s = _summary()
+    assert s["Outer size"]["value"] == "6' 0\" × 2' 0\" × 2' 5-1/4\""
+    assert s["Board courses"]["value"] == "3 courses of 2x10 pressure-treated"
+    assert s["Board courses"]["detail"] == "all full-width boards"
+    # inside 69 x 21 x 27-3/4 = 40209.75 cu in = 23.3 cu ft = 0.86 cu yd
+    assert s["Soil needed"]["value"] == "23.3 cu ft (0.86 cu yd)"
+    assert s["Seat height"]["value"] == "2' 5-1/4\""
+    assert s["Corner posts"]["value"] == "4 × 4x4, 2' 3-3/4\" tall"

@@ -176,58 +176,72 @@
     "description": "Raised garden bed with stacked side boards, corner posts and an optional seat-height cap rail.",
     "params_schema": {
       "additionalProperties": false,
-      "description": "Garden bed parameters. Bounds not stated in the original spec are marked (inferred).",
+      "description": "Garden bed parameters. Bounds inferred (not in the original spec): width_in and height_in, and\nlength_in, whose 144 in maximum is the longest 2x10 sold so the long sides stay single boards.\n\nSchema hints for the parameter panel are the same as the ramp's: `group` (\"key\" or \"advanced\"),\n`enum_labels` and `unit`.",
       "properties": {
         "length_in": {
           "default": 72,
-          "description": "Outer length; 144 in is the longest 2x10 sold, so long sides stay single boards (bounds inferred)",
+          "description": "Outside length of the bed, end to end along the long sides. The long sides are single boards, so 12 ft is the most.",
+          "group": "key",
           "maximum": 144,
           "minimum": 24,
-          "title": "Length (in)",
+          "title": "Length",
           "type": "number",
           "unit": "in"
         },
         "width_in": {
           "default": 24,
-          "description": "Outer width (bounds inferred)",
+          "description": "Outside width of the bed, from the front face to the back face. Keep it within reach: about 24 in from one side, 48 in from both.",
+          "group": "key",
           "maximum": 48,
           "minimum": 12,
-          "title": "Width (in)",
+          "title": "Width",
           "type": "number",
           "unit": "in"
         },
         "height_in": {
-          "default": 30,
-          "description": "Overall height including the cap rail (bounds inferred)",
+          "default": 29.25,
+          "description": "From the ground to the very top of the bed, including the cap rail when there is one.",
+          "group": "key",
           "maximum": 48,
           "minimum": 12,
-          "title": "Height (in)",
+          "title": "Height",
           "type": "number",
           "unit": "in"
         },
         "access": {
           "default": "one_side",
-          "description": "one_side when the bed sits against a wall, both_sides when you can reach it from both long sides",
+          "description": "Which long sides you can stand at to work the bed. It sets how wide the bed can be and still be reached.",
           "enum": [
             "one_side",
             "both_sides"
           ],
-          "title": "Access",
+          "enum_labels": {
+            "both_sides": "Both sides",
+            "one_side": "One side (against a wall)"
+          },
+          "group": "advanced",
+          "title": "Reach from",
           "type": "string"
         },
         "board": {
           "default": "2x10_PT",
-          "description": "Lumber for the stacked side courses",
+          "description": "Lumber stacked on edge to make the walls. The top course is ripped narrower when the height isn't a whole number of boards.",
           "enum": [
             "2x10_PT",
             "2x8_PT"
           ],
-          "title": "Side board",
+          "enum_labels": {
+            "2x10_PT": "2x10 pressure-treated",
+            "2x8_PT": "2x8 pressure-treated"
+          },
+          "group": "advanced",
+          "title": "Side boards",
           "type": "string"
         },
         "cap_rail": {
           "default": true,
-          "description": "2x6 rail around the top that doubles as a seat or armrest",
+          "description": "A flat 2x6 rail around the top edge that doubles as a seat or armrest. It counts toward the height.",
+          "group": "advanced",
           "title": "Cap rail",
           "type": "boolean"
         }
@@ -238,7 +252,7 @@
     "defaults": {
       "length_in": 72,
       "width_in": 24,
-      "height_in": 30,
+      "height_in": 29.25,
       "access": "one_side",
       "board": "2x10_PT",
       "cap_rail": true
@@ -250,40 +264,74 @@
     "description": "Wooden steps up to a porch, with notched stringers, deck-board treads and risers.",
     "params_schema": {
       "additionalProperties": false,
-      "description": "Step platform parameters. Bounds not stated in the original spec are marked (inferred).",
+      "description": "Step platform parameters. Bounds not stated in the original spec were inferred: width_in,\ntread_depth_in, max_riser_in, step_count and platform_depth_in.\n\nSchema hints for the parameter panel (see `ramp.Params`): `group` \"key\" for what a homeowner measures\nor decides, \"advanced\" for construction choices; `unit` is the unit of a number; `empty_label` is\nwhat an empty optional value means (the panel says \"No limit\" without it).",
       "properties": {
         "total_rise_in": {
-          "description": "Height from the ground to the top step surface (the porch)",
+          "description": "From the ground to the top of the porch, deck or doorway, measured straight up. The top step is the platform (or the porch) itself.",
+          "group": "key",
           "maximum": 60,
           "minimum": 1,
-          "title": "Total rise (in)",
+          "title": "Rise (height to climb)",
           "type": "number",
           "unit": "in"
         },
         "width_in": {
           "default": 36,
-          "description": "Overall width of the steps (bounds inferred)",
+          "description": "Width of every step, from one side edge to the other.",
+          "group": "key",
           "maximum": 72,
           "minimum": 24,
-          "title": "Width (in)",
+          "title": "Step width",
           "type": "number",
           "unit": "in"
         },
         "tread_depth_in": {
           "default": 11,
-          "description": "Horizontal distance from one riser to the next (bounds inferred)",
+          "description": "How far each step goes back, from the front of one step to the front of the next. 11 in is the usual minimum.",
+          "group": "advanced",
           "maximum": 16,
           "minimum": 8,
-          "title": "Tread depth (in)",
+          "title": "Step depth",
           "type": "number",
           "unit": "in"
         },
         "max_riser_in": {
           "default": 7,
-          "description": "Tallest riser allowed; sets how many steps are built (bounds inferred)",
+          "description": "The most any one step may rise, top of one step to the top of the next. Sets how many steps are built when the number of steps is left empty.",
+          "group": "advanced",
           "maximum": 9,
           "minimum": 4,
-          "title": "Maximum riser height (in)",
+          "title": "Tallest step allowed",
+          "type": "number",
+          "unit": "in"
+        },
+        "step_count": {
+          "default": null,
+          "description": "How many times you step up, counting the step onto the top. Leave empty for the fewest steps that keep each riser under the tallest step allowed.",
+          "empty_label": "Automatic",
+          "group": "key",
+          "title": "Number of steps",
+          "maximum": 12,
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "top_platform": {
+          "default": true,
+          "description": "Builds a flat platform with its own frame and posts at the top of the steps. Turn it off when the steps end at an existing porch or deck.",
+          "group": "key",
+          "title": "Top platform",
+          "type": "boolean"
+        },
+        "platform_depth_in": {
+          "default": 36,
+          "description": "How far the top platform goes back from the top step, rounded up to whole deck boards. 36 in leaves room to stand and open a door.",
+          "group": "advanced",
+          "maximum": 96,
+          "minimum": 24,
+          "title": "Platform depth",
           "type": "number",
           "unit": "in"
         }
@@ -297,7 +345,10 @@
     "defaults": {
       "width_in": 36,
       "tread_depth_in": 11,
-      "max_riser_in": 7
+      "max_riser_in": 7,
+      "step_count": null,
+      "top_platform": true,
+      "platform_depth_in": 36
     }
   },
   {
@@ -306,40 +357,54 @@
     "description": "Workbench with 4x4 legs, 2x4 aprons, a plywood top and an optional lower shelf.",
     "params_schema": {
       "additionalProperties": false,
-      "description": "Workbench parameters. All bounds are inferred (the spec gave sizes, not limits).",
+      "description": "Workbench parameters. All bounds are inferred (the spec gave sizes, not limits): the width and depth\nstop at one 48 x 96 in plywood sheet because the top is a single piece.\n\nSchema hints for the parameter panel (in `json_schema_extra`), as on the ramp: `group` is \"key\" for the\noverall size a homeowner decides and \"advanced\" for construction choices, which the panel folds away;\n`unit` is the unit of a number.",
       "properties": {
         "width_in": {
           "default": 48,
-          "description": "Left to right; up to one 8 ft sheet (bounds inferred)",
+          "description": "Length of the top from left to right, edge to edge. The top is one piece of plywood, so it can be at most 96 in (the long side of a sheet).",
+          "group": "key",
           "maximum": 96,
           "minimum": 24,
-          "title": "Width (in)",
+          "title": "Width",
           "type": "number",
           "unit": "in"
         },
         "depth_in": {
           "default": 24,
-          "description": "Front to back; up to the 4 ft sheet width (bounds inferred)",
+          "description": "Size of the top from front to back, edge to edge. It can be at most 48 in (the short side of a plywood sheet).",
+          "group": "key",
           "maximum": 48,
           "minimum": 12,
-          "title": "Depth (in)",
+          "title": "Depth",
           "type": "number",
           "unit": "in"
         },
         "height_in": {
           "default": 34,
-          "description": "Floor to the top surface (bounds inferred)",
+          "description": "From the floor to the top of the work surface, measured straight up.",
+          "group": "key",
           "maximum": 48,
           "minimum": 24,
-          "title": "Height (in)",
+          "title": "Working-surface height",
           "type": "number",
           "unit": "in"
         },
         "lower_shelf": {
           "default": true,
-          "description": "Plywood shelf on 2x4 supports between the legs",
+          "description": "A plywood shelf between the legs, resting on 2x4 supports.",
+          "group": "advanced",
           "title": "Lower shelf",
           "type": "boolean"
+        },
+        "shelf_height_in": {
+          "default": 10.0,
+          "description": "From the floor to the top of the lower shelf. It has to stay at least 6 in below the frame under the top.",
+          "group": "advanced",
+          "maximum": 36,
+          "minimum": 4,
+          "title": "Shelf height",
+          "type": "number",
+          "unit": "in"
         }
       },
       "title": "Params",
@@ -349,7 +414,8 @@
       "width_in": 48,
       "depth_in": 24,
       "height_in": 34,
-      "lower_shelf": true
+      "lower_shelf": true,
+      "shelf_height_in": 10.0
     }
   }
 ]

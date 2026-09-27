@@ -1,5 +1,7 @@
 """The workbench's at-a-glance numbers (meta["summary"]) and its parameter-panel schema hints."""
 
+import pytest
+
 from app import engine
 from app.models import ParamValue
 from app.templates import params_schema
@@ -49,6 +51,23 @@ def test_schema_groups_and_plain_titles():
         "depth_in": "Depth",
         "height_in": "Working-surface height",
         "lower_shelf": "Lower shelf",
+        "shelf_height_in": "Shelf height",
     }
     for prop in props.values():
         assert "(" not in prop["title"] and "inferred" not in prop["description"]
+
+
+def test_the_shelf_height_can_be_changed():
+    s = _summary(shelf_height_in=18)
+    assert s["Lower shelf"]["value"] == '18" off the floor'
+    # top underside 34 - 0.703 = 33.297, minus the 3-1/2 in apron = 29.797, minus the 18 in shelf = 11.797
+    assert s["Clear space under the top"]["value"] == "11-13/16\""
+
+
+def test_a_shelf_too_close_to_the_top_names_the_highest_that_fits():
+    from app.engine_errors import ParamValidationError
+    from app.templates.workbench import Params, derive
+
+    with pytest.raises(ParamValidationError, match="The highest shelf that fits is 23-13/16 in"):
+        derive(Params(shelf_height_in=24))
+    assert derive(Params(shelf_height_in=24, lower_shelf=False)).has_shelf is False  # ignored without a shelf

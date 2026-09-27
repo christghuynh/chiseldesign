@@ -21,7 +21,9 @@ Decisions where the spec was silent (all marked here, none engineered):
 - Aprons are 2x4s on edge (3.5 tall), flush with the outer faces of the legs, their top touching the
   underside of the top. Long aprons run along X between the legs at the front and back; short aprons run
   along Z between the legs at each end.
-- Shelf: its top surface is SHELF_HEIGHT_IN (10) above the floor. It rests on two 2x4 shelf supports laid
+- Shelf: its top surface is `shelf_height_in` (default 10) above the floor, and it must leave at least
+  MIN_SHELF_CLEARANCE_IN below the aprons (otherwise ParamValidationError says the highest shelf that fits).
+  It rests on two 2x4 shelf supports laid
   flat (3.5 wide, as deep as a leg) between the front legs and between the back legs. The shelf runs
   between the legs along X and from the front to the back leg faces along Z, so it needs no notches. It
   has no clearance gap to the legs (a builder trims it to fit).
@@ -49,7 +51,8 @@ BOARD_MATERIAL = "2x4_PT"
 SHEET_MATERIAL = "3/4_ext_ply"
 
 TOP_OVERHANG_IN = 0.75  # placeholder, to verify: top overhang past the outer faces of the legs
-SHELF_HEIGHT_IN = 10.0  # placeholder, to verify: floor to the top surface of the lower shelf
+SHELF_HEIGHT_IN = 10.0  # default floor-to-shelf-top height (placeholder, to verify)
+MIN_SHELF_CLEARANCE_IN = 6.0  # room left between the shelf and the aprons, so it can still hold something
 
 _LEG_IN = lumber_spec(LEG_MATERIAL).width_in or 3.5  # 4x4 actual size
 _APRON_THICK_IN = lumber_spec(BOARD_MATERIAL).thickness_in  # 1.5
@@ -71,7 +74,8 @@ class Params(BaseModel):
     width_in: float = Field(48, ge=24, le=96, title="Width", description="Length of the top from left to right, edge to edge. The top is one piece of plywood, so it can be at most 96 in (the long side of a sheet).", json_schema_extra={"unit": "in", "group": "key"})
     depth_in: float = Field(24, ge=12, le=48, title="Depth", description="Size of the top from front to back, edge to edge. It can be at most 48 in (the short side of a plywood sheet).", json_schema_extra={"unit": "in", "group": "key"})
     height_in: float = Field(34, ge=24, le=48, title="Working-surface height", description="From the floor to the top of the work surface, measured straight up.", json_schema_extra={"unit": "in", "group": "key"})
-    lower_shelf: bool = Field(True, title="Lower shelf", description="A plywood shelf between the legs, resting on 2x4 supports, with its top surface 10 in above the floor.", json_schema_extra={"group": "advanced"})
+    lower_shelf: bool = Field(True, title="Lower shelf", description="A plywood shelf between the legs, resting on 2x4 supports.", json_schema_extra={"group": "advanced"})
+    shelf_height_in: float = Field(SHELF_HEIGHT_IN, ge=4, le=36, title="Shelf height", description="From the floor to the top of the lower shelf. It has to stay at least 6 in below the frame under the top.", json_schema_extra={"unit": "in", "group": "advanced"})
 
 
 @dataclass(frozen=True)
@@ -118,7 +122,14 @@ def derive(params: Params) -> Derived:
     between_x = leg_x_max - leg_x_min - 2 * _LEG_IN
     between_z = leg_z_max - leg_z_min - 2 * _LEG_IN
     top_underside = h - _PLY_IN
-    shelf_bottom = SHELF_HEIGHT_IN - _PLY_IN
+    shelf = params.shelf_height_in
+    highest = top_underside - _APRON_WIDE_IN - MIN_SHELF_CLEARANCE_IN
+    if params.lower_shelf and shelf > highest + 1e-9:
+        raise ParamValidationError(
+            f"A shelf {format_fraction(shelf)} in off the floor is too close to the top of a {format_fraction(h)} in bench. "
+            f"The highest shelf that fits is {format_fraction(highest)} in."
+        )
+    shelf_bottom = shelf - _PLY_IN
     sheet_w, sheet_l = lumber_spec(SHEET_MATERIAL).sheet_size_in or (48.0, 96.0)
     return Derived(
         width_in=w,
@@ -136,11 +147,11 @@ def derive(params: Params) -> Derived:
         apron_bottom_y=top_underside - _APRON_WIDE_IN,
         long_apron_length_in=between_x,
         short_apron_length_in=between_z,
-        shelf_top_y=SHELF_HEIGHT_IN,
+        shelf_top_y=shelf,
         shelf_support_y=shelf_bottom - _APRON_THICK_IN,
         shelf_width_in=between_x,
         shelf_depth_in=leg_z_max - leg_z_min,
-        shelf_clearance_in=top_underside - _APRON_WIDE_IN - SHELF_HEIGHT_IN if params.lower_shelf else 0.0,
+        shelf_clearance_in=top_underside - _APRON_WIDE_IN - shelf if params.lower_shelf else 0.0,
         leg_count=4,
         top_overhang_in=TOP_OVERHANG_IN,
         sheet_width_in=sheet_w,

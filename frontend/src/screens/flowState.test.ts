@@ -53,6 +53,16 @@ describe("measurementValues / presetDimensions", () => {
 
   it("lists every numeric preset with its title", async () => {
     const { presetDimensions } = await import("./flowState");
-    expect(presetDimensions(bed)).toEqual([["Length (in)", 72], ["Width (in)", 24], ["Height (in)", 30]]);
+    expect(presetDimensions(bed)).toEqual([["Length (in)", "72"], ["Width (in)", "24"], ["Height (in)", "30"]]);
+  });
+
+  it("shows only the key dimensions, with units, when the template marks them", async () => {
+    const { presetDimensions } = await import("./flowState");
+    const grouped: TemplateInfo = {
+      ...bed,
+      params_schema: { properties: { length_in: { title: "Length", unit: "in", group: "key" }, height_in: { title: "Height", unit: "in", group: "key" }, gap_in: { title: "Gap", unit: "in", group: "advanced" } } },
+      defaults: { length_in: 72, height_in: 29.25, gap_in: 0.125 },
+    };
+    expect(presetDimensions(grouped)).toEqual([["Length", "72 in"], ["Height", "29.25 in"]]);
   });
 });
