@@ -219,3 +219,30 @@ def test_force_tool_is_used(monkeypatch, echo_engine):
     monkeypatch.setattr(edit_mod, "call_with_tools", _capture)
     _post(_spec_dict(), "wider")
     assert captured.get("force_tool") is True
+
+
+def test_the_conversation_is_not_stored_in_the_returned_spec(monkeypatch, echo_engine):
+    monkeypatch.setattr(edit_mod, "call_with_tools", lambda *a, **k: ToolCall("set_params", {"patch": {"clear_width_in": 42}}))
+    spec = _spec_dict()
+    spec["meta"]["contractor_quote_cad"] = 4000
+    spec["meta"]["edit_turns"] = [{"role": "user", "text": "change the width"}, {"role": "model", "text": "What width?"}]
+    body = _post(spec, "42 inches").json()
+    assert "edit_turns" not in body["spec"]["meta"]
+    assert body["spec"]["meta"]["contractor_quote_cad"] == 4000
+
+
+def test_only_the_last_five_exchanges_reach_the_model(monkeypatch, echo_engine):
+    captured = {}
+
+    def _capture(messages, tools, **kwargs):
+        captured["prompt"] = messages[0].text
+        return ToolCall("ask_clarification", {"question": "Which part?"})
+
+    monkeypatch.setattr(edit_mod, "call_with_tools", _capture)
+    spec = _spec_dict()
+    spec["meta"]["edit_turns"] = [
+        {"role": "user" if i % 2 == 0 else "model", "text": f"turn-{i:02d}"} for i in range(14)
+    ]
+    _post(spec, "hmm")
+    assert "turn-03" not in captured["prompt"]
+    assert "turn-04" in captured["prompt"] and "turn-13" in captured["prompt"]
