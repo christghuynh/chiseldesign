@@ -41,23 +41,13 @@ export default function App() {
         Skip to content
       </a>
       <header className="app-header sticky top-0 z-30">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2">
           <div className="app-brand-cluster">
-            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--logo" aria-label="Go to Chisel welcome screen">
-              <span className="h-11 w-24 shrink-0 overflow-hidden" aria-hidden="true">
+            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--brand" aria-label="Go to Chisel welcome screen">
+              <span className="h-8 w-11 shrink-0" aria-hidden="true">
                 <img src="/brand/logo.png" alt="" className="h-full w-full object-contain" />
               </span>
-            </button>
-            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--wordmark text-left text-xl font-black tracking-tight" aria-label="Go to Chisel welcome screen">
               <span className="app-brand-name app-brand-name--chisel">Chisel</span>
-            </button>
-            <button
-              type="button"
-              className="app-button app-button--secondary text-sm"
-              onClick={() => setScreen("projects")}
-              aria-current={screen === "projects" ? "page" : undefined}
-            >
-              Projects
             </button>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -79,6 +69,14 @@ export default function App() {
                   <path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z" />
                 </svg>
               )}
+            </button>
+            <button
+              type="button"
+              className="app-button app-button--secondary text-sm"
+              onClick={() => setScreen("projects")}
+              aria-current={screen === "projects" ? "page" : undefined}
+            >
+              Projects
             </button>
             <button type="button" className="app-button app-button--secondary text-sm" onClick={() => setHelpOpen(true)} aria-haspopup="dialog">
               Shortcuts

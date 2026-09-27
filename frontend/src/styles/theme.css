@@ -115,7 +115,7 @@ label { line-height: 1.35; }
 .app-shell--landing .landing-hero {
   min-height: 0;
   height: auto;
-  min-height: calc(100dvh - 5rem);
+  min-height: calc(100dvh - 4rem);
   padding-top: clamp(1.5rem, 4vw, 3.5rem);
   padding-bottom: clamp(1.5rem, 4vw, 3.5rem);
 }
@@ -129,8 +129,10 @@ label { line-height: 1.35; }
 }
 
 .app-brand-cluster { display: flex; align-items: center; gap: .35rem; }
-.app-home-button--logo { display: grid; place-items: center; padding: .15rem; }
-.app-home-button--wordmark { position: relative; left: -.75rem; display: grid; min-height: 3rem; place-items: center; padding: .2rem .45rem; }
+.app-home-button--brand { display: inline-flex; min-height: 2.5rem; align-items: flex-end; gap: .15rem; padding: .15rem .5rem .15rem .15rem; }
+.app-home-button--brand > span:first-child { margin-bottom: .18rem; }
+.app-header .app-button { min-height: 2.5rem; padding: .4rem .75rem; }
+.app-header .app-icon-button { width: 2.5rem; min-height: 2.5rem; padding: 0; }
 
 .app-home-button:hover {
   border-color: color-mix(in srgb, var(--brand) 22%, transparent);
