@@ -53,4 +53,4 @@ def test_every_ada_citation_names_a_section_and_links_to_the_standard():
 
 
 def test_the_only_sources_without_a_link_are_the_non_guideline_ones():
-    assert {k for k, s in sources().items() if s["url"] is None} == {"local-code-notice", "site-fit", "lumber-stock-lengths"}
+    assert {k for k, s in sources().items() if s["url"] is None} == {"local-code-notice", "site-fit", "lumber-stock-lengths", "thin-rip"}

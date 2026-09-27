@@ -289,7 +289,7 @@ def apply(check: RuleCheck, **values) -> sp.Params:
 
 def test_rules_are_found_and_ordered_and_use_the_constants():
     checks = run_rules(total_rise_in=21)
-    assert list(checks) == ["STEP-001", "STEP-002", "STEP-003"]
+    assert list(checks) == ["STEP-001", "STEP-002", "STEP-003", "STEP-004"]
     assert checks["STEP-001"].title == "Riser height within maximum"
     assert checks["STEP-002"].title == "Tread deep enough"
     assert checks["STEP-003"].title == "Permit and local code notice"
@@ -444,6 +444,6 @@ def test_randomized_sweep_of_valid_params_builds_valid_plans():
         steps = sp.build_skeleton(p, labelled)
         assert steps[-1].action_key == "final_check"
         checks = check_design(KEY, p, derived, labelled)
-        assert [c.id for c in checks] == ["STEP-001", "STEP-002", "STEP-003"]
+        assert [c.id for c in checks] == ["STEP-001", "STEP-002", "STEP-003", "STEP-004"]
         built += 1
     assert built >= 40 and built + rejected == 80

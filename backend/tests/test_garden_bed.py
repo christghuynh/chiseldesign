@@ -55,7 +55,7 @@ def test_registry_finds_garden_bed_with_schema_and_defaults():
     assert props["cap_rail"]["type"] == "boolean"
     assert props["length_in"]["unit"] == "in"
     assert info.params_schema.get("required", []) == []
-    assert info.defaults == {"length_in": 72, "width_in": 24, "height_in": 30, "access": "one_side", "board": "2x10_PT", "cap_rail": True}
+    assert info.defaults == {"length_in": 72, "width_in": 24, "height_in": 29.25, "access": "one_side", "board": "2x10_PT", "cap_rail": True}
 
 
 @pytest.mark.parametrize(
@@ -87,7 +87,8 @@ def test_validate_params_accepts_the_bounds():
 
 
 def test_default_derive():
-    d = derive(P())
+    # 30 in tall: the old default, which rips the top course to a 3/4 in strip (BED-004 warns about it)
+    d = derive(P(height_in=30))
     assert d.course_count == 4 and d.course_height_in == 28.5 and d.post_height_in == 28.5
     assert d.ripped_width_in == pytest.approx(0.75) and d.course_widths_in == (9.25, 9.25, 9.25, 0.75)
     assert (d.outer_length_in, d.outer_width_in) == (72, 24)
@@ -101,7 +102,7 @@ def test_exact_multiple_has_no_rip():
 
 
 def test_no_cap_rail_is_taller_stack():
-    with_cap, without = derive(P()), derive(P(cap_rail=False))
+    with_cap, without = derive(P(height_in=30)), derive(P(cap_rail=False, height_in=30))
     assert without.course_height_in == 30 and without.post_height_in == 30
     assert without.course_count == 4 and without.ripped_width_in == pytest.approx(2.25)
     assert without.course_height_in > with_cap.course_height_in
@@ -128,7 +129,7 @@ def test_a_board_longer_than_its_stock_is_a_readable_error():
 
 
 def test_default_part_counts_names_and_groups():
-    parts = generate_parts(P())
+    parts = generate_parts(P(height_in=30))  # four courses, the top one a 3/4 in rip
     counts = {(p.name, p.group): 0 for p in parts}
     for p in parts:
         counts[(p.name, p.group)] += 1
@@ -145,7 +146,7 @@ def test_default_part_counts_names_and_groups():
 
 
 def test_ripped_course_is_one_course_with_a_note():
-    parts = generate_parts(P())
+    parts = generate_parts(P(height_in=30))
     ripped = [p for p in parts if p.cut_notes]
     assert len(ripped) == 4 and {p.name for p in ripped} == {"Side course (long)", "Side course (end)"}
     assert all(p.cut_notes == ["Rip to 3/4 in wide"] for p in ripped)
@@ -162,7 +163,7 @@ def test_a_height_that_is_not_a_multiple_produces_one_ripped_course():
 
 
 def test_no_cap_rail_has_no_cap_parts_and_taller_courses():
-    capped, bare = generate_parts(P()), generate_parts(P(cap_rail=False))
+    capped, bare = generate_parts(P(height_in=30)), generate_parts(P(cap_rail=False, height_in=30))
     assert not [p for p in bare if p.group == "cap" or p.name == "Cap rail"]
     assert len(bare) == len(capped) - 4
     top = lambda parts: max(box(p)[1][1] for p in parts)  # noqa: E731
@@ -284,7 +285,7 @@ def run_rules(**kw):
 
 def test_rules_default_bed():
     checks = run_rules()
-    assert list(checks) == ["BED-001", "BED-002", "BED-003"]
+    assert list(checks) == ["BED-001", "BED-002", "BED-003", "BED-004"]
     assert checks["BED-001"].status == "pass" and checks["BED-001"].fix is None
     assert checks["BED-002"].status == "pass" and checks["BED-002"].fix is None
     assert checks["BED-003"].status == "info"
@@ -399,7 +400,8 @@ def assert_valid_plan(p: Params) -> Plan:
 def test_end_to_end_default_bed():
     plan = assert_valid_plan(P())
     assert {row.material for row in plan.cut_list} == {"2x10_PT", "4x4_PT", "2x6_PT"}
-    assert any("Rip to 3/4 in wide" in row.cut_notes for row in plan.cut_list)
+    assert not any(note.startswith("Rip") for row in plan.cut_list for note in row.cut_notes)  # full boards
+    assert any("Rip to 3/4 in wide" in row.cut_notes for row in assert_valid_plan(P(height_in=30)).cut_list)
 
 
 def test_end_to_end_randomized_sweep():
@@ -418,3 +420,8 @@ def test_end_to_end_randomized_sweep():
         assert [x.model_dump() for x in parts] == [x.model_dump() for x in generate_parts(p)]
         assert all(box(x)[1][0] >= 0 for x in parts)
 
+
+
+def test_default_height_uses_whole_boards():
+    d = derive(P())  # 29-1/4 = three 9-1/4 courses + the 1-1/2 cap
+    assert d.course_count == 3 and d.ripped_width_in is None and d.course_widths_in == (9.25, 9.25, 9.25)
