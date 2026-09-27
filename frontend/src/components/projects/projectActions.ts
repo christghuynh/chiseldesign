@@ -52,6 +52,18 @@ export async function openProject(token: string | null, id: number): Promise<voi
   setScreen("design");
 }
 
+/**
+ * Delete a saved project (and all its versions) and drop it from the list. If it is the project the editor
+ * is linked to, the link is cleared: the design stays open, and saving it again makes a new project instead
+ * of trying to add a version to one that no longer exists.
+ */
+export async function deleteProject(token: string | null, id: number): Promise<void> {
+  await projectsApi.remove(token, id);
+  const { projects, setProjects, currentProjectId, setCurrentProjectId } = useStore.getState();
+  setProjects(projects.filter((p) => p.id !== id));
+  if (currentProjectId === id) setCurrentProjectId(null);
+}
+
 export function defaultProjectName(now = new Date()): string {
   const { spec } = useStore.getState();
   const template = spec?.template ?? "project";
