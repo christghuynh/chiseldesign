@@ -36,7 +36,7 @@ export default function App() {
   if (DevRoute) return <DevRoute />;
 
   return (
-    <div className={`theme-transition ${screen === "landing" ? "app-shell--landing" : "min-h-screen"} bg-[var(--bg)] text-[var(--text)]`}>
+    <div className={`theme-transition ${screen === "landing" ? "app-shell--landing" : screen === "design" ? "app-shell--design" : "min-h-screen"} bg-[var(--bg)] text-[var(--text)]`}>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-[var(--surface)] focus:p-3">
         Skip to content
       </a>
@@ -47,7 +47,7 @@ export default function App() {
               <span className="h-8 w-11 shrink-0" aria-hidden="true">
                 <img src="/brand/logo.png" alt="" className="h-full w-full object-contain" />
               </span>
-              <span className="app-brand-name app-brand-name--chisel">Chisel</span>
+              <span className="app-brand-name app-brand-name--chisel">chisel</span>
             </button>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">

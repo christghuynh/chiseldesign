@@ -71,6 +71,7 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overscroll-behavior-y: none;
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, ui-sans-serif, system-ui, sans-serif;
@@ -99,6 +100,10 @@ label { line-height: 1.35; }
   flex-direction: column;
   overflow: visible;
 }
+
+html { overscroll-behavior-y: none; }
+.app-shell--design { display: flex; height: 100dvh; min-height: 100dvh; flex-direction: column; overflow: hidden; }
+.app-shell--design .design-main { flex: 1 1 auto; min-height: 0; height: auto; }
 
 @media (min-width: 801px) {
   html:has(.app-shell--landing),
@@ -184,7 +189,7 @@ label { line-height: 1.35; }
 .push-to-talk { display: inline-flex; flex-direction: column; gap: .35rem; }
 
 /* Design is a focused canvas: tools float above the model instead of competing for page space. */
-.design-main { width: 100%; min-height: calc(100dvh - 5rem); height: calc(100dvh - 5rem); padding: 0; }
+.design-main { width: 100%; min-height: 0; height: 100%; padding: 0; }
 .design-workspace { --design-edge: clamp(1rem, 2.5vw, 2rem); --design-left-panel: 23rem; --design-right-panel: 20rem; --text: #37393a; --text-muted: #4d5052; --surface-solid: #ffffff; --surface: rgb(251 252 253 / 54%); --surface-muted: rgb(219 227 234 / 82%); --border: rgb(55 57 58 / 22%); --design-glass: rgb(255 255 255 / 88%); --design-glass-shadow: 0 22px 58px rgb(55 57 58 / 18%); --design-glass-filter: blur(22px) saturate(1.15); position: relative; min-height: 100%; height: 100%; overflow: hidden; background: #ffffff; color: #37393a; }
 .design-workspace__canvas { position: absolute; inset: 0; }
 .design-workspace__topbar { position: absolute; top: var(--design-edge); right: var(--design-edge); z-index: 4; display: flex; align-items: start; justify-content: end; pointer-events: none; }
@@ -413,18 +418,15 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 @media (max-width: 800px) {
   .app-shell--landing { display: block; height: auto; min-height: 100vh; max-height: none; overflow: visible; }
   .app-shell--landing main { display: block; min-height: auto; overflow: visible; }
-  .design-main { height: auto; min-height: 0; }
-  .design-workspace { display: flex; min-height: 0; height: auto; flex-direction: column; gap: .85rem; overflow: visible; padding: .75rem; }
-  .design-workspace__canvas { position: relative; min-height: 33rem; height: 65svh; border: 1px solid var(--border); border-radius: 1.1rem; overflow: hidden; order: 1; }
+  .design-workspace { display: block; min-height: 100%; height: 100%; overflow: hidden; padding: 0; }
+  .design-workspace__canvas { position: absolute; inset: 0; min-height: 0; height: auto; border: 0; border-radius: 0; overflow: hidden; }
   .design-workspace__topbar { top: 1.35rem; right: 1.35rem; left: 1.35rem; }
   .design-workspace__history { gap: .35rem; }
   .design-workspace__history .app-button { min-height: 2.2rem; padding: .3rem .55rem; font-size: .78rem; }
-  .design-workspace__panel, .design-workspace__panel--parameters, .design-workspace__panel--details { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: 100%; max-height: none; overflow: visible; order: 2; }
-  .design-workspace__panel--details { order: 3; }
-  .design-workspace__panel.is-collapsed { width: 100%; }
-  .design-workspace__feedback { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: auto; max-width: none; align-self: stretch; order: 2; translate: none; }
-  .project-health { align-items: start; }
-  .design-workspace__edit-trigger { position: relative; bottom: auto; left: auto; align-self: center; translate: none; order: 4; }
+  .design-workspace__panel, .design-workspace__panel--parameters, .design-workspace__panel--details { position: absolute; top: var(--design-edge); right: auto; bottom: var(--design-edge); left: var(--design-edge); width: min(21rem, calc(100vw - 2 * var(--design-edge))); max-height: none; overflow: hidden; }
+  .design-workspace__panel--details { top: calc(var(--design-edge) + 3.5rem); }
+  .design-workspace__panel.is-collapsed { bottom: auto; min-width: 0; width: auto; }
+  .design-workspace__feedback { position: absolute; right: auto; bottom: calc(var(--design-edge) + 4rem); left: 50%; width: auto; max-width: calc(100vw - 2rem); translate: -50% 0; }
   .design-workspace__editor-backdrop { position: fixed; z-index: 70; }
   .design-workspace__composer { position: relative; right: auto; bottom: auto; left: auto; width: min(42rem, 100%); max-width: none; }
   .design-workspace__status { top: auto; bottom: 1.25rem; }
