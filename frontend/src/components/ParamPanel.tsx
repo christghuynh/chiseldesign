@@ -244,7 +244,8 @@ export function NumberField({ id, title, property, value, nullable, integer = fa
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      {/* Slider, value box and unit keep fixed proportions and shrink with the panel (see .param-number-row). */}
+      <div className={`param-number-row${min !== undefined && max !== undefined ? "" : " param-number-row--no-slider"}`}>
         {min !== undefined && max !== undefined && (
           <input
             aria-label={`${title} slider`}
@@ -263,12 +264,12 @@ export function NumberField({ id, title, property, value, nullable, integer = fa
             onPointerCancel={endDrag}
             onKeyUp={endDrag}
             onBlur={endDrag}
-            className="min-h-11 flex-1"
+            className="min-h-11"
           />
         )}
         <input
           id={id}
-          className="app-input w-24"
+          className="app-input"
           type="text"
           inputMode={integer ? "numeric" : "decimal"}
           autoComplete="off"

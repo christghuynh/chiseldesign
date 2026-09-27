@@ -1,5 +1,6 @@
 // "At a glance": the numbers a builder wants from the current design (slope, lengths, runs, landings...).
-// The engine formats them per template in `spec.meta.summary`; this only displays the text.
+// The engine formats them per template in `spec.meta.summary`; this only displays the text. It fits one or two
+// columns to the width it gets (the Design side panel is narrow), not to the screen size.
 import type { Spec } from "../types";
 
 export interface KeyFact {
@@ -26,7 +27,7 @@ export function KeyFacts({ spec }: { spec: Spec }) {
       <h3 id="key-facts-title" className="mt-0 text-lg font-bold">
         At a glance
       </h3>
-      <dl className="m-0 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+      <dl className="m-0 grid grid-cols-[repeat(auto-fill,minmax(8rem,1fr))] gap-x-4 gap-y-3">
         {facts.map((fact) => (
           <div key={fact.label}>
             <dt className="text-sm text-[var(--text-muted)]">{fact.label}</dt>
