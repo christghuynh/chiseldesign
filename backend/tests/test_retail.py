@@ -12,7 +12,19 @@ import pytest
 from app.models import CutListRow
 from app.nesting import BoardPiece, PieceTooLongError, nest_boards
 from app.pricing import retail
-from app.pricing.retail import Listing, RetailLookupError, best_by_length, find_boards, find_wood, nominal_of, parse_listing, plan_wood
+from app.pricing.retail import (
+    Listing,
+    RetailLookupError,
+    best_by_length,
+    candidate_by_length,
+    find_boards,
+    find_wood,
+    nominal_of,
+    parse_listing,
+    plan_wood,
+    price_key,
+    price_worksheet,
+)
 
 P = "https://www.homedepot.ca/product/"
 PAGE = f"""# 2 x 6 Pressure Treated Lumber
@@ -254,3 +266,35 @@ def test_a_page_that_never_reads_gives_a_clear_error():
 
     with pytest.raises(RetailLookupError, match="could not read"):
         find_boards("2x6_PT", client(handler))
+
+
+# --- the price worksheet ---------------------------------------------------------------------------------
+
+
+def test_price_keys_match_prices_json_keys():
+    from app import data
+
+    assert price_key("2x6_PT", 192.0) == "2x6_PT_192" and price_key("5/4x6_PT_deck", 96) == "5/4x6_PT_deck_96"
+    for material, spec in data.lumber().items():
+        if spec.kind == "board":
+            assert all(price_key(material, n) in data.prices() for n in spec.stock_lengths_in), material
+
+
+def test_candidates_are_sold_products_and_a_tavily_price_only_ranks_them():
+    make = lambda sku, length, price, sold=True: Listing(sku, sku, "u", length, price, False, sold)  # noqa: E731
+    best = candidate_by_length([make("a", 96, None), make("b", 96, 30.0), make("c", 96, 20.0), make("d", 120, None, sold=False), make("e", 144, None)])
+    assert {length: item.sku for length, item in best.items()} == {96: "c", 144: "e"}  # priced beats unpriced; unsold is never a candidate
+
+
+def test_worksheet_has_a_row_per_stock_length_and_none_where_nothing_is_sold():
+    def handler(request):
+        if request.url.path == "/search":
+            return httpx.Response(200, json={"results": [{"url": "https://www.homedepot.ca/x/pressure-treated-lumber/f/2-x-6/r"}]})
+        return httpx.Response(200, json={"results": [{"raw_content": PAGE}]})
+
+    rows = price_worksheet(["2x6_PT"], client(handler))
+    assert [r.key for r in rows] == ["2x6_PT_96", "2x6_PT_120", "2x6_PT_144", "2x6_PT_192"]  # no 14 ft: it is not sold
+    by_key = {r.key: r.listing for r in rows}
+    assert by_key["2x6_PT_96"].sku == "1000790084" and by_key["2x6_PT_192"].sku == "1000790085"
+    assert by_key["2x6_PT_144"] is None  # nothing in the page text is sold in this length
+
