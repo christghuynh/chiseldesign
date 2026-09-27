@@ -4,90 +4,157 @@
     "name": "Accessibility ramp",
     "description": "Wooden ramp with optional switchback, landings, curbs and handrails.",
     "params_schema": {
-      "title": "Params",
-      "type": "object",
-      "required": ["total_rise_in"],
+      "additionalProperties": false,
+      "description": "Ramp parameters. Bounds not stated in the original spec were inferred: available_length_in, slope_ratio,\nlanding_length_in, stringer_spacing_in and deck_gap_in.\n\nSchema hints for the parameter panel (in `json_schema_extra`): `group` is \"key\" for the few dimensions\na homeowner measures and \"advanced\" for construction choices, which the panel folds away;\n`enum_labels` gives readable names for the choices; `unit` is the unit of a number.",
       "properties": {
         "total_rise_in": {
-          "title": "Total rise (in)",
-          "description": "Height from ground to the top of the porch",
-          "type": "number",
+          "description": "From the ground to the top of the porch or doorway, measured straight up. Three standard steps are about 21 in.",
+          "group": "key",
+          "maximum": 60,
           "minimum": 1,
-          "maximum": 60
+          "title": "Rise (height to climb)",
+          "type": "number",
+          "unit": "in"
         },
         "clear_width_in": {
-          "title": "Clear width (in)",
-          "description": "Usable width between edges",
-          "type": "number",
           "default": 36,
+          "description": "Walking width of the whole ramp, edge to edge inside the curbs. Every run and landing gets this width; 36 in fits a wheelchair.",
+          "group": "key",
+          "maximum": 60,
           "minimum": 30,
-          "maximum": 60
+          "title": "Ramp width",
+          "type": "number",
+          "unit": "in"
         },
         "available_length_in": {
-          "title": "Available length (in)",
-          "description": "Length of yard or site available; leave empty for no limit",
-          "type": ["number", "null"],
-          "default": null
+          "default": null,
+          "description": "How far the yard extends out from the porch. Leave empty if space isn't a limit; if a straight ramp won't fit, Chisel suggests a switchback.",
+          "group": "key",
+          "title": "Space in front (optional)",
+          "unit": "in",
+          "maximum": 1200,
+          "minimum": 12,
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "layout": {
+          "default": "auto",
+          "description": "Automatic uses a straight ramp when it fits the space and the lumber, otherwise a switchback (two runs side by side with a turn landing).",
+          "enum": [
+            "auto",
+            "straight",
+            "switchback"
+          ],
+          "enum_labels": {
+            "auto": "Automatic",
+            "straight": "Straight",
+            "switchback": "Switchback"
+          },
+          "group": "advanced",
           "title": "Layout",
-          "description": "auto picks straight when it fits, otherwise switchback",
-          "type": "string",
-          "enum": ["auto", "straight", "switchback"],
-          "default": "auto"
+          "type": "string"
         },
         "slope_ratio": {
-          "title": "Slope (run per unit rise)",
-          "description": "12 means 1:12; 12 or more is recommended",
-          "type": "number",
-          "default": 12
+          "default": 12,
+          "description": "12 means 1:12, the usual guideline for wheelchairs; higher is gentler and longer.",
+          "group": "advanced",
+          "maximum": 40,
+          "minimum": 2,
+          "title": "Slope (inches of ramp per inch of rise)",
+          "type": "number"
         },
         "landing_length_in": {
-          "title": "Landing length (in)",
-          "description": "Length of each landing",
+          "default": 60,
+          "description": "Length of each flat landing between runs, where people rest or turn.",
+          "group": "advanced",
+          "maximum": 240,
+          "minimum": 12,
+          "title": "Landing length",
           "type": "number",
-          "default": 60
+          "unit": "in"
         },
         "framing": {
+          "default": "2x6_PT",
+          "description": "Boards for the stringers (the sloped supports) and the landing frames.",
+          "enum": [
+            "2x6_PT",
+            "2x8_PT"
+          ],
+          "enum_labels": {
+            "2x6_PT": "2x6 pressure-treated",
+            "2x8_PT": "2x8 pressure-treated"
+          },
+          "group": "advanced",
           "title": "Framing lumber",
-          "description": "Stringer and landing framing material",
-          "type": "string",
-          "enum": ["2x6_PT", "2x8_PT"],
-          "default": "2x6_PT"
+          "type": "string"
         },
         "stringer_spacing_in": {
-          "title": "Stringer spacing (in)",
-          "description": "On center",
+          "default": 16,
+          "description": "Distance between the sloped supports under the deck, center to center. Closer is stiffer.",
+          "group": "advanced",
+          "maximum": 24,
+          "minimum": 8,
+          "title": "Stringer spacing",
           "type": "number",
-          "default": 16
+          "unit": "in"
         },
         "decking": {
+          "default": "5/4x6_PT_deck",
+          "description": "The walking surface.",
+          "enum": [
+            "5/4x6_PT_deck",
+            "3/4_ext_ply"
+          ],
+          "enum_labels": {
+            "3/4_ext_ply": "3/4 exterior plywood",
+            "5/4x6_PT_deck": "5/4x6 deck boards"
+          },
+          "group": "advanced",
           "title": "Decking",
-          "description": "Deck boards or plywood",
-          "type": "string",
-          "enum": ["5/4x6_PT_deck", "3/4_ext_ply"],
-          "default": "5/4x6_PT_deck"
+          "type": "string"
         },
         "deck_gap_in": {
-          "title": "Deck gap (in)",
-          "description": "Gap between deck boards",
+          "default": 0.125,
+          "description": "Gap between deck boards for drainage.",
+          "group": "advanced",
+          "maximum": 0.5,
+          "minimum": 0,
+          "title": "Deck board gap",
           "type": "number",
-          "default": 0.125
+          "unit": "in"
         },
         "handrails": {
+          "default": "auto",
+          "description": "Automatic adds handrails on both sides when the rise needs them.",
+          "enum": [
+            "auto",
+            "yes",
+            "no"
+          ],
+          "enum_labels": {
+            "auto": "Automatic",
+            "no": "None",
+            "yes": "Always"
+          },
+          "group": "advanced",
           "title": "Handrails",
-          "description": "auto adds handrails when the rise requires them",
-          "type": "string",
-          "enum": ["auto", "yes", "no"],
-          "default": "auto"
+          "type": "string"
         },
         "edge_curb": {
+          "default": true,
+          "description": "A 2x6 curb along the open sides so wheels and canes can't slip off the edge.",
+          "group": "advanced",
           "title": "Edge curb",
-          "description": "2x4 curb on open sides",
-          "type": "boolean",
-          "default": true
+          "type": "boolean"
         }
-      }
+      },
+      "required": [
+        "total_rise_in"
+      ],
+      "title": "Params",
+      "type": "object"
     },
     "defaults": {
       "clear_width_in": 36,
@@ -101,6 +168,188 @@
       "deck_gap_in": 0.125,
       "handrails": "auto",
       "edge_curb": true
+    }
+  },
+  {
+    "key": "garden_bed",
+    "name": "Raised garden bed",
+    "description": "Raised garden bed with stacked side boards, corner posts and an optional seat-height cap rail.",
+    "params_schema": {
+      "additionalProperties": false,
+      "description": "Garden bed parameters. Bounds not stated in the original spec are marked (inferred).",
+      "properties": {
+        "length_in": {
+          "default": 72,
+          "description": "Outer length; 144 in is the longest 2x10 sold, so long sides stay single boards (bounds inferred)",
+          "maximum": 144,
+          "minimum": 24,
+          "title": "Length (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "width_in": {
+          "default": 24,
+          "description": "Outer width (bounds inferred)",
+          "maximum": 48,
+          "minimum": 12,
+          "title": "Width (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "height_in": {
+          "default": 30,
+          "description": "Overall height including the cap rail (bounds inferred)",
+          "maximum": 48,
+          "minimum": 12,
+          "title": "Height (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "access": {
+          "default": "one_side",
+          "description": "one_side when the bed sits against a wall, both_sides when you can reach it from both long sides",
+          "enum": [
+            "one_side",
+            "both_sides"
+          ],
+          "title": "Access",
+          "type": "string"
+        },
+        "board": {
+          "default": "2x10_PT",
+          "description": "Lumber for the stacked side courses",
+          "enum": [
+            "2x10_PT",
+            "2x8_PT"
+          ],
+          "title": "Side board",
+          "type": "string"
+        },
+        "cap_rail": {
+          "default": true,
+          "description": "2x6 rail around the top that doubles as a seat or armrest",
+          "title": "Cap rail",
+          "type": "boolean"
+        }
+      },
+      "title": "Params",
+      "type": "object"
+    },
+    "defaults": {
+      "length_in": 72,
+      "width_in": 24,
+      "height_in": 30,
+      "access": "one_side",
+      "board": "2x10_PT",
+      "cap_rail": true
+    }
+  },
+  {
+    "key": "step_platform",
+    "name": "Step platform",
+    "description": "Wooden steps up to a porch, with notched stringers, deck-board treads and risers.",
+    "params_schema": {
+      "additionalProperties": false,
+      "description": "Step platform parameters. Bounds not stated in the original spec are marked (inferred).",
+      "properties": {
+        "total_rise_in": {
+          "description": "Height from the ground to the top step surface (the porch)",
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Total rise (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "width_in": {
+          "default": 36,
+          "description": "Overall width of the steps (bounds inferred)",
+          "maximum": 72,
+          "minimum": 24,
+          "title": "Width (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "tread_depth_in": {
+          "default": 11,
+          "description": "Horizontal distance from one riser to the next (bounds inferred)",
+          "maximum": 16,
+          "minimum": 8,
+          "title": "Tread depth (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "max_riser_in": {
+          "default": 7,
+          "description": "Tallest riser allowed; sets how many steps are built (bounds inferred)",
+          "maximum": 9,
+          "minimum": 4,
+          "title": "Maximum riser height (in)",
+          "type": "number",
+          "unit": "in"
+        }
+      },
+      "required": [
+        "total_rise_in"
+      ],
+      "title": "Params",
+      "type": "object"
+    },
+    "defaults": {
+      "width_in": 36,
+      "tread_depth_in": 11,
+      "max_riser_in": 7
+    }
+  },
+  {
+    "key": "workbench",
+    "name": "Workbench",
+    "description": "Workbench with 4x4 legs, 2x4 aprons, a plywood top and an optional lower shelf.",
+    "params_schema": {
+      "additionalProperties": false,
+      "description": "Workbench parameters. All bounds are inferred (the spec gave sizes, not limits).",
+      "properties": {
+        "width_in": {
+          "default": 48,
+          "description": "Left to right; up to one 8 ft sheet (bounds inferred)",
+          "maximum": 96,
+          "minimum": 24,
+          "title": "Width (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "depth_in": {
+          "default": 24,
+          "description": "Front to back; up to the 4 ft sheet width (bounds inferred)",
+          "maximum": 48,
+          "minimum": 12,
+          "title": "Depth (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "height_in": {
+          "default": 34,
+          "description": "Floor to the top surface (bounds inferred)",
+          "maximum": 48,
+          "minimum": 24,
+          "title": "Height (in)",
+          "type": "number",
+          "unit": "in"
+        },
+        "lower_shelf": {
+          "default": true,
+          "description": "Plywood shelf on 2x4 supports between the legs",
+          "title": "Lower shelf",
+          "type": "boolean"
+        }
+      },
+      "title": "Params",
+      "type": "object"
+    },
+    "defaults": {
+      "width_in": 48,
+      "depth_in": 24,
+      "height_in": 34,
+      "lower_shelf": true
     }
   }
 ]

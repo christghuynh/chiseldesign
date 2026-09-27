@@ -51,6 +51,11 @@ def generate(template: str, params: dict[str, ParamValue], meta: dict[str, Any] 
     parts = cutlist.label_parts(module.generate_parts(model))
     checks = rules.check_design(template, model, derived, parts)
     spec_meta = dict(meta or {})
+    # Key numbers for the UI (optional template hook), recomputed on every call so a stale summary
+    # posted back in `meta` never survives.
+    spec_meta.pop("summary", None)
+    if hasattr(module, "summarize"):
+        spec_meta["summary"] = module.summarize(model, derived)
     plan = plan_builder.build_plan(parts, spec_meta)
     spec_params = _spec_params(model, params)
     assumed = [name for name, value in spec_params.items() if value.source in ("inferred", "default")]

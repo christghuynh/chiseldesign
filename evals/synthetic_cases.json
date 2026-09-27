@@ -1,0 +1,322 @@
+{
+  "description": "Synthetic hand-drawn-style sketches (evals/make_synthetic_sketches.py). A stand-in for real sketches (NC-5).",
+  "tolerances_default_in": 1.0,
+  "cases": [
+    {
+      "name": "porch_3steps_21in_12ft",
+      "image": "fixtures/sketches/synthetic/porch_3steps_21in_12ft.jpg",
+      "font": "Caveat",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_ftin_labels",
+      "image": "fixtures/sketches/synthetic/porch_ftin_labels.jpg",
+      "font": "Kalam-Regular",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 14,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          },
+          "clear_width_in": {
+            "value": 36,
+            "tol": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_metric",
+      "image": "fixtures/sketches/synthetic/porch_metric.jpg",
+      "font": "NothingYouCouldDo",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 20.9,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 141.7,
+            "tol": 4
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_steps_no_numbers",
+      "image": "fixtures/sketches/synthetic/porch_steps_no_numbers.jpg",
+      "font": "PatrickHand-Regular",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 4
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_harsh_photo",
+      "image": "fixtures/sketches/synthetic/porch_harsh_photo.jpg",
+      "font": "Caveat",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 24,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 240,
+            "tol": 4
+          }
+        }
+      }
+    },
+    {
+      "name": "ramp_note_list",
+      "image": "fixtures/sketches/synthetic/ramp_note_list.jpg",
+      "font": "Kalam-Regular",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 18,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 180,
+            "tol": 3
+          },
+          "clear_width_in": {
+            "value": 42,
+            "tol": 1
+          },
+          "layout": {
+            "value": "switchback"
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_width_and_handrails",
+      "image": "fixtures/sketches/synthetic/porch_width_and_handrails.jpg",
+      "font": "NothingYouCouldDo",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 14,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          },
+          "clear_width_in": {
+            "value": 36,
+            "tol": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "garden_bed",
+      "image": "fixtures/sketches/synthetic/garden_bed.jpg",
+      "font": "PatrickHand-Regular",
+      "expect": {
+        "template": "garden_bed",
+        "params": {
+          "length_in": {
+            "value": 72,
+            "tol": 2
+          },
+          "width_in": {
+            "value": 24,
+            "tol": 2
+          },
+          "height_in": {
+            "value": 30,
+            "tol": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "workbench",
+      "image": "fixtures/sketches/synthetic/workbench.jpg",
+      "font": "Caveat",
+      "expect": {
+        "template": "workbench",
+        "params": {
+          "width_in": {
+            "value": 48,
+            "tol": 1
+          },
+          "depth_in": {
+            "value": 24,
+            "tol": 1
+          },
+          "height_in": {
+            "value": 34,
+            "tol": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "step_platform",
+      "image": "fixtures/sketches/synthetic/step_platform.jpg",
+      "font": "Kalam-Regular",
+      "expect": {
+        "template": "step_platform",
+        "params": {
+          "total_rise_in": {
+            "value": 14,
+            "tol": 1
+          },
+          "width_in": {
+            "value": 36,
+            "tol": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "not_a_sketch",
+      "image": "fixtures/sketches/synthetic/not_a_sketch.jpg",
+      "font": "NothingYouCouldDo",
+      "expect": {
+        "template": null,
+        "params": {}
+      }
+    },
+    {
+      "name": "porch_cluttered",
+      "image": "fixtures/sketches/synthetic/porch_cluttered.jpg",
+      "font": "PatrickHand-Regular",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_crossed_out",
+      "image": "fixtures/sketches/synthetic/porch_crossed_out.jpg",
+      "font": "Caveat",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_rise_no_unit",
+      "image": "fixtures/sketches/synthetic/porch_rise_no_unit.jpg",
+      "font": "Kalam-Regular",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_far_away",
+      "image": "fixtures/sketches/synthetic/porch_far_away.jpg",
+      "font": "NothingYouCouldDo",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_sideways",
+      "image": "fixtures/sketches/synthetic/porch_sideways.jpg",
+      "font": "PatrickHand-Regular",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "porch_dark",
+      "image": "fixtures/sketches/synthetic/porch_dark.jpg",
+      "font": "Caveat",
+      "expect": {
+        "template": "ramp",
+        "params": {
+          "total_rise_in": {
+            "value": 21,
+            "tol": 1
+          },
+          "available_length_in": {
+            "value": 144,
+            "tol": 3
+          }
+        }
+      }
+    }
+  ]
+}
