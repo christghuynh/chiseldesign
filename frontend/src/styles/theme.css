@@ -1,6 +1,10 @@
-/* The app's typeface: change this one line to try another font. Inter is imported in index.css. */
+/* The app's typeface: change --font-sans (and the import in index.css) to try another font; the tracking settings go with it. */
 :root {
-  --font-sans: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: Poppins, -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
+  /* Letter spacing that goes with the font: Poppins is wide, so body text uses none and headings only a little
+     (Inter or San Francisco would want about -0.011em and -0.028em). */
+  --font-tracking: 0em;
+  --heading-tracking: -0.012em;
   /* Space between the screen edges and the top bar's contents: grows with the window, so the layout keeps its proportions. */
   --page-edge: clamp(1rem, 2.5vw, 5rem);
   color-scheme: light;
@@ -79,13 +83,13 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  letter-spacing: -0.011em;
+  letter-spacing: var(--font-tracking);
   line-height: 1.5;
 }
 
 button, input, select, textarea { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
-h1, h2, h3, h4 { letter-spacing: -0.028em; line-height: 1.12; text-wrap: balance; }
+h1, h2, h3, h4 { letter-spacing: var(--heading-tracking); line-height: 1.12; text-wrap: balance; }
 p, li, dd { line-height: 1.6; }
 label { line-height: 1.35; }
 
@@ -486,7 +490,7 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 .landing-story__copy-track--left { justify-content: flex-start; }
 .landing-story__copy-track--right { justify-content: flex-end; }
 .landing-story__copy { display: grid; width: min(100%, 27rem); gap: 1.1rem; border: 1px solid color-mix(in srgb, var(--border) 72%, transparent); border-radius: 1.5rem; background: color-mix(in srgb, var(--surface-solid) 78%, transparent); box-shadow: var(--shadow-card); padding: clamp(1.4rem, 3vw, 2.35rem); pointer-events: auto; backdrop-filter: blur(18px) saturate(1.1); }
-.landing-story__copy h1, .landing-story__copy h2 { margin: 0; font-size: clamp(2.3rem, 4.3vw, 4.6rem); font-weight: 760; }
+.landing-story__copy h1, .landing-story__copy h2 { margin: 0; font-size: clamp(2.3rem, 4.3vw, 4.6rem); font-weight: 700; }
 .landing-story__copy > p:not(.landing-story__eyebrow) { margin: 0; color: var(--text-muted); font-size: clamp(1rem, 1.3vw, 1.18rem); }
 .landing-story__eyebrow { margin: 0; color: var(--brand); font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .landing-story__copy .app-button { justify-self: start; margin-top: .35rem; }

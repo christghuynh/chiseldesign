@@ -1,6 +1,10 @@
 @import "tailwindcss";
-/* Inter by Rasmus Andersson (variable, weights 100-900), bundled with the app so it works offline. */
-@import "@fontsource-variable/inter";
+/* Poppins (static weights: the ones the app uses), bundled with the app so it works offline. */
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800.css";
 @import "./styles/theme.css";
 
 /* Accessibility baseline: 16px minimum text, visible focus, reduced motion. */
