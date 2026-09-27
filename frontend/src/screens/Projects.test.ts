@@ -25,7 +25,7 @@ function mockFetch(routes: Record<string, [number, unknown] | unknown>) {
       calls.push(key);
       const route = routes[key];
       const [status, body] = Array.isArray(route) && typeof route[0] === "number" ? route : [200, route];
-      return new Response(JSON.stringify(body ?? null), { status: route === undefined ? 599 : status });
+      return status === 204 ? new Response(null, { status }) : new Response(JSON.stringify(body ?? null), { status: route === undefined ? 599 : status });
     }),
   );
   return calls;
@@ -107,4 +107,65 @@ describe("Projects screen (login off)", () => {
     expect(screen.getByRole("button", { name: "Save new version" })).toBeTruthy();
     expect(calls).toContain("POST /api/projects");
   });
+
+  it("deletes a project only after confirming, then shows the empty state", async () => {
+    // the list answers with the project until the DELETE has happened
+    let deleted = false;
+    const calls: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init: RequestInit = {}) => {
+        const key = `${init.method ?? "GET"} ${url}`;
+        calls.push(key);
+        if (key === "DELETE /api/projects/5") {
+          deleted = true;
+          return new Response(null, { status: 204 });
+        }
+        return new Response(JSON.stringify(deleted ? [] : [SUMMARY]));
+      }),
+    );
+    renderScreen();
+    fireEvent.click(await screen.findByRole("button", { name: "Delete Grandma's porch" }));
+    expect(calls).not.toContain("DELETE /api/projects/5"); // the first click only asks
+    expect(screen.getByText("Delete this project and its saved versions?")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Yes, delete" }));
+
+    expect(await screen.findByText("No saved projects yet")).toBeTruthy();
+    expect(calls.filter((c) => c === "DELETE /api/projects/5")).toHaveLength(1);
+    expect(useStore.getState().projects).toEqual([]);
+  });
+
+  it("cancelling the confirmation deletes nothing", async () => {
+    const calls = mockFetch({ "GET /api/projects": [SUMMARY] });
+    renderScreen();
+    fireEvent.click(await screen.findByRole("button", { name: "Delete Grandma's porch" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.getByText("Grandma's porch")).toBeTruthy();
+    expect(screen.queryByText("Delete this project and its saved versions?")).toBeNull();
+    expect(screen.getByRole("button", { name: "Delete Grandma's porch" })).toBeTruthy();
+    expect(calls.some((c) => c.startsWith("DELETE"))).toBe(false);
+  });
+
+  it("deleting the open project unlinks it, so the next save creates a new project", async () => {
+    useStore.setState({ currentProjectId: 5 });
+    mockFetch({ "GET /api/projects": [SUMMARY], "DELETE /api/projects/5": [204, null] });
+    renderScreen();
+    expect(await screen.findByText("Open now")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Delete Grandma's porch" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes, delete" }));
+    await waitFor(() => expect(useStore.getState().currentProjectId).toBeNull());
+  });
+
+  it("keeps the project and says why when the server refuses", async () => {
+    mockFetch({
+      "GET /api/projects": [SUMMARY],
+      "DELETE /api/projects/5": [404, { error: { code: "NOT_FOUND", message: "Project 5 not found" } }],
+    });
+    renderScreen();
+    fireEvent.click(await screen.findByRole("button", { name: "Delete Grandma's porch" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes, delete" }));
+    expect((await screen.findByRole("alert")).textContent).toMatch(/doesn't exist or belongs to someone else/);
+    expect(screen.getByText("Grandma's porch")).toBeTruthy();
+  });
 });
+
