@@ -38,6 +38,7 @@ from app.data import lumber_spec
 from app.engine_errors import ParamValidationError
 from app.models import Part, SkeletonStep
 from app.templates.geometry import PartBuilder
+from app.util.units import format_fraction, format_ft_in
 
 KEY = "workbench"
 NAME = "Workbench"
@@ -57,14 +58,20 @@ _PLY_IN = lumber_spec(SHEET_MATERIAL).thickness_in  # 0.703
 
 
 class Params(BaseModel):
-    """Workbench parameters. All bounds are inferred (the spec gave sizes, not limits)."""
+    """Workbench parameters. All bounds are inferred (the spec gave sizes, not limits): the width and depth
+    stop at one 48 x 96 in plywood sheet because the top is a single piece.
+
+    Schema hints for the parameter panel (in `json_schema_extra`), as on the ramp: `group` is "key" for the
+    overall size a homeowner decides and "advanced" for construction choices, which the panel folds away;
+    `unit` is the unit of a number.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    width_in: float = Field(48, ge=24, le=96, title="Width (in)", description="Left to right; up to one 8 ft sheet (bounds inferred)", json_schema_extra={"unit": "in"})
-    depth_in: float = Field(24, ge=12, le=48, title="Depth (in)", description="Front to back; up to the 4 ft sheet width (bounds inferred)", json_schema_extra={"unit": "in"})
-    height_in: float = Field(34, ge=24, le=48, title="Height (in)", description="Floor to the top surface (bounds inferred)", json_schema_extra={"unit": "in"})
-    lower_shelf: bool = Field(True, title="Lower shelf", description="Plywood shelf on 2x4 supports between the legs")
+    width_in: float = Field(48, ge=24, le=96, title="Width", description="Length of the top from left to right, edge to edge. The top is one piece of plywood, so it can be at most 96 in (the long side of a sheet).", json_schema_extra={"unit": "in", "group": "key"})
+    depth_in: float = Field(24, ge=12, le=48, title="Depth", description="Size of the top from front to back, edge to edge. It can be at most 48 in (the short side of a plywood sheet).", json_schema_extra={"unit": "in", "group": "key"})
+    height_in: float = Field(34, ge=24, le=48, title="Working-surface height", description="From the floor to the top of the work surface, measured straight up.", json_schema_extra={"unit": "in", "group": "key"})
+    lower_shelf: bool = Field(True, title="Lower shelf", description="A plywood shelf between the legs, resting on 2x4 supports, with its top surface 10 in above the floor.", json_schema_extra={"group": "advanced"})
 
 
 @dataclass(frozen=True)
@@ -88,6 +95,12 @@ class Derived:
     shelf_support_y: float  # bottom of the shelf supports
     shelf_width_in: float  # along X
     shelf_depth_in: float  # along Z
+    shelf_clearance_in: float  # top of the shelf up to the bottom of the aprons (0.0 without a shelf)
+    leg_count: int
+    top_overhang_in: float  # top edge past the outer faces of the legs, on every side
+    sheet_width_in: float  # plywood sheet the top is cut from
+    sheet_length_in: float
+    top_sheet_fraction: float  # share of one sheet's area the top uses
 
     @property
     def footprint_x(self) -> tuple[float, float]:
@@ -106,6 +119,7 @@ def derive(params: Params) -> Derived:
     between_z = leg_z_max - leg_z_min - 2 * _LEG_IN
     top_underside = h - _PLY_IN
     shelf_bottom = SHELF_HEIGHT_IN - _PLY_IN
+    sheet_w, sheet_l = lumber_spec(SHEET_MATERIAL).sheet_size_in or (48.0, 96.0)
     return Derived(
         width_in=w,
         depth_in=d,
@@ -126,7 +140,47 @@ def derive(params: Params) -> Derived:
         shelf_support_y=shelf_bottom - _APRON_THICK_IN,
         shelf_width_in=between_x,
         shelf_depth_in=leg_z_max - leg_z_min,
+        shelf_clearance_in=top_underside - _APRON_WIDE_IN - SHELF_HEIGHT_IN if params.lower_shelf else 0.0,
+        leg_count=4,
+        top_overhang_in=TOP_OVERHANG_IN,
+        sheet_width_in=sheet_w,
+        sheet_length_in=sheet_l,
+        top_sheet_fraction=(w * d) / (sheet_w * sheet_l),
     )
+
+
+def _in(inches: float) -> str:
+    return f'{format_fraction(inches)}"'
+
+
+def _size(width_in: float, depth_in: float) -> str:
+    return f"{format_ft_in(width_in)} × {format_ft_in(depth_in)}"
+
+
+def summarize(params: Params, derived: Derived) -> list[dict[str, str]]:
+    """The numbers a builder wants at a glance, as display text (`label`, `value`, optional `detail`).
+
+    Optional template hook: the engine stores the result on the spec as `meta["summary"]`. Every value
+    is formatted here from `derive`, so the UI only displays text and computes nothing.
+    """
+    d = derived
+    sheet = f"{format_ft_in(d.sheet_width_in)} × {format_ft_in(d.sheet_length_in)} sheet of {lumber_spec(SHEET_MATERIAL).description}"
+    if d.top_sheet_fraction >= 1 - 1e-9:
+        top_from = f"cut from a whole {sheet}"
+    else:
+        top_from = f"cut from {min(99, max(1, round(d.top_sheet_fraction * 100)))}% of one {sheet}"
+    facts: list[dict[str, str]] = [
+        {"label": "Top", "value": f"{_size(d.width_in, d.depth_in)} (width × depth)", "detail": top_from},
+        {"label": "Working height", "value": format_ft_in(d.height_in), "detail": "floor to the top of the work surface"},
+        {"label": "Legs", "value": f"{d.leg_count} × {lumber_spec(LEG_MATERIAL).description}", "detail": f"each {format_ft_in(d.leg_height_in)} long"},
+    ]
+    if d.has_shelf:
+        facts.append({"label": "Lower shelf", "value": f"{_in(d.shelf_top_y)} off the floor", "detail": "floor to the top of the shelf"})
+        facts.append({"label": "Clear space under the top", "value": format_ft_in(d.shelf_clearance_in), "detail": "from the shelf up to the bottom of the aprons"})
+    else:
+        facts.append({"label": "Lower shelf", "value": "None"})
+    facts.append({"label": "Footprint", "value": _size(d.width_in, d.depth_in), "detail": f"the top overhangs the legs by {_in(d.top_overhang_in)} on every side"})
+    return facts
 
 
 def _rect(w: float, h: float) -> list[tuple[float, float]]:

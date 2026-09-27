@@ -97,3 +97,8 @@ What I did meanwhile: B. The Projects screen has it, and "Save" on the Plan and 
 Question: `currentProjectId` stays set after opening a project, so if the user then starts a fresh design in Capture, "Save new version" would add it to the old project.
 Options I see: A) Capture calls `setCurrentProjectId(null)` when it applies a new parse result (P2's screen). B) Keep the current safeguard only.
 What I did meanwhile: B. Whenever a project is open, Save offers both "Save new version" and "Save as new project".
+
+### GEO-21 — Engine test used the workbench as its "no summary" template (p4 tpl-workbench, 2026-09-27; for P1)
+Question: `test_engine.py::test_templates_without_a_summary_drop_a_stale_one` generated a workbench and asserted `meta` had no `summary`. The workbench now has `summarize`, so that failed. Garden bed and step platform will likely get summaries too, so switching templates would only move the break.
+Options I see: A) Keep the test on the workbench and assert only that the stale entry is gone (works whether or not a template summarizes). B) Add a test-only template with no `summarize` to cover the "no summary key at all" branch.
+What I did meanwhile: A. The test is renamed `test_a_stale_summary_posted_back_in_meta_never_survives`. The case where a template has no hook, so `summary` is absent altogether, is no longer covered by that test.

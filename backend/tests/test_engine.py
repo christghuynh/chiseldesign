@@ -179,6 +179,6 @@ def test_summary_is_recomputed_on_every_call():
     assert all(isinstance(fact["value"], str) and fact["value"] for fact in spec.meta["summary"])
 
 
-def test_templates_without_a_summary_drop_a_stale_one():
+def test_a_stale_summary_posted_back_in_meta_never_survives():
     spec, _ = engine.generate("workbench", {}, {"summary": [{"label": "stale", "value": "x"}]})
-    assert "summary" not in spec.meta
+    assert {"label": "stale", "value": "x"} not in spec.meta.get("summary", [])
