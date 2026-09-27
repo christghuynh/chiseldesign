@@ -105,14 +105,14 @@ describe("choosing a template fills in its preset dimensions", () => {
     fireEvent.click(browse);
     const dialog = screen.getByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: /Raised garden bed/ }));
-    expect(within(dialog).getByText("Length (in): 72")).toBeTruthy();
+    expect(within(dialog).getByText("Length: 72 in")).toBeTruthy();
     fireEvent.click(within(dialog).getByRole("button", { name: "Start with this template" }));
     await waitFor(() => expect(useStore.getState().screen).toBe("confirm"));
     const { getCaptureSession } = await import("./flowState");
     const params = getCaptureSession()!.parse.spec!.params;
     expect(params.width_in).toEqual({ value: 30, source: "user", confidence: null });
     expect(params.length_in.value).toBe(72);
-    expect(params.height_in.value).toBe(30);
+    expect(params.height_in.value).toBe(29.25); // the full-board default
     expect(params.clear_width_in).toBeUndefined();
   });
 
