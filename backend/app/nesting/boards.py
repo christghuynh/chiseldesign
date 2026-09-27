@@ -6,6 +6,7 @@ stock length that still holds its contents, so a single 100" piece is bought as 
 A saw kerf is lost between neighbouring pieces (not at the ends of the board).
 """
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from app.data import lumber_spec
@@ -44,7 +45,9 @@ def _first_fit_decreasing(pieces: list[BoardPiece], capacity: float, kerf_in: fl
     return bins
 
 
-def nest_boards(pieces: list[BoardPiece], kerf_in: float = KERF_IN) -> list[StockLayout]:
+def nest_boards(
+    pieces: list[BoardPiece], kerf_in: float = KERF_IN, stock_lengths_in: Mapping[str, Sequence[float]] | None = None
+) -> list[StockLayout]:
     """Lay board pieces out on stock lengths; returns one StockLayout (kind "board") per board to buy.
 
     Layouts are ordered by material, then stock length, then their number in `stock_id`
@@ -52,22 +55,28 @@ def nest_boards(pieces: list[BoardPiece], kerf_in: float = KERF_IN) -> list[Stoc
     start at 0 and advance by length + kerf; y is 0, h is the board's actual width. `utilization` is
     the sum of piece lengths over the stock length (kerf not counted). Raises PieceTooLongError, naming
     the piece, its length and the maximum, if any piece is longer than the longest stock sold.
+
+    `stock_lengths_in` overrides the lengths sold for the given materials (for example the lengths a
+    retailer really lists); other materials use the lumber data. Lengths are used in ascending order.
     """
+    overrides = {m: sorted(lengths) for m, lengths in (stock_lengths_in or {}).items()}
     by_material: dict[str, list[BoardPiece]] = {}
     for piece in pieces:
         by_material.setdefault(piece.material, []).append(piece)
 
     specs = {}
+    lengths: dict[str, list[float]] = {}
     too_long: list[BoardPiece] = []
     for material in sorted(by_material):
         spec = lumber_spec(material)
         if spec.kind != "board" or spec.width_in is None:
             raise ValueError(f"{material!r} is not a board material; use nest_sheets for sheets")
         specs[material] = spec
-        too_long += sorted((p for p in by_material[material] if p.length_in > spec.stock_lengths_in[-1] + _EPS), key=lambda p: p.part_id)
+        lengths[material] = overrides.get(material) or list(spec.stock_lengths_in)
+        too_long += sorted((p for p in by_material[material] if p.length_in > lengths[material][-1] + _EPS), key=lambda p: p.part_id)
     if too_long:  # checked for ALL materials before nesting, so the error lists every offender
         first = too_long[0]
-        longest = specs[first.material].stock_lengths_in[-1]
+        longest = lengths[first.material][-1]
         raise PieceTooLongError(
             f"Part {first.part_id} ({first.label}, {first.material}) is {format_ft_in(first.length_in)} "
             f"({first.length_in:g} in) long, but the longest {first.material} board sold is {format_ft_in(longest)} "
@@ -78,11 +87,11 @@ def nest_boards(pieces: list[BoardPiece], kerf_in: float = KERF_IN) -> list[Stoc
     layouts: list[StockLayout] = []
     for material in sorted(by_material):
         spec = specs[material]
-        longest = spec.stock_lengths_in[-1]
+        longest = lengths[material][-1]
         bins = _first_fit_decreasing(by_material[material], longest, kerf_in)
         sized: list[tuple[float, int, _Bin]] = []
         for index, b in enumerate(bins):
-            stock = next(length for length in spec.stock_lengths_in if b.used <= length + _EPS)
+            stock = next(length for length in lengths[material] if b.used <= length + _EPS)
             sized.append((stock, index, b))
         sized.sort(key=lambda t: (t[0], t[1]))
         counters: dict[float, int] = {}
