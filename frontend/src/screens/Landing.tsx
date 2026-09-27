@@ -37,8 +37,11 @@ const story = [
 ] as const;
 
 const MAX_PROGRESS = story.length - 1;
-const WHEEL_DISTANCE_PER_STAGE = 1100;
-const STABLE_PORTION = .3;
+// How much scrolling each story step takes. Larger = the story lasts longer and is harder to skip.
+const WHEEL_DISTANCE_PER_STAGE = 2200; // wheel/trackpad pixels per step
+const TOUCH_DISTANCE_PER_STAGE = 1000; // finger travel in pixels per step
+// Share of each step where the picture holds still before the next transition starts.
+const STABLE_PORTION = .4;
 
 function clamp(value: number) {
   return Math.max(0, Math.min(MAX_PROGRESS, value));
@@ -124,7 +127,7 @@ export function Landing() {
       onTouchMove={(event) => {
         const currentY = event.touches[0]?.clientY;
         if (touchY.current === null || currentY === undefined) return;
-        updateProgress(progressRef.current + (touchY.current - currentY) / 520);
+        updateProgress(progressRef.current + (touchY.current - currentY) / TOUCH_DISTANCE_PER_STAGE);
         touchY.current = currentY;
       }}
       onTouchEnd={() => { touchY.current = null; }}
