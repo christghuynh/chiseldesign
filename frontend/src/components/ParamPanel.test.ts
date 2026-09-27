@@ -131,7 +131,7 @@ describe("whole numbers", () => {
     ...ramp,
     params_schema: {
       type: "object",
-      properties: { step_count: { title: "Number of steps", type: ["integer", "null"], minimum: 1, maximum: 12 } },
+      properties: { step_count: { title: "Number of steps", type: ["integer", "null"], minimum: 1, maximum: 12, empty_label: "Automatic" } },
     },
     defaults: {},
   };
@@ -148,6 +148,12 @@ describe("whole numbers", () => {
     type(count, "4");
     fireEvent.blur(count);
     expect(onChange).toHaveBeenCalledExactlyOnceWith("step_count", 4);
+  });
+
+  it("says what an empty value means", () => {
+    render(h(ParamPanel, { template: steps, params: {}, onChange: vi.fn() }));
+    expect(box("Number of steps").placeholder).toBe("Automatic");
+    expect(screen.getByText(/leave empty for automatic/)).toBeTruthy();
   });
 });
 
