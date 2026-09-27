@@ -219,16 +219,20 @@ label { line-height: 1.35; }
 .project-health__summary { display: inline-flex; align-items: center; gap: .4rem; margin: 0; color: var(--text); font-size: .78rem; font-weight: 760; white-space: nowrap; }
 .project-health__summary-mark { width: .55rem; height: .55rem; border-radius: 999px; background: var(--success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 18%, transparent); }
 .project-health__summary--attention .project-health__summary-mark { background: var(--warning); box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 18%, transparent); }
+.project-health__summary--fail .project-health__summary-mark { background: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 18%, transparent); }
 .project-health__items { display: flex; flex: 1 1 auto; flex-wrap: wrap; gap: .35rem; min-width: 0; margin: 0; padding: 0; list-style: none; }
 .project-health__item { border: 1px solid transparent; border-radius: 999px; font-size: .72rem; font-weight: 680; line-height: 1.2; padding: .3rem .5rem; }
 .project-health__item--pass { border-color: color-mix(in srgb, var(--success) 36%, var(--border)); background: color-mix(in srgb, var(--success) 12%, var(--surface-solid)); color: var(--success); }
 .project-health__item--attention { border-color: color-mix(in srgb, var(--warning) 40%, var(--border)); background: color-mix(in srgb, var(--warning) 12%, var(--surface-solid)); color: var(--warning); }
 .project-health__item--fail { border-color: color-mix(in srgb, var(--danger) 42%, var(--border)); background: color-mix(in srgb, var(--danger) 12%, var(--surface-solid)); color: var(--danger); }
-.design-workspace__health { position: absolute; top: 7.1rem; left: 50%; z-index: 4; width: min(30rem, calc(100vw - var(--design-left-panel) - var(--design-right-panel) - 4rem)); translate: -50% 0; }
 .design-workspace__feedback { position: absolute; bottom: calc(var(--design-edge) + 4rem); left: 50%; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .35rem .55rem; max-width: calc(100vw - 2rem); border: 1px solid color-mix(in srgb, var(--changed) 50%, var(--border)); border-radius: 999px; background: color-mix(in srgb, var(--changed) 13%, var(--surface-solid)); box-shadow: var(--shadow-sm); color: var(--text); font-size: .78rem; padding: .5rem .75rem; text-align: center; translate: -50% 0; }
 .design-workspace__feedback > :first-child { color: var(--changed); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .design-workspace__feedback strong { font-weight: 760; }
 .design-workspace__feedback > :last-child { color: var(--text-muted); }
+.design-workspace__panel-status { margin-left: auto; border: 1px solid transparent; border-radius: 999px; font-size: .66rem; font-weight: 760; letter-spacing: .03em; padding: .28rem .45rem; text-transform: none; white-space: nowrap; }
+.design-workspace__panel-status--pass { border-color: color-mix(in srgb, var(--success) 36%, var(--border)); background: color-mix(in srgb, var(--success) 12%, var(--surface-solid)); color: var(--success); }
+.design-workspace__panel-status--attention { border-color: color-mix(in srgb, var(--warning) 40%, var(--border)); background: color-mix(in srgb, var(--warning) 12%, var(--surface-solid)); color: var(--warning); }
+.design-workspace__panel-status--fail { border-color: color-mix(in srgb, var(--danger) 42%, var(--border)); background: color-mix(in srgb, var(--danger) 12%, var(--surface-solid)); color: var(--danger); }
 .design-workspace__edit-trigger { position: absolute; bottom: var(--design-edge); left: 50%; z-index: 4; display: inline-flex; align-items: center; gap: .45rem; translate: -50% 0; }
 /* Centred with `translate`, not `transform`: .app-button:hover sets `transform: translateY(-1px)`,
    which would otherwise replace the centring and make the button jump right on hover. */
@@ -416,7 +420,7 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
   .design-workspace__panel, .design-workspace__panel--parameters, .design-workspace__panel--details { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: 100%; max-height: none; overflow: visible; order: 2; }
   .design-workspace__panel--details { order: 3; }
   .design-workspace__panel.is-collapsed { width: 100%; }
-  .design-workspace__health, .design-workspace__feedback { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: auto; max-width: none; align-self: stretch; order: 2; translate: none; }
+  .design-workspace__feedback { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: auto; max-width: none; align-self: stretch; order: 2; translate: none; }
   .project-health { align-items: start; }
   .design-workspace__edit-trigger { position: relative; bottom: auto; left: auto; align-self: center; translate: none; order: 4; }
   .design-workspace__editor-backdrop { position: fixed; z-index: 70; }

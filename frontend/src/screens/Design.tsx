@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api/client";
 import { KeyFacts } from "../components/KeyFacts";
 import { ParamPanel } from "../components/ParamPanel";
-import { ProjectHealth } from "../components/ProjectHealth";
+import { projectHealthSummary, type ProjectHealthSummary } from "../components/ProjectHealth";
 import { PushToTalk } from "../components/PushToTalk";
 import { RuleBadges } from "../components/RuleBadges";
 import { TypedEditBox } from "../components/TypedEditBox";
@@ -100,6 +100,7 @@ export function Design() {
   }
 
   const currentSpec = spec;
+  const health = projectHealthSummary(spec, plan);
 
   function showFeedback(change: string, previous: Plan, next: Plan) {
     setFeedback({ change, materials: describeStockDelta(previous, next) });
@@ -206,8 +207,6 @@ export function Design() {
         </div>
       </header>
 
-      <ProjectHealth spec={spec} plan={plan} className="design-workspace__health" />
-
       {busy && <div className="design-workspace__status"><LoadingState message="Updating your build plan…" /></div>}
       {error && <div className="design-workspace__status"><ErrorState message={error} /></div>}
       {feedback && <div className="design-workspace__feedback" role="status"><span>Changed</span><strong>{feedback.change}</strong><span>{feedback.materials}</span></div>}
@@ -225,7 +224,7 @@ export function Design() {
       </aside>
 
       <aside className={`design-workspace__panel design-workspace__panel--details${collapsed.details ? " is-collapsed" : ""}`} aria-label="Design details">
-        <PanelToggle label="Details & checks" controls="design-panel-details" expanded={!collapsed.details} onToggle={() => togglePanel("details")} />
+        <PanelToggle label="Details & checks" status={health} controls="design-panel-details" expanded={!collapsed.details} onToggle={() => togglePanel("details")} />
         <div id="design-panel-details" className="design-workspace__panel-scroll" hidden={collapsed.details}>
           {selectedPart && (
             <section className="app-card design-workspace__selection" aria-live="polite">
@@ -261,10 +260,11 @@ export function Design() {
 }
 
 /** Header button that collapses or expands a Design side panel. */
-function PanelToggle({ label, controls, expanded, onToggle }: { label: string; controls: string; expanded: boolean; onToggle: () => void }) {
+function PanelToggle({ label, status, controls, expanded, onToggle }: { label: string; status?: ProjectHealthSummary; controls: string; expanded: boolean; onToggle: () => void }) {
   return (
     <button type="button" className="design-workspace__panel-toggle" aria-expanded={expanded} aria-controls={controls} onClick={onToggle} title={expanded ? `Collapse ${label.toLowerCase()}` : `Expand ${label.toLowerCase()}`}>
       <span>{label}</span>
+      {status && <span aria-hidden="true" className={`design-workspace__panel-status design-workspace__panel-status--${status.tone}`}>{status.label}</span>}
       <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
     </button>
   );
