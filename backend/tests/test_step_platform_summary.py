@@ -5,6 +5,7 @@ import pytest
 
 from app import engine
 from app.cutlist import label_parts
+from app.engine_errors import ParamValidationError
 from app.models import ParamValue
 from app.plan import build_plan
 from app.rules import check_design
@@ -35,6 +36,7 @@ def test_schema_groups_and_labels():
     assert props["step_count"]["title"] == "Number of steps"
     assert "leave empty for the fewest steps" in props["step_count"]["description"].lower()
     assert props["step_count"]["type"] == ["integer", "null"]
+    assert props["step_count"]["empty_label"] == "Automatic"
     for prop in props.values():
         assert "(in)" not in prop["title"] and "inferred" not in prop["description"]
 
@@ -93,6 +95,13 @@ def test_a_riser_taller_than_any_board_is_stacked_strips_and_still_builds(rise, 
     assert max(q.transform.pos[1] + max(y for _, y in q.profile) for q in risers) == pytest.approx(rise)
     build_plan(parts)
     assert [c.id for c in check_design(sp.KEY, p, d, parts)] == ["STEP-001", "STEP-002", "STEP-003"]
+
+
+def test_a_forced_count_the_stringer_cannot_be_cut_from_names_the_count_that_works():
+    # 2 steps of 15 in leave 0.38 in of wood under the notches; 3 steps of 10 leave enough.
+    with pytest.raises(ParamValidationError, match=r'^2 steps of 15" are too tall to cut from a 2x10 stringer\. Use at least 3 steps, or leave Number of steps empty\.$'):
+        sp.derive(sp.Params(total_rise_in=30, step_count=2))
+    sp.derive(sp.Params(total_rise_in=30, step_count=3))
 
 
 def test_leaving_the_count_empty_behaves_as_before():

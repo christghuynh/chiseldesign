@@ -37,7 +37,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.data import lumber_spec
 from app.engine_errors import ParamValidationError
 from app.models import Part, SkeletonStep
-from app.templates.step_platform_geometry import profile_board_length, stringer_profile, throat
+from app.templates.step_platform_geometry import MIN_THROAT_IN, profile_board_length, stringer_profile, throat
 from app.util.units import format_fraction, format_ft_in
 
 KEY = "step_platform"
@@ -56,7 +56,8 @@ class Params(BaseModel):
     tread_depth_in, max_riser_in and step_count.
 
     Schema hints for the parameter panel (see `ramp.Params`): `group` "key" for what a homeowner measures
-    or decides, "advanced" for construction choices; `unit` is the unit of a number.
+    or decides, "advanced" for construction choices; `unit` is the unit of a number; `empty_label` is
+    what an empty optional value means (the panel says "No limit" without it).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -65,7 +66,7 @@ class Params(BaseModel):
     width_in: float = Field(36, ge=24, le=72, title="Step width", description="Width of every step, from one side edge to the other.", json_schema_extra={"unit": "in", "group": "key"})
     tread_depth_in: float = Field(11, ge=8, le=16, title="Step depth", description="How far each step goes back, from the front of one step to the front of the next. 11 in is the usual minimum.", json_schema_extra={"unit": "in", "group": "advanced"})
     max_riser_in: float = Field(7, ge=4, le=9, title="Tallest step allowed", description="The most any one step may rise, top of one step to the top of the next. Sets how many steps are built when the number of steps is left empty.", json_schema_extra={"unit": "in", "group": "advanced"})
-    step_count: int | None = Field(None, ge=1, le=12, title="Number of steps", description="How many times you step up, counting the step onto the porch. Leave empty for the fewest steps that keep each riser under the tallest step allowed.", json_schema_extra={"group": "key"})
+    step_count: int | None = Field(None, ge=1, le=12, title="Number of steps", description="How many times you step up, counting the step onto the porch. Leave empty for the fewest steps that keep each riser under the tallest step allowed.", json_schema_extra={"group": "key", "empty_label": "Automatic"})
 
 
 @dataclass(frozen=True)
@@ -107,6 +108,16 @@ def _riser_boards(height: float) -> tuple[str, int]:
     return widest, math.ceil(height / (lumber_spec(widest).width_in or 0.0) - 1e-9)
 
 
+def _uncuttable_count_message(params: Params, n: int, height: float, board_width: float) -> str:
+    """Why a forced step count can't be cut from the stringer board, and the fewest steps that can."""
+    fits = [c for c in range(n + 1, 13) if throat(params.total_rise_in / c, params.tread_depth_in, board_width) >= MIN_THROAT_IN - 1e-9]
+    advice = f"Use at least {fits[0]} steps" if fits else "Use more steps"
+    return (
+        f"{n} steps of {format_fraction(height)}\" are too tall to cut from a {lumber_spec(STRINGER_MATERIAL).nominal} stringer. "
+        f"{advice}, or leave Number of steps empty."
+    )
+
+
 def derive(params: Params) -> Derived:
     """Compute the layout. Raises ParamValidationError when a board would be longer than the longest one sold."""
     n = params.step_count or max(1, math.ceil(params.total_rise_in / params.max_riser_in - 1e-9))
@@ -134,6 +145,8 @@ def derive(params: Params) -> Derived:
         try:
             profile = stringer_profile(n, height, params.tread_depth_in, tread.thickness_in, board_width)
         except ValueError as exc:
+            if params.step_count is not None:
+                raise ParamValidationError(_uncuttable_count_message(params, n, height, board_width)) from None
             raise ParamValidationError(f"The stringers cannot be cut: {exc}") from None
         length = profile_board_length(profile, stringer.thickness_in, STRINGER_MATERIAL)
         wood = throat(height, params.tread_depth_in, board_width)
