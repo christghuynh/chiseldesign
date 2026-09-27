@@ -1,5 +1,5 @@
 {
-  "_comment": "Actual (not nominal) dimensions in inches. Starting values from the spec; verify against a retailer (task NC-4). Board stock_lengths_in are the lengths sold; sheet_size_in is [width, length].",
+  "_comment": "Actual (not nominal) dimensions in inches. Board stock_lengths_in are the lengths sold: checked against Home Depot Canada (homedepot.ca) on 2026-09-26, so a length the store does not sell is left out and its pieces are cut from the next longer board (task NC-4). sheet_size_in is [width, length].",
   "materials": {
     "2x4_PT": {
       "nominal": "2x4",
@@ -10,7 +10,7 @@
       "stock_lengths_in": [
         96,
         120,
-        144
+        192
       ],
       "sheet_size_in": null,
       "outdoor_rated": true
@@ -25,7 +25,6 @@
         96,
         120,
         144,
-        168,
         192
       ],
       "sheet_size_in": null,
@@ -41,7 +40,6 @@
         96,
         120,
         144,
-        168,
         192
       ],
       "sheet_size_in": null,
