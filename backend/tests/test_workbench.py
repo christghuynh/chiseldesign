@@ -8,6 +8,7 @@ import pytest
 
 from app import templates
 from app.cutlist import label_parts, sheet_piece_dims
+from app.data import lumber_spec
 from app.engine_errors import ParamValidationError
 from app.models import Part, Plan
 from app.plan import build_plan
@@ -208,8 +209,10 @@ def test_a_bench_wider_than_a_sheet_is_rejected_clearly():
 
 
 def test_a_board_longer_than_its_stock_is_rejected_clearly():
-    wide = Params.model_construct(width_in=200.0, depth_in=48.0, height_in=34.0, lower_shelf=False)
-    with pytest.raises(ParamValidationError, match=r"Apron \(long\) needs a 191.5 in board but 2x4_PT is sold up to 144 in"):
+    longest = lumber_spec("2x4_PT").max_stock_length_in
+    wide = Params.model_construct(width_in=longest + 60, depth_in=48.0, height_in=34.0, lower_shelf=False)
+    needed = f"{longest + 60 - 8.5:g}"  # the apron is the width less the leg posts and end clearance
+    with pytest.raises(ParamValidationError, match=rf"Apron \(long\) needs a {needed} in board but 2x4_PT is sold up to {longest:g} in"):
         workbench.generate_parts(wide)
 
 

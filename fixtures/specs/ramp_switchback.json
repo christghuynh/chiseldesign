@@ -1713,10 +1713,10 @@
     ],
     "layouts": [
       {
-        "stock_id": "2x4_PT_96-1",
+        "stock_id": "2x4_PT_192-1",
         "material": "2x4_PT",
         "kind": "board",
-        "length_in": 96.0,
+        "length_in": 192.0,
         "width_in": 3.5,
         "pieces": [
           {
@@ -1727,21 +1727,11 @@
             "w": 86.8,
             "h": 3.5,
             "rotated": false
-          }
-        ],
-        "utilization": 0.9041666666666667
-      },
-      {
-        "stock_id": "2x4_PT_96-2",
-        "material": "2x4_PT",
-        "kind": "board",
-        "length_in": 96.0,
-        "width_in": 3.5,
-        "pieces": [
+          },
           {
             "label": "A",
             "part_id": "A-2",
-            "x": 0.0,
+            "x": 86.925,
             "y": 0.0,
             "w": 86.8,
             "h": 3.5,
@@ -1751,10 +1741,10 @@
         "utilization": 0.9041666666666667
       },
       {
-        "stock_id": "2x4_PT_96-3",
+        "stock_id": "2x4_PT_192-2",
         "material": "2x4_PT",
         "kind": "board",
-        "length_in": 96.0,
+        "length_in": 192.0,
         "width_in": 3.5,
         "pieces": [
           {
@@ -1765,21 +1755,11 @@
             "w": 86.8,
             "h": 3.5,
             "rotated": false
-          }
-        ],
-        "utilization": 0.9041666666666667
-      },
-      {
-        "stock_id": "2x4_PT_96-4",
-        "material": "2x4_PT",
-        "kind": "board",
-        "length_in": 96.0,
-        "width_in": 3.5,
-        "pieces": [
+          },
           {
             "label": "A",
             "part_id": "A-4",
-            "x": 0.0,
+            "x": 86.925,
             "y": 0.0,
             "w": 86.8,
             "h": 3.5,
@@ -1815,118 +1795,6 @@
           }
         ],
         "utilization": 0.96875
-      },
-      {
-        "stock_id": "2x6_PT_168-1",
-        "material": "2x6_PT",
-        "kind": "board",
-        "length_in": 168.0,
-        "width_in": 5.5,
-        "pieces": [
-          {
-            "label": "E",
-            "part_id": "E-1",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 81.0,
-            "h": 5.5,
-            "rotated": false
-          },
-          {
-            "label": "F",
-            "part_id": "F-1",
-            "x": 81.125,
-            "y": 0.0,
-            "w": 81.0,
-            "h": 5.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.9642857142857143
-      },
-      {
-        "stock_id": "2x6_PT_168-2",
-        "material": "2x6_PT",
-        "kind": "board",
-        "length_in": 168.0,
-        "width_in": 5.5,
-        "pieces": [
-          {
-            "label": "F",
-            "part_id": "F-2",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 81.0,
-            "h": 5.5,
-            "rotated": false
-          },
-          {
-            "label": "F",
-            "part_id": "F-3",
-            "x": 81.125,
-            "y": 0.0,
-            "w": 81.0,
-            "h": 5.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.9642857142857143
-      },
-      {
-        "stock_id": "2x6_PT_168-3",
-        "material": "2x6_PT",
-        "kind": "board",
-        "length_in": 168.0,
-        "width_in": 5.5,
-        "pieces": [
-          {
-            "label": "G",
-            "part_id": "G-1",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 78.228,
-            "h": 5.5,
-            "rotated": false
-          },
-          {
-            "label": "G",
-            "part_id": "G-2",
-            "x": 78.353,
-            "y": 0.0,
-            "w": 78.228,
-            "h": 5.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.9312857142857143
-      },
-      {
-        "stock_id": "2x6_PT_168-4",
-        "material": "2x6_PT",
-        "kind": "board",
-        "length_in": 168.0,
-        "width_in": 5.5,
-        "pieces": [
-          {
-            "label": "G",
-            "part_id": "G-3",
-            "x": 0.0,
-            "y": 0.0,
-            "w": 78.228,
-            "h": 5.5,
-            "rotated": false
-          },
-          {
-            "label": "G",
-            "part_id": "G-4",
-            "x": 78.353,
-            "y": 0.0,
-            "w": 78.228,
-            "h": 5.5,
-            "rotated": false
-          }
-        ],
-        "utilization": 0.9312857142857143
       },
       {
         "stock_id": "2x6_PT_192-1",
@@ -2079,6 +1947,118 @@
       },
       {
         "stock_id": "2x6_PT_192-6",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "E",
+            "part_id": "E-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 81.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "F",
+            "part_id": "F-1",
+            "x": 81.125,
+            "y": 0.0,
+            "w": 81.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.84375
+      },
+      {
+        "stock_id": "2x6_PT_192-7",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "F",
+            "part_id": "F-2",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 81.0,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "F",
+            "part_id": "F-3",
+            "x": 81.125,
+            "y": 0.0,
+            "w": 81.0,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.84375
+      },
+      {
+        "stock_id": "2x6_PT_192-8",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "G",
+            "part_id": "G-1",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 78.228,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "G",
+            "part_id": "G-2",
+            "x": 78.353,
+            "y": 0.0,
+            "w": 78.228,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8148749999999999
+      },
+      {
+        "stock_id": "2x6_PT_192-9",
+        "material": "2x6_PT",
+        "kind": "board",
+        "length_in": 192.0,
+        "width_in": 5.5,
+        "pieces": [
+          {
+            "label": "G",
+            "part_id": "G-3",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 78.228,
+            "h": 5.5,
+            "rotated": false
+          },
+          {
+            "label": "G",
+            "part_id": "G-4",
+            "x": 78.353,
+            "y": 0.0,
+            "w": 78.228,
+            "h": 5.5,
+            "rotated": false
+          }
+        ],
+        "utilization": 0.8148749999999999
+      },
+      {
+        "stock_id": "2x6_PT_192-10",
         "material": "2x6_PT",
         "kind": "board",
         "length_in": 192.0,
@@ -2864,13 +2844,13 @@
     ],
     "shopping": [
       {
-        "key": "2x4_PT_96",
-        "description": "2x4 pressure-treated, 8 ft",
+        "key": "2x4_PT_192",
+        "description": "2x4 pressure-treated, 16 ft",
         "unit": "each",
-        "qty": 4,
-        "unit_price": 7.7,
-        "subtotal": 30.8,
-        "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-4-x-8-premium-wood-above-ground-use-only/1000789777"
+        "qty": 2,
+        "unit_price": 14.95,
+        "subtotal": 29.9,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-4-x-16-premium-wood-above-ground-use-only/1000789774"
       },
       {
         "key": "2x6_PT_96",
@@ -2882,21 +2862,12 @@
         "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-8-premium-wood-above-ground-use-only/1000790084"
       },
       {
-        "key": "2x6_PT_168",
-        "description": "2x6 pressure-treated, 14 ft (placeholder price)",
-        "unit": "each",
-        "qty": 4,
-        "unit_price": 21.0,
-        "subtotal": 84.0,
-        "source_url": null
-      },
-      {
         "key": "2x6_PT_192",
         "description": "2x6 pressure-treated, 16 ft",
         "unit": "each",
-        "qty": 6,
+        "qty": 10,
         "unit_price": 22.65,
-        "subtotal": 135.9,
+        "subtotal": 226.5,
         "source_url": "https://www.homedepot.ca/product/pressure-treated-2-x-6-x-16-premium-wood-above-ground-use-only/1000790085"
       },
       {
@@ -2919,12 +2890,12 @@
       },
       {
         "key": "5/4x6_PT_deck_96",
-        "description": "5/4x6 pressure-treated deck board, 8 ft (placeholder price)",
+        "description": "5/4x6 pressure-treated deck board, 8 ft",
         "unit": "each",
         "qty": 1,
-        "unit_price": 14.0,
-        "subtotal": 14.0,
-        "source_url": null
+        "unit_price": 7.09,
+        "subtotal": 7.09,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-5-4-x-6-x-8-premium-wood-decking-above-ground-use-only/1000680745"
       },
       {
         "key": "5/4x6_PT_deck_192",
@@ -2972,11 +2943,11 @@
         "source_url": null
       }
     ],
-    "subtotal": 737.0,
-    "tax": 95.81,
-    "total": 832.81,
+    "subtotal": 735.79,
+    "tax": 95.65,
+    "total": 831.44,
     "contractor_quote": 4000.0,
-    "savings": 3167.19,
+    "savings": 3168.56,
     "has_placeholder_prices": true
   }
 }
