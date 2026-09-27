@@ -148,9 +148,16 @@ export function Landing() {
   );
 }
 
-function StoryVisual({ step, index, progress, introReady }: { step: typeof story[number]; index: number; progress: number; introReady: boolean }) {
+// How far an image must travel to be fully off screen: its own size, plus its distance from the
+// screen edge (at most 7rem), rotation and shadow. Moving by less leaves part of it on screen when
+// it is hidden at the end of the transition, which looks like it disappears early.
+const OFF_SCREEN_X = "(100% + 12rem)";
+const OFF_SCREEN_Y = "(50vh + 50% + 8rem)";
+
+/** Opacity, transform and visibility of story image `index` at scroll `progress` (0..MAX_PROGRESS). */
+export function visualStyle(index: number, progress: number, side: "left" | "right") {
   const opacity = presence(progress, index);
-  const direction = step.side === "left" ? 1 : -1;
+  const direction = side === "left" ? 1 : -1;
   const offset = (progress - index) * direction * -13;
   const y = (progress - index) * -3;
   const captureToDesign = Math.max(0, Math.min(1, progress));
@@ -159,19 +166,18 @@ function StoryVisual({ step, index, progress, introReady }: { step: typeof story
   const isDesignToPlan = progress >= 1 && progress <= 2 && (index === 1 || index === 2);
   const planToBuild = Math.max(0, Math.min(1, progress - 2));
   const isPlanToBuild = progress >= 2 && progress <= 3 && (index === 2 || index === 3);
-  const isStable = Math.abs(progress - index) < .001;
   const style = isCaptureToDesign && index === 0
-    ? { opacity: 1, transform: `translate3d(0, 0, 0) scale(${1 - captureToDesign * .28})` }
+    ? { opacity: 1 - captureToDesign, transform: `translate3d(0, 0, 0) scale(${1 - captureToDesign * .28})` }
     : isCaptureToDesign && index === 1
       ? { opacity: captureToDesign, transform: "translate3d(0, 0, 0)" }
       : isDesignToPlan && index === 1
-    ? { opacity: 1, transform: `translate3d(${designToPlan * -58}%, 0, 0)` }
+    ? { opacity: 1, transform: `translate3d(calc(${-designToPlan} * ${OFF_SCREEN_X}), 0, 0)` }
     : isDesignToPlan && index === 2
-      ? { opacity: designToPlan === 0 ? 0 : 1, transform: `translate3d(${(1 - designToPlan) * 58}%, 0, 0)` }
+      ? { opacity: designToPlan === 0 ? 0 : 1, transform: `translate3d(calc(${1 - designToPlan} * ${OFF_SCREEN_X}), 0, 0)` }
       : isPlanToBuild && index === 2
-        ? { opacity: 1, transform: `translate3d(${planToBuild * 8}%, ${planToBuild * 46}%, 0) rotate(${planToBuild * 5}deg)` }
+        ? { opacity: 1, transform: `translate3d(${planToBuild * 8}%, calc(${planToBuild} * ${OFF_SCREEN_Y}), 0) rotate(${planToBuild * 5}deg)` }
         : isPlanToBuild && index === 3
-          ? { opacity: planToBuild === 0 ? 0 : 1, transform: `translate3d(0, ${(1 - planToBuild) * 70}%, 0) rotate(${(1 - planToBuild) * -4}deg)` }
+          ? { opacity: planToBuild === 0 ? 0 : 1, transform: `translate3d(0, calc(${1 - planToBuild} * ${OFF_SCREEN_Y}), 0) rotate(${(1 - planToBuild) * -4}deg)` }
       : { opacity, transform: `translate3d(${offset}%, ${y}%, 0) scale(${.94 + opacity * .06})` };
   const visibility = isCaptureToDesign && index === 0
     ? captureToDesign >= 1 ? "hidden" : "visible"
@@ -186,12 +192,18 @@ function StoryVisual({ step, index, progress, introReady }: { step: typeof story
         : isPlanToBuild && index === 3
           ? planToBuild <= 0 ? "hidden" : "visible"
           : opacity === 0 ? "hidden" : "visible";
+  return { ...style, visibility } as const;
+}
+
+function StoryVisual({ step, index, progress, introReady }: { step: typeof story[number]; index: number; progress: number; introReady: boolean }) {
+  const isStable = Math.abs(progress - index) < .001;
+  const style = visualStyle(index, progress, step.side);
   const isIntro = index === 0 && isStable && introReady;
 
   return (
     <figure
       className={`landing-story__visual landing-story__visual--${step.visual} landing-story__visual--${step.side}${isStable ? " is-stable" : ""}${isIntro ? " is-intro-ready" : ""}`}
-      style={{ ...style, visibility }}
+      style={style}
     >
       <img src={step.image} alt={step.alt} draggable={false} />
     </figure>
