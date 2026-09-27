@@ -9,6 +9,7 @@ import { SafetyNotice } from "../components/plan/SafetyNotice";
 import { ShoppingList } from "../components/plan/ShoppingList";
 import { SummaryCard } from "../components/plan/SummaryCard";
 import { EmptyState } from "../components/common/EmptyState";
+import { ProjectHealth } from "../components/ProjectHealth";
 import { SaveProject } from "../components/projects/SaveProject";
 import { useStore } from "../store";
 import { Scene } from "../three/Scene";
@@ -74,6 +75,7 @@ export function Plan() {
         {nav}
       </div>
 
+      <ProjectHealth spec={spec} plan={plan} showPricing />
       <SummaryCard spec={spec} plan={plan} />
 
       <section aria-labelledby="cutlist-title" className="plan-cutlist grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">

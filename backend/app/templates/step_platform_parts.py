@@ -49,6 +49,9 @@ def build_parts(params: Params, derived: Derived) -> list[Part]:
             builder.add("Tread board", TREAD_MATERIAL, _rect(tread_w, tread_t), width, pos=(x, k * h - tread_t, z0), group="treads")
 
     riser_notes = [] if derived.riser_rip_width_in is None else [f"Rip to {format_fraction(derived.riser_rip_width_in)} in wide"]
+    strips = derived.riser_boards_per_riser  # more than 1 only when a forced step count makes a riser very tall
+    strip_h = h / strips
     for k in range(1, n + 1):
-        builder.add("Riser", derived.riser_material, _rect(riser.thickness_in, h), width, pos=((k - 1) * pitch, (k - 1) * h, z0), cut_notes=riser_notes, group="risers")
+        for j in range(strips):
+            builder.add("Riser", derived.riser_material, _rect(riser.thickness_in, strip_h), width, pos=((k - 1) * pitch, (k - 1) * h + j * strip_h, z0), cut_notes=riser_notes, group="risers")
     return builder.parts

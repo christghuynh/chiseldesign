@@ -33,11 +33,11 @@ export function LayoutSvg({ layout, highlightedLabel = null }: LayoutSvgProps) {
       <svg viewBox={`0 0 ${g.width} ${g.height}`} width="100%" role="img" aria-label={summary} className="block">
         <defs>
           <pattern id={hatchId} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="8" height="8" fill="#f1f5f9" />
-            <line x1="0" y1="0" x2="0" y2="8" stroke="#94a3b8" strokeWidth="3" />
+            <rect width="8" height="8" fill="#e8eef2" />
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#8a9299" strokeWidth="3" />
           </pattern>
         </defs>
-        <rect data-stock x={0} y={0} width={g.width} height={g.height} fill={`url(#${hatchId})`} stroke="#334155" strokeWidth="2" />
+        <rect data-stock x={0} y={0} width={g.width} height={g.height} fill={`url(#${hatchId})`} stroke="#33587a" strokeWidth="2" />
         {g.pieces.map((p) => {
           const highlighted = p.label === highlightedLabel;
           const text = p.w >= 70 ? `${p.label} · ${formatFraction(p.lengthIn)}"` : p.w >= 16 ? p.label : null;
@@ -49,8 +49,8 @@ export function LayoutSvg({ layout, highlightedLabel = null }: LayoutSvgProps) {
                 y={p.y}
                 width={p.w}
                 height={p.h}
-                fill={highlighted ? "#fde68a" : "#dbeafe"}
-                stroke={highlighted ? "#b45309" : "#1e3a8a"}
+                fill={highlighted ? "#77b6ea" : "#dbeaf7"}
+                stroke={highlighted ? "#37393a" : "#33587a"}
                 strokeWidth={highlighted ? 3 : 1.5}
               >
                 <title>{`${p.partId}: ${formatFraction(p.lengthIn)}"`}</title>
@@ -62,7 +62,7 @@ export function LayoutSvg({ layout, highlightedLabel = null }: LayoutSvgProps) {
                   textAnchor="middle"
                   dominantBaseline="central"
                   fontSize="16"
-                  fill="#0f172a"
+                  fill="#37393a"
                   aria-hidden="true"
                 >
                   {text}

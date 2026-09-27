@@ -97,3 +97,12 @@ What I did meanwhile: B. The Projects screen has it, and "Save" on the Plan and 
 Question: `currentProjectId` stays set after opening a project, so if the user then starts a fresh design in Capture, "Save new version" would add it to the old project.
 Options I see: A) Capture calls `setCurrentProjectId(null)` when it applies a new parse result (P2's screen). B) Keep the current safeguard only.
 What I did meanwhile: B. Whenever a project is open, Save offers both "Save new version" and "Save as new project".
+
+### GEO-21 — Engine test used the workbench as its "no summary" template (p4 tpl-workbench, 2026-09-27; for P1)
+Question: `test_engine.py::test_templates_without_a_summary_drop_a_stale_one` generated a workbench and asserted `meta` had no `summary`. The workbench now has `summarize`, so that failed. Garden bed and step platform will likely get summaries too, so switching templates would only move the break.
+Options I see: A) Keep the test on the workbench and assert only that the stale entry is gone (works whether or not a template summarizes). B) Add a test-only template with no `summarize` to cover the "no summary key at all" branch.
+What I did meanwhile: A. The test is renamed `test_a_stale_summary_posted_back_in_meta_never_survives`. The case where a template has no hook, so `summary` is absent altogether, is no longer covered by that test.
+### GEO-20 — Forced step counts: very tall risers, uncuttable stringers, and the "No limit" hint (p4/tpl-step-platform, 2026-09-27)
+Question: `step_count` can force risers taller than any riser board (e.g. 2 steps at 21 in = 10-1/2 in, over the 9-1/4 in 2x10), and the task needs that design to derive so STEP-001 can fail with a fix.
+What I did: such a riser is built from equal stacked strips of 2x10 (`Derived.riser_boards_per_riser`, 1 in every design without a forced count), so the model still builds and the rule fails with `{"step_count": <smallest passing>}`. The fix is only offered when that count is within 1–12 and builds.
+Resolved: (A) a forced count whose notches leave too little wood in the stringer (e.g. 2 steps at 30 in) still raises ParamValidationError, but the message now names the fix: "2 steps of 15" are too tall to cut from a 2x10 stringer. Use at least 3 steps, or leave Number of steps empty." (B) New schema hint `empty_label` (step_count sets "Automatic"); ParamPanel uses it for the placeholder and the range hint and falls back to "No limit", so the ramp is unchanged. **P2:** heads-up that ParamPanel reads this new hint.

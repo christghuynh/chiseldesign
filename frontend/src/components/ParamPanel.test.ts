@@ -125,6 +125,38 @@ describe("slider", () => {
   });
 });
 
+describe("whole numbers", () => {
+  // A template with an integer parameter, like the step platform's optional step count.
+  const steps: TemplateInfo = {
+    ...ramp,
+    params_schema: {
+      type: "object",
+      properties: { step_count: { title: "Number of steps", type: ["integer", "null"], minimum: 1, maximum: 12, empty_label: "Automatic" } },
+    },
+    defaults: {},
+  };
+
+  it("slides in steps of 1 and asks for a whole number when typed", () => {
+    const onChange = vi.fn();
+    render(h(ParamPanel, { template: steps, params: { step_count: { value: 3, source: "user", confidence: null } }, onChange }));
+    expect(slider("Number of steps").step).toBe("1");
+    const count = box("Number of steps");
+    type(count, "2.5");
+    fireEvent.blur(count);
+    expect(screen.getByRole("alert").textContent).toBe("Enter a whole number.");
+    expect(onChange).not.toHaveBeenCalled();
+    type(count, "4");
+    fireEvent.blur(count);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith("step_count", 4);
+  });
+
+  it("says what an empty value means", () => {
+    render(h(ParamPanel, { template: steps, params: {}, onChange: vi.fn() }));
+    expect(box("Number of steps").placeholder).toBe("Automatic");
+    expect(screen.getByText(/leave empty for automatic/)).toBeTruthy();
+  });
+});
+
 describe("layout", () => {
   it("shows the key dimensions first and folds the rest under Advanced settings", () => {
     setup();

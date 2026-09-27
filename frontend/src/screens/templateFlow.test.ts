@@ -58,6 +58,16 @@ const shownNumbers = () =>
     .filter((input) => input.type !== "checkbox" && input.value !== "")
     .map((input) => Number(input.value.replace(/[^\d.-]/g, "")));
 
+/** Every <label for> must point at an element that exists, and ids must be unique on the page. */
+function expectValidLabels() {
+  const ids = [...document.querySelectorAll("[id]")].map((el) => el.id);
+  expect(ids.filter((id, i) => ids.indexOf(id) !== i), "duplicate ids").toEqual([]);
+  const broken = [...document.querySelectorAll("label[for]")]
+    .map((label) => label.getAttribute("for")!)
+    .filter((id) => !document.getElementById(id));
+  expect(broken, "labels whose for= matches no element").toEqual([]);
+}
+
 beforeEach(() => {
   useStore.setState(useStore.getInitialState(), true);
   mockApi();
@@ -79,6 +89,7 @@ describe("choosing a template fills in its preset dimensions", () => {
       await waitFor(() => {
         for (const [, value] of numericDefaults(template)) expect(shownNumbers()).toContain(value);
       });
+      expectValidLabels();
       fireEvent.click(screen.getByRole("button", { name: /Looks right/ }));
       await waitFor(() => expect(useStore.getState().screen).toBe("design"));
 
@@ -94,6 +105,7 @@ describe("choosing a template fills in its preset dimensions", () => {
       await waitFor(() => {
         for (const [, value] of numericDefaults(template)) expect(shownNumbers()).toContain(value);
       });
+      expectValidLabels();
     });
   }
 
@@ -146,6 +158,7 @@ describe("choosing a template fills in its preset dimensions", () => {
     await waitFor(() => {
       for (const [, value] of numericDefaults(bed)) expect(shownNumbers()).toContain(value);
     });
+    expectValidLabels();
     fireEvent.click(screen.getByRole("button", { name: /Looks right/ }));
     await waitFor(() => expect(generateBodies).toHaveLength(1));
     expect(generateBodies[0].template).toBe("garden_bed");
