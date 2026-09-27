@@ -13,9 +13,9 @@ interface ParamPanelProps {
 export function ParamPanel({ template, params, onChange, busy = false }: ParamPanelProps) {
   const properties = (template.params_schema.properties ?? {}) as Record<string, SchemaProperty>;
   return (
-    <section className="app-card p-4" aria-labelledby="parameters-title">
-      <div className="mb-3 flex items-baseline justify-between gap-2"><h3 id="parameters-title" className="m-0 text-lg font-bold">Parameters</h3>{busy && <span role="status" className="text-sm text-[var(--text-muted)]">Updating model…</span>}</div>
-      <div className="space-y-4">
+    <section className="app-card p-5" aria-labelledby="parameters-title">
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3"><h3 id="parameters-title" className="m-0 text-lg font-bold">Parameters</h3>{busy && <span role="status" className="text-sm text-[var(--text-muted)]">Updating model…</span>}</div>
+      <div className="space-y-5">
         {Object.entries(properties).map(([name, property]) => {
           const current = params[name];
           if (!current) return null;
@@ -23,11 +23,11 @@ export function ParamPanel({ template, params, onChange, busy = false }: ParamPa
           const types = Array.isArray(property.type) ? property.type : [property.type];
           const assumption = current.source === "inferred" || current.source === "default";
           const id = `parameter-${name}`;
-          return <div key={name} className={`rounded p-2 ${assumption ? "assumption" : ""}`}>
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-2"><label htmlFor={id} className="font-semibold">{title}</label><SourceTag source={current.source} /></div>
+          return <div key={name} className={`rounded-lg p-3 ${assumption ? "assumption" : ""}`}>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-3"><label htmlFor={id} className="font-semibold">{title}</label><SourceTag source={current.source} /></div>
             {property.description && <p className="mb-2 text-sm text-[var(--text-muted)]">{property.description}</p>}
             {property.enum ? (
-              <div className="flex flex-wrap gap-1" role="group" aria-label={title}>
+              <div className="flex flex-wrap gap-2" role="group" aria-label={title}>
                 {property.enum.map((choice) => <button key={choice} type="button" disabled={busy} aria-pressed={current.value === choice} onClick={() => onChange(name, choice)} className={`min-h-10 rounded px-3 text-sm ${current.value === choice ? "bg-[var(--brand)] text-[var(--brand-contrast)]" : "border border-[var(--border)]"}`}>{choice}</button>)}
               </div>
             ) : types.includes("boolean") ? (

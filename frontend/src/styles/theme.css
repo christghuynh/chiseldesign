@@ -84,6 +84,34 @@ label { line-height: 1.35; }
   backdrop-filter: blur(20px) saturate(1.35);
 }
 
+.app-shell--landing {
+  display: flex;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (min-width: 801px) {
+  html:has(.app-shell--landing),
+  body:has(.app-shell--landing) { height: 100%; overflow: hidden; }
+}
+
+.app-shell--landing main {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-shell--landing .landing-hero {
+  min-height: 0;
+  height: 100%;
+  padding-top: clamp(1.5rem, 4vw, 3.5rem);
+  padding-bottom: clamp(1.5rem, 4vw, 3.5rem);
+}
+
 .app-home-button {
   border: 1px solid transparent;
   border-radius: .9rem;
@@ -91,6 +119,10 @@ label { line-height: 1.35; }
   color: var(--text);
   cursor: pointer;
 }
+
+.app-brand-cluster { display: flex; align-items: center; gap: .35rem; }
+.app-home-button--logo { display: grid; place-items: center; padding: .15rem; }
+.app-home-button--wordmark { display: grid; min-height: 3rem; place-items: center; padding: .2rem .45rem; }
 
 .app-home-button:hover {
   border-color: color-mix(in srgb, var(--brand) 22%, transparent);
@@ -143,6 +175,21 @@ label { line-height: 1.35; }
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(16px) saturate(1.12);
 }
+
+/* Shared card rhythm: headings and their first interactive group should never touch. */
+.app-card > :is(h2, h3, h4):not(:last-child) { margin-bottom: 1rem; }
+.app-card > :is(h2, h3, h4) { margin-top: 0; }
+.typed-edit-box { display: flex; align-items: stretch; gap: .75rem; }
+.push-to-talk { display: inline-flex; flex-direction: column; gap: .35rem; }
+
+/* The edit panel is used in Design and is deliberately roomier than a compact settings card. */
+section[aria-labelledby="edits-title"] { padding: 1.25rem; }
+section[aria-labelledby="edits-title"] > h3 { margin: 0 0 1rem; }
+section[aria-labelledby="edits-title"] > .flex { align-items: center; gap: .75rem; }
+section[aria-labelledby="edits-title"] > .mt-3 { margin-top: 1rem; }
+section[aria-labelledby="edits-title"] [role="status"] { line-height: 1.5; }
+section[aria-labelledby="checks-title"] { padding: 1.25rem; }
+section[aria-labelledby="checks-title"] article { padding: .9rem; }
 
 .app-button {
   min-height: 2.75rem;
@@ -241,14 +288,18 @@ label { line-height: 1.35; }
 .capture-page__heading h2 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.35rem); }
 .capture-page__heading p { max-width: 43rem; margin: 0; color: var(--text-muted); }
 .capture-page__heading-actions { display: flex; align-items: center; justify-content: end; gap: 1rem; }
+.capture-error { margin: .75rem 0 1.5rem; }
+.capture-error--photo .app-card { border-color: color-mix(in srgb, var(--warning) 65%, var(--border)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--warning) 24%, transparent), 0 0 24px color-mix(in srgb, var(--warning) 24%, transparent), var(--shadow-card); }
 .capture-workspace { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(23rem, .96fr); gap: 1rem; }
 .capture-card { padding: 1rem; }
 .capture-card h3 { display: flex; align-items: center; gap: .55rem; margin: 0; font-size: 1.1rem; }
 .capture-step { display: inline-grid; width: 1.7rem; height: 1.7rem; place-items: center; border: 1px solid color-mix(in srgb, var(--accent-sage) 76%, var(--border)); border-radius: 999px; background: color-mix(in srgb, var(--accent-sage) 18%, transparent); color: var(--accent-sage-deep); font-size: .82rem; font-weight: 800; line-height: 1; }
 .capture-card__intro { margin: .25rem 0 .75rem; color: var(--text-muted); font-size: .86rem; }
 .capture-photo { display: grid; grid-template-rows: auto auto auto; align-content: start; min-height: 0; }
+.capture-photo--attention { border-color: color-mix(in srgb, var(--warning) 72%, var(--border)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warning) 17%, transparent), var(--shadow-card); animation: capture-photo-attention 640ms ease-out; }
 .capture-dropzone { display: grid; min-height: 7.5rem; place-items: center; border: 1.5px dashed color-mix(in srgb, var(--brand) 42%, var(--border)); border-radius: 1rem; background: color-mix(in srgb, var(--accent-sage) 9%, transparent); color: var(--text-muted); padding: .75rem 1rem; text-align: center; }
 .capture-dropzone p { max-width: 22rem; margin: 0; }
+.capture-photo__required { margin: .7rem 0 0; color: var(--warning); font-size: .83rem; font-weight: 700; text-align: center; }
 .capture-preview { max-height: 8rem; width: 100%; border-radius: 1rem; object-fit: contain; }
 .capture-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
 .capture-fields label { color: var(--text-muted); font-size: .84rem; font-weight: 650; }
@@ -258,6 +309,17 @@ label { line-height: 1.35; }
 .capture-template { display: flex; align-items: end; gap: .85rem; margin-top: .75rem; padding: .75rem 1rem; }
 .capture-template h3 { margin: 0 1rem 0 0; font-size: 1rem; }
 .capture-template label { flex: 1; color: var(--text-muted); font-size: .84rem; font-weight: 650; }
+
+@keyframes capture-photo-attention {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  45% { transform: translateX(4px); }
+  68% { transform: translateX(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capture-photo--attention { animation: none; }
+}
 
 .template-selector-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgb(22 36 42 / 38%); padding: 1.25rem; backdrop-filter: blur(5px); }
 .template-selector { width: min(54rem, 100%); max-height: min(42rem, calc(100vh - 2.5rem)); overflow: hidden; padding: 1.25rem; }
@@ -288,7 +350,18 @@ label { line-height: 1.35; }
 .template-preview-art__rail { stroke-opacity: .78; stroke-width: 3.5; }
 .template-preview-art__node { fill: var(--surface-solid); stroke: currentColor; stroke-width: 3.5; }
 
+.camera-capture-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgb(22 36 42 / 48%); padding: 1.25rem; backdrop-filter: blur(6px); }
+.camera-capture { width: min(42rem, 100%); overflow: hidden; padding: 1.25rem; }
+.camera-capture__header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.camera-capture__header h2 { margin: .15rem 0 0; font-size: 1.5rem; }
+.camera-capture__video { display: block; aspect-ratio: 4 / 3; width: 100%; border: 1px solid var(--border); border-radius: 1rem; background: #07111d; object-fit: cover; }
+.camera-capture__error { display: grid; min-height: 14rem; place-items: center; gap: 1rem; border: 1px dashed var(--border); border-radius: 1rem; background: color-mix(in srgb, var(--danger-soft) 45%, var(--surface)); padding: 1.5rem; text-align: center; }
+.camera-capture__error p { max-width: 29rem; margin: 0; color: var(--text-muted); }
+.camera-capture__actions { display: flex; justify-content: end; gap: .7rem; margin-top: 1rem; }
+
 @media (max-width: 800px) {
+  .app-shell--landing { display: block; height: auto; min-height: 100vh; max-height: none; overflow: visible; }
+  .app-shell--landing main { display: block; min-height: auto; overflow: visible; }
   .app-segmented-nav { left: auto; right: 0; width: min(16rem, calc(100vw - 1rem)); }
   .capture-page__heading { display: grid; gap: .3rem; }
   .capture-page__heading-actions { display: grid; justify-content: stretch; gap: .6rem; }
@@ -298,6 +371,9 @@ label { line-height: 1.35; }
   .template-selector { max-height: calc(100vh - 1.25rem); padding: 1rem; }
   .template-selector__body { grid-template-columns: 1fr; overflow-y: auto; }
   .template-selector__list { grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); max-height: 13rem; }
+  .camera-capture { padding: 1rem; }
+  .typed-edit-box { flex-wrap: wrap; }
+  .typed-edit-box .app-input { width: 100%; flex-basis: 100%; }
 }
 
 .landing-hero {

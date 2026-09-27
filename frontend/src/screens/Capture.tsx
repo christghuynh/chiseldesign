@@ -37,12 +37,18 @@ export function Capture() {
   const setCurrentProjectId = useStore((state) => state.setCurrentProjectId);
   const picker = useRef<HTMLInputElement>(null);
   const camera = useRef<HTMLInputElement>(null);
+  const photoCard = useRef<HTMLDivElement>(null);
+  const cameraPreview = useRef<HTMLVideoElement>(null);
+  const cameraStream = useRef<MediaStream | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [templates, setTemplates] = useState<TemplateInfo[]>([]);
   const [templateKey, setTemplateKey] = useState("ramp");
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [previewTemplateKey, setPreviewTemplateKey] = useState("ramp");
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [photoAttention, setPhotoAttention] = useState(false);
   const [fields, setFields] = useState(blank);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +60,13 @@ export function Capture() {
     void api.templates().then(setTemplates).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Could not load templates."));
   }, []);
 
+  useEffect(() => () => {
+    cameraStream.current?.getTracks().forEach((track) => track.stop());
+  }, []);
+
   function choose(next: File | undefined) {
     setError(null);
+    setPhotoAttention(false);
     if (!next) return;
     if (!next.type.startsWith("image/")) { setError("Please choose an image file (JPEG, PNG, HEIC, or WebP)."); return; }
     if (next.size > 10 * 1024 * 1024) { setError("That image is larger than 10 MB. Choose a smaller image."); return; }
@@ -64,8 +75,57 @@ export function Capture() {
     setPreview(URL.createObjectURL(next));
   }
 
+  function closeCamera() {
+    cameraStream.current?.getTracks().forEach((track) => track.stop());
+    cameraStream.current = null;
+    if (cameraPreview.current) cameraPreview.current.srcObject = null;
+    setCameraOpen(false);
+    setCameraError(null);
+  }
+
+  async function openCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      camera.current?.click();
+      return;
+    }
+    setCameraError(null);
+    setCameraOpen(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+      cameraStream.current = stream;
+      if (cameraPreview.current) {
+        cameraPreview.current.srcObject = stream;
+        await cameraPreview.current.play();
+      }
+    } catch (reason) {
+      setCameraError(reason instanceof Error && reason.name === "NotAllowedError" ? "Camera access was blocked. Allow camera access in your browser settings and try again." : "We could not open your camera. You can still choose an image from your device.");
+    }
+  }
+
+  function takePhoto() {
+    const video = cameraPreview.current;
+    if (!video || video.videoWidth === 0 || video.videoHeight === 0) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      choose(new File([blob], "chisel-camera-photo.jpg", { type: "image/jpeg" }));
+      closeCamera();
+    }, "image/jpeg", .92);
+  }
+
   async function submit() {
-    if (!file) { setError("Add a photo or choose a template instead."); return; }
+    if (!file) {
+      setError("Add a photo in the highlighted area before analyzing it. To start without one, use Browse templates.");
+      setPhotoAttention(false);
+      window.requestAnimationFrame(() => {
+        setPhotoAttention(true);
+        photoCard.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -136,10 +196,10 @@ export function Capture() {
           <button type="button" className="app-button app-button--secondary" onClick={openTemplatePicker} disabled={!templates.length}>Browse templates</button>
         </div>
       </div>
-      {error && <ErrorState message={error} onRetry={file ? () => void submit() : undefined} />}
+      {error && <div className={`capture-error ${photoAttention ? "capture-error--photo" : ""}`}><ErrorState message={error} onRetry={file ? () => void submit() : undefined} /></div>}
       {loading && <LoadingState message={file ? "Reading your photo and measurements…" : "Preparing your template…"} />}
       <div className="capture-workspace">
-        <div className="app-card capture-card capture-photo">
+        <div ref={photoCard} className={`app-card capture-card capture-photo ${photoAttention ? "capture-photo--attention" : ""}`}>
           <div>
             <h3><span className="capture-step">1</span>Add a photo</h3>
             <p className="capture-card__intro">A sketch or a photo of the space works. Images up to 10 MB.</p>
@@ -147,12 +207,13 @@ export function Capture() {
           <input ref={picker} className="sr-only" type="file" accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} />
           <input ref={camera} className="sr-only" type="file" accept="image/*" capture="environment" onChange={(event: ChangeEvent<HTMLInputElement>) => choose(event.target.files?.[0])} />
           {preview ? <img src={preview} alt="Selected site or sketch" className="capture-preview" /> : <div className="capture-dropzone"><p>No image selected yet. A photo is optional if you would rather begin with a template.</p></div>}
+          {photoAttention && !preview && <p className="capture-photo__required" role="status">Add or take a photo here before analyzing.</p>}
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" className="app-button app-button--secondary flex flex-1 items-center justify-center gap-2 border-dashed" onClick={() => picker.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); choose(event.dataTransfer.files[0]); }}>
               <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8" cy="9" r="1.2" /><path d="m4 18 5.2-5 3.5 3.2 2.3-2.2L20 18" /></svg>
               Choose an image
             </button>
-            <button type="button" className="app-button app-button--secondary inline-flex items-center justify-center gap-2" onClick={() => camera.current?.click()}>
+            <button type="button" className="app-button app-button--secondary inline-flex items-center justify-center gap-2" onClick={() => void openCamera()}>
               <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h3l1.3-2h7.4L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8Z" /><circle cx="12" cy="13" r="3.2" /></svg>
               Use camera
             </button>
@@ -190,6 +251,21 @@ export function Capture() {
                 </div>
                 <button type="button" className="app-button w-full" disabled={loading} onClick={() => { setTemplateKey(previewTemplate.key); setTemplatePickerOpen(false); void startTemplate(previewTemplate.key); }}>Start with this template</button>
               </aside>
+            </div>
+          </section>
+        </div>
+      )}
+      {cameraOpen && (
+        <div className="camera-capture-backdrop" role="presentation">
+          <section className="app-card camera-capture" role="dialog" aria-modal="true" aria-labelledby="camera-capture-title">
+            <div className="camera-capture__header">
+              <div><p className="template-selector__eyebrow">Camera</p><h2 id="camera-capture-title">Take a photo</h2></div>
+              <button type="button" className="app-button app-button--secondary app-icon-button" onClick={closeCamera} aria-label="Close camera">×</button>
+            </div>
+            {cameraError ? <div className="camera-capture__error"><p>{cameraError}</p><button type="button" className="app-button app-button--secondary" onClick={() => void openCamera()}>Try again</button></div> : <video ref={cameraPreview} className="camera-capture__video" autoPlay muted playsInline />}
+            <div className="camera-capture__actions">
+              <button type="button" className="app-button app-button--secondary" onClick={closeCamera}>Cancel</button>
+              {!cameraError && <button type="button" className="app-button" onClick={takePhoto}>Take photo</button>}
             </div>
           </section>
         </div>

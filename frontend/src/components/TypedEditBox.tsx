@@ -17,7 +17,7 @@ export function TypedEditBox({ onSubmit, disabled = false, placeholder = "e.g. m
 
   return (
     <form
-      className="flex gap-2"
+      className="typed-edit-box"
       onSubmit={(event) => {
         event.preventDefault();
         const trimmed = text.trim();
@@ -36,9 +36,9 @@ export function TypedEditBox({ onSubmit, disabled = false, placeholder = "e.g. m
         disabled={disabled}
         placeholder={placeholder}
         onChange={(event) => setText(event.target.value)}
-        className="min-h-11 flex-1 rounded border border-slate-400 px-3"
+        className="app-input min-h-12 flex-1"
       />
-      <button type="submit" disabled={disabled} className="min-h-11 rounded bg-slate-900 px-4 text-white disabled:opacity-50">
+      <button type="submit" disabled={disabled} className="app-button min-h-12 disabled:opacity-50">
         Apply
       </button>
     </form>

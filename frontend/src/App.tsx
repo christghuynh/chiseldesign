@@ -39,17 +39,19 @@ export default function App() {
   if (DevRoute) return <DevRoute />;
 
   return (
-    <div className="theme-transition min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div className={`theme-transition ${screen === "landing" ? "app-shell--landing" : "min-h-screen"} bg-[var(--bg)] text-[var(--text)]`}>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-[var(--surface)] focus:p-3">
         Skip to content
       </a>
       <header className="app-header sticky top-0 z-30">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-1">
-            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button flex items-center gap-1 text-left text-xl font-black tracking-tight" aria-label="Go to Chisel welcome screen">
+          <div className="app-brand-cluster">
+            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button app-home-button--logo" aria-label="Go to Chisel welcome screen">
               <span className="h-11 w-24 shrink-0 overflow-hidden" aria-hidden="true">
                 <img src="/brand/logo.png" alt="" className="h-full w-full object-contain" />
               </span>
+            </button>
+            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button app-home-button--wordmark text-left text-xl font-black tracking-tight" aria-label="Go to Chisel welcome screen">
               <span className="app-brand-name app-brand-name--chisel">Chisel</span>
             </button>
             <div className="app-sections-menu relative">
@@ -101,7 +103,7 @@ export default function App() {
               )}
             </button>
             <button type="button" className="app-button app-button--secondary text-sm" onClick={() => setHelpOpen(true)} aria-haspopup="dialog">
-              Shortcuts ?
+              Shortcuts
             </button>
           </div>
         </div>
