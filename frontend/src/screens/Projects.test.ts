@@ -167,5 +167,36 @@ describe("Projects screen (login off)", () => {
     expect((await screen.findByRole("alert")).textContent).toMatch(/doesn't exist or belongs to someone else/);
     expect(screen.getByText("Grandma's porch")).toBeTruthy();
   });
+
+  it("drops the 'Saved the project.' message once that project is deleted", async () => {
+    useStore.getState().applyGenerateResult(switchback.spec, switchback.plan, "parse");
+    let projects: unknown[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init: RequestInit = {}) => {
+        const key = `${init.method ?? "GET"} ${url}`;
+        if (key === "POST /api/projects") {
+          projects = [{ ...SUMMARY, id: 11, name: "Front ramp" }];
+          return new Response(JSON.stringify({ id: 11 }));
+        }
+        if (key === "DELETE /api/projects/11") {
+          projects = [];
+          return new Response(null, { status: 204 });
+        }
+        return new Response(JSON.stringify(projects));
+      }),
+    );
+    renderScreen();
+    fireEvent.click(await screen.findByRole("button", { name: "Save project" }));
+    fireEvent.change(screen.getByLabelText("Project name"), { target: { value: "Front ramp" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByText("Saved the project.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete Front ramp" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes, delete" }));
+    expect(await screen.findByText("No saved projects yet")).toBeTruthy();
+    expect(screen.queryByText("Saved the project.")).toBeNull();
+    expect(screen.getByRole("button", { name: "Save project" })).toBeTruthy(); // saving again makes a new project
+  });
 });
 

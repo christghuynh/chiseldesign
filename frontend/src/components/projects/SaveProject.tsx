@@ -1,6 +1,6 @@
 // Owner: P4. "Save project" (FE-11), used on the Plan and Projects screens. Anyone can design; saving
 // needs a login, so logged-out users get a login button first (a popup, so the design stays in memory).
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useStore } from "../../store";
 import { defaultProjectName, saveCurrentProject } from "./projectActions";
@@ -21,6 +21,12 @@ export function SaveProject({ onSaved }: SaveProjectProps) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // "Saved the project." is about the project the editor is linked to; once that is deleted it would be wrong.
+  const linked = currentProjectId !== null;
+  useEffect(() => {
+    if (!linked) setStatus(null);
+  }, [linked]);
 
   if (!spec) return null;
 
