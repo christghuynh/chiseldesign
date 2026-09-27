@@ -196,7 +196,7 @@ html { overscroll-behavior-y: none; }
 
 /* Design is a focused canvas: tools float above the model instead of competing for page space. */
 .design-main { width: 100%; min-height: 0; height: 100%; padding: 0; }
-.design-workspace { --design-edge: clamp(.75rem, 2vw, 1.25rem); --design-left-panel: 23rem; --design-right-panel: 20rem; --text: #37393a; --text-muted: #4d5052; --surface-solid: #ffffff; --surface: rgb(251 252 253 / 54%); --surface-muted: rgb(219 227 234 / 82%); --border: rgb(55 57 58 / 22%); --design-glass: rgb(255 255 255 / 88%); --design-glass-shadow: 0 22px 58px rgb(55 57 58 / 18%); --design-glass-filter: blur(22px) saturate(1.15); position: relative; min-height: 100%; height: 100%; overflow: hidden; background: #ffffff; color: #37393a; }
+.design-workspace { --design-edge: clamp(.75rem, 2vw, 1.25rem); --design-left-panel: clamp(17rem, 25vw, 24rem); --design-right-panel: clamp(15rem, 21vw, 21rem); --text: #37393a; --text-muted: #4d5052; --surface-solid: #ffffff; --surface: rgb(251 252 253 / 54%); --surface-muted: rgb(219 227 234 / 82%); --border: rgb(55 57 58 / 22%); --design-glass: rgb(255 255 255 / 88%); --design-glass-shadow: 0 22px 58px rgb(55 57 58 / 18%); --design-glass-filter: blur(22px) saturate(1.15); position: relative; min-height: 100%; height: 100%; overflow: hidden; background: #ffffff; color: #37393a; }
 .design-workspace__canvas { position: absolute; inset: 0; }
 .design-workspace__topbar { position: absolute; top: var(--design-edge); right: var(--design-edge); z-index: 4; display: flex; align-items: start; justify-content: end; pointer-events: none; }
 .design-workspace__topbar > * { pointer-events: auto; }
@@ -328,6 +328,12 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 }
 
 .app-input:focus { border-color: color-mix(in srgb, var(--focus) 70%, var(--border)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus) 18%, transparent); outline: none; }
+/* Parameter rows: slider two thirds, value box one third, then the unit. Both may shrink, so the row always fits its
+   panel with the same proportions (a range input otherwise refuses to shrink below ~130px). */
+.param-number-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; align-items: center; gap: .5rem; }
+.param-number-row--no-slider { grid-template-columns: minmax(0, 1fr) auto; }
+.param-number-row input[type="range"] { width: 100%; min-width: 0; margin: 0; }
+.param-number-row .app-input { width: 100%; min-width: 0; padding-inline: .45rem; }
 .source-tag { display: inline-block; border-radius: 999px; background: var(--surface-muted); color: var(--text-muted); font-size: .7rem; font-weight: 750; letter-spacing: .04em; padding: .2rem .5rem; text-transform: uppercase; }
 .assumption { border-left: 3px solid var(--warning); background: color-mix(in srgb, var(--warning) 9%, var(--surface)); }
 .rule-status--pass { background: #dfeae2; color: #25573f; }
@@ -420,7 +426,6 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 .camera-capture__actions { display: flex; justify-content: end; gap: .7rem; margin-top: 1rem; }
 
 @media (min-width: 801px) and (max-width: 1200px) {
-  .design-workspace { --design-left-panel: 19rem; --design-right-panel: 16rem; }
   .design-workspace__history { gap: .35rem; }
 }
 
