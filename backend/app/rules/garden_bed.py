@@ -10,6 +10,7 @@ from typing import Any
 
 from app.models import Part, RuleCheck, RuleFix
 from app.rules.constants import (
+    BED_MIN_RIP_IN,
     BED_MAX_HEIGHT_IN,
     BED_MAX_WIDTH_BOTH_SIDES_IN,
     BED_MAX_WIDTH_ONE_SIDE_IN,
@@ -84,5 +85,27 @@ def _path_check(params: Any) -> RuleCheck:
     return RuleCheck(id="BED-003", title="Path clearance around the bed", status="info", detail=detail, source_ref=BED_PATH_CLEARANCE_IN.source_key)
 
 
+def _rip_check(params: Any, derived: Any) -> RuleCheck:
+    """Warns when the top course would be ripped into a thin strip (practice, not a guideline). The fix moves
+    the height to a whole number of boards: lower first (less lumber), higher when lower leaves the
+    accessible height range."""
+    limit = BED_MIN_RIP_IN
+    rip = derived.ripped_width_in
+    title = "Top course is a practical width"
+    if rip is None:
+        return RuleCheck(id="BED-004", title=title, status="pass", detail="Every course is a full-width board", source_ref=limit.source_key)
+    if rip >= limit.value - 1e-9:
+        return RuleCheck(id="BED-004", title=title, status="pass", detail=f"The top course is ripped to {format_ft_in(rip)}, at least {format_ft_in(limit.value)}", source_ref=limit.source_key)
+    detail = f"The top course is ripped to a {format_ft_in(rip)} strip; anything under {format_ft_in(limit.value)} wastes a row of boards and is hard to cut safely"
+    fix = None
+    for target in (params.height_in - rip, params.height_in + (derived.board_width_in - rip)):
+        target = round(target, 4)
+        fixed = _patched(params, {"height_in": target})
+        if fixed is not None and _height_status(fixed.height_in) == "pass":
+            fix = RuleFix(label=f"Set the height to {format_ft_in(target)} (full boards)", params_patch={"height_in": target})
+            break
+    return RuleCheck(id="BED-004", title=title, status="warn", detail=detail, source_ref=limit.source_key, fix=fix)
+
+
 def check(params: Any, derived: Any, parts: list[Part]) -> list[RuleCheck]:
-    return [_height_check(params), _reach_check(params), _path_check(params)]
+    return [_height_check(params), _reach_check(params), _path_check(params), _rip_check(params, derived)]

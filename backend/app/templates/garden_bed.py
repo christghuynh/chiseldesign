@@ -19,8 +19,9 @@ Layout decisions made here (the brief left them open):
   TOP of the posts and courses and its thickness counts inside `height_in`, so the posts (and the
   course stack) are `height_in - 1.5` tall with a cap and `height_in` without.
 - Course count is `ceil(course_height / board_width)`. The LAST (top) course is ripped when the height
-  is not a multiple of the board width; only that one course is ripped. A very thin rip (a strip a
-  few tenths of an inch wide) is legal but impractical; the spec prescribes ceil, so it is kept.
+  is not a multiple of the board width; only that one course is ripped. A very thin rip is legal but
+  impractical, so the BED-004 rule warns under 3 in and offers a whole-board height. The default height
+  (29-1/4 in: three 2x10 courses plus the cap rail) uses full boards.
 - `access` does not change the geometry; it only selects the reach limit used by the rules.
 - The cut list infers a board's length as the longest of its three extents. For an end course or end
   cap board shorter than its own cross-section (only very narrow beds) that would be wrong, so such
@@ -76,7 +77,7 @@ class Params(BaseModel):
 
     length_in: float = Field(72, ge=24, le=144, title="Length", description="Outside length of the bed, end to end along the long sides. The long sides are single boards, so 12 ft is the most.", json_schema_extra={"unit": "in", "group": "key"})
     width_in: float = Field(24, ge=12, le=48, title="Width", description="Outside width of the bed, from the front face to the back face. Keep it within reach: about 24 in from one side, 48 in from both.", json_schema_extra={"unit": "in", "group": "key"})
-    height_in: float = Field(30, ge=12, le=48, title="Height", description="From the ground to the very top of the bed, including the cap rail when there is one.", json_schema_extra={"unit": "in", "group": "key"})
+    height_in: float = Field(29.25, ge=12, le=48, title="Height", description="From the ground to the very top of the bed, including the cap rail when there is one.", json_schema_extra={"unit": "in", "group": "key"})
     access: Access = Field("one_side", title="Reach from", description="Which long sides you can stand at to work the bed. It sets how wide the bed can be and still be reached.", json_schema_extra={"group": "advanced", "enum_labels": ACCESS_LABELS})
     board: BoardKey = Field("2x10_PT", title="Side boards", description="Lumber stacked on edge to make the walls. The top course is ripped narrower when the height isn't a whole number of boards.", json_schema_extra={"group": "advanced", "enum_labels": BOARD_LABELS})
     cap_rail: bool = Field(True, title="Cap rail", description="A flat 2x6 rail around the top edge that doubles as a seat or armrest. It counts toward the height.", json_schema_extra={"group": "advanced"})
