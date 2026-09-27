@@ -60,9 +60,15 @@ export function measurementValues(template: TemplateInfo, typed: Record<string, 
 }
 
 /** The template's numeric presets with their display titles, e.g. ["Length (in)", 72]. */
-export function presetDimensions(template: TemplateInfo): [string, number][] {
-  const props = (template.params_schema.properties ?? {}) as Record<string, { title?: string }>;
+/**
+ * The template's numeric presets as [title, "72 in"] for a preview. When the template marks its key
+ * dimensions (`group: "key"`), only those are listed; advanced settings stay out of the preview.
+ */
+export function presetDimensions(template: TemplateInfo): [string, string][] {
+  const props = (template.params_schema.properties ?? {}) as Record<string, { title?: string; unit?: string; group?: string }>;
+  const grouped = Object.values(props).some((prop) => prop.group);
   return Object.entries(template.defaults)
     .filter((entry): entry is [string, number] => typeof entry[1] === "number")
-    .map(([name, value]) => [props[name]?.title ?? name.replaceAll("_", " "), value]);
+    .filter(([name]) => !grouped || props[name]?.group === "key")
+    .map(([name, value]) => [props[name]?.title ?? name.replaceAll("_", " "), props[name]?.unit ? `${value} ${props[name].unit}` : String(value)]);
 }
