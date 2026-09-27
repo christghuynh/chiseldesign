@@ -47,7 +47,7 @@ def test_registry_finds_the_workbench_with_schema_and_defaults():
     assert "workbench" in templates.registry()
     info = next(i for i in templates.template_infos() if i.key == "workbench")
     assert info.name == "Workbench"
-    assert info.defaults == {"width_in": 48, "depth_in": 24, "height_in": 34, "lower_shelf": True}
+    assert info.defaults == {"width_in": 48, "depth_in": 24, "height_in": 34, "lower_shelf": True, "shelf_height_in": 10.0}
     props = info.params_schema["properties"]
     assert (props["width_in"]["minimum"], props["width_in"]["maximum"]) == (24, 96)
     assert (props["depth_in"]["minimum"], props["depth_in"]["maximum"]) == (12, 48)
@@ -83,7 +83,7 @@ def test_bounds_are_inclusive():
     for values in ({"width_in": 24, "depth_in": 12, "height_in": 24}, {"width_in": 96, "depth_in": 48, "height_in": 48}):
         parts = parts_of(**values)
         assert parts
-    assert make().model_dump() == {"width_in": 48, "depth_in": 24, "height_in": 34, "lower_shelf": True}
+    assert make().model_dump() == {"width_in": 48, "depth_in": 24, "height_in": 34, "lower_shelf": True, "shelf_height_in": 10.0}
 
 
 # ----------------------------------------------------------------------------- parts
