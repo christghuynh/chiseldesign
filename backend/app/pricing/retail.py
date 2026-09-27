@@ -296,3 +296,45 @@ def find_wood(rows: list[CutListRow], client: httpx.Client | None = None) -> lis
             continue
         plans.append(plan_wood(material, by_material[material], listings))
     return plans
+
+
+# --- a worksheet for reading real prices -----------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class WorksheetRow:
+    """One price key and the product whose page to read its price from (None when no such product is sold)."""
+
+    key: str
+    material: str
+    length_in: float
+    listing: Listing | None
+
+
+def price_key(material: str, length_in: float) -> str:
+    """The prices.json key for a board: '2x6_PT' at 192 in is '2x6_PT_192'."""
+    return f"{material}_{int(length_in)}"
+
+
+def candidate_by_length(listings: list[Listing]) -> dict[float, Listing]:
+    """For each length, the sold product to price. The Tavily price only ranks candidates (a listed price
+    suggests a live product); it is never used as the price."""
+    best: dict[float, Listing] = {}
+    for item in listings:
+        if not item.sold:
+            continue
+        current = best.get(item.length_in)
+        if current is None or _rank(item) < _rank(current):
+            best[item.length_in] = item
+    return best
+
+
+def price_worksheet(materials: list[str], client: httpx.Client | None = None) -> list[WorksheetRow]:
+    """For every stock length the engine may buy of these materials, the product to read a price from."""
+    rows: list[WorksheetRow] = []
+    for material in materials:
+        candidates = candidate_by_length(find_boards(material, client))
+        for length in lumber_spec(material).stock_lengths_in:
+            rows.append(WorksheetRow(price_key(material, length), material, length, candidates.get(float(length))))
+    return rows
+
