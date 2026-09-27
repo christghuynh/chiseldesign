@@ -12,9 +12,12 @@ def test_lumber_uses_actual_not_nominal_dimensions():
     assert lumber_spec("2x8_PT").width_in == 7.25 and lumber_spec("2x10_PT").width_in == 9.25
 
 
-def test_stock_lengths_match_the_agreed_table():
-    assert lumber_spec("2x4_PT").stock_lengths_in == [96, 120, 144]
-    assert lumber_spec("2x6_PT").stock_lengths_in == [96, 120, 144, 168, 192]
+def test_stock_lengths_are_the_ones_home_depot_canada_sells():
+    """Checked against homedepot.ca on 2026-09-26 (task NC-4): 14 ft 2x6 and 2x8, and a priced 12 ft 2x4, are not sold."""
+    assert lumber_spec("2x4_PT").stock_lengths_in == [96, 120, 192]
+    assert lumber_spec("2x6_PT").stock_lengths_in == [96, 120, 144, 192]
+    assert lumber_spec("2x8_PT").stock_lengths_in == [96, 120, 144, 192]
+    assert lumber_spec("5/4x6_PT_deck").stock_lengths_in == [96, 120, 144, 168, 192]
     assert lumber_spec("2x10_PT").stock_lengths_in == [96, 120, 144]
     assert lumber_spec("4x4_PT").stock_lengths_in == [96, 120]
     assert lumber_spec("2x6_PT").max_stock_length_in == 192

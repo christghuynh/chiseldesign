@@ -4,10 +4,12 @@ import math
 
 import pytest
 
+from app.data import lumber_spec
 from app.rules.constants import HANDRAIL_HEIGHT_IN
 from tests.test_ramp_support import assert_invariants, bbox, make, named, world_points
 
 H = HANDRAIL_HEIGHT_IN.value
+LONGEST_RAIL = lumber_spec("2x4_PT").max_stock_length_in  # rails are 2x4: the longest board sold
 
 
 def handrail_parts(parts):
@@ -83,7 +85,7 @@ def test_rails_follow_the_slope():
         edges = [(pts[i], pts[(i + 1) % len(pts)]) for i in range(len(pts))]
         a, b = max(edges, key=lambda e: math.dist(*e))
         assert math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])) % 180 == pytest.approx(derived.slope_angle_deg, abs=0.05)
-        assert math.dist(*max(edges, key=lambda e: math.dist(*e))) <= 144 + 1e-6
+        assert math.dist(*max(edges, key=lambda e: math.dist(*e))) <= LONGEST_RAIL + 1e-6
 
 
 def test_rails_stay_within_the_height_range_above_the_surface():
@@ -104,12 +106,14 @@ def test_rails_stay_within_the_height_range_above_the_surface():
 def test_long_rails_are_split_at_posts_into_buyable_pieces():
     params, derived, parts = make(total_rise_in=30, layout="straight")
     per_run = [r for r in named(parts, "Handrail") if bbox([r])[0][0] < derived.runs[0].run_in]
-    assert len(per_run) == 6 and all(r.cut_notes == ["Splice: butt joint centered on a post"] for r in per_run)
+    assert derived.runs[0].sloped_in > LONGEST_RAIL  # longer than the longest board sold, so each rail is spliced
+    pieces = math.ceil(derived.runs[0].sloped_in / LONGEST_RAIL)
+    assert len(per_run) == 2 * pieces and all(r.cut_notes == ["Splice: butt joint centered on a post"] for r in per_run)
     left = sorted((r for r in per_run if bbox([r])[0][2] < 0), key=lambda r: bbox([r])[0][0])
-    assert len(left) == 3
+    assert len(left) == pieces
     for r in left:
         edges = [math.dist(r.profile[i], r.profile[(i + 1) % 4]) for i in range(4)]
-        assert max(edges) <= 144 + 1e-6
+        assert max(edges) <= LONGEST_RAIL + 1e-6
     # the pieces butt against each other at posts: adjacent pieces meet in x (within the parallelogram lean)
     post_xs = sorted({round((bbox([p])[0][0] + bbox([p])[1][0]) / 2, 2) for p in named(parts, "Handrail post") if bbox([p])[1][0] <= derived.runs[0].run_in + 1e-3})
     for a, b in zip(left, left[1:], strict=False):
