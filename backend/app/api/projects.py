@@ -1,9 +1,9 @@
 """Projects API (INF-6). Auth via current_user (INF-5); persistence via the store repo.
 
-Owners only see their own projects; another user's project id returns 404.
+Owners only see and delete their own projects; another user's project id returns 404.
 """
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from app.auth.verify import AuthUser, current_user
 from app.models import (
@@ -38,6 +38,14 @@ def create_project(req: ProjectCreateRequest, user: AuthUser = Depends(current_u
 def get_project(project_id: int, user: AuthUser = Depends(current_user)):
     owner_id = repo.upsert_user(user.sub)
     return repo.get_project(owner_id, project_id)
+
+
+@router.delete("/{project_id}", status_code=204, responses=ERRORS)
+def delete_project(project_id: int, user: AuthUser = Depends(current_user)):
+    """Delete one of the caller's projects with all its versions. 204 on success; 404 if it is not theirs."""
+    owner_id = repo.upsert_user(user.sub)
+    repo.delete_project(owner_id, project_id)
+    return Response(status_code=204)
 
 
 @router.post("/{project_id}/versions", response_model=VersionCreateResponse, responses=ERRORS)

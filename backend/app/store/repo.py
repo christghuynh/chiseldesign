@@ -81,6 +81,16 @@ def create_project(owner_id: int, name: str, spec: Spec) -> ProjectCreateRespons
     return ProjectCreateResponse(id=project_id)
 
 
+def delete_project(owner_id: int, project_id: int) -> None:
+    """Delete a project and every one of its versions. Another user's project id is a 404, like every other call."""
+    with connect() as conn:
+        _owned_project_row(conn, project_id, owner_id)
+        # versions.project_id has no ON DELETE CASCADE, so remove the versions first (foreign keys are on)
+        conn.execute("DELETE FROM versions WHERE project_id = ?", (project_id,))
+        conn.execute("DELETE FROM projects WHERE id = ? AND owner_id = ?", (project_id, owner_id))
+        conn.commit()
+
+
 def get_project(owner_id: int, project_id: int) -> ProjectDetail:
     with connect() as conn:
         _owned_project_row(conn, project_id, owner_id)

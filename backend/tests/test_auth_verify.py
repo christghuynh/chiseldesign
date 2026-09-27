@@ -99,6 +99,38 @@ def test_valid_token_reaches_the_projects_route(_local_jwks, tmp_path, monkeypat
     assert r.json() == []
 
 
+def _bearer(sub="auth0|abc123", **claims):
+    return {"Authorization": f"Bearer {_make_token({'sub': sub, **claims})}"}
+
+
+def test_deleting_a_project_works_with_a_verified_login_token(_local_jwks, tmp_path, monkeypatch):
+    """The whole delete path under real RS256 verification (not the AUTH_DISABLED dev user): the owner's token
+    deletes; someone else's valid token gets a 404 and changes nothing; a bad or missing token is a 401."""
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "t.db"))
+    mine, theirs = _bearer("auth0|abc123"), _bearer("auth0|someone-else")
+    pid = client.post("/api/projects", json={"name": "Ramp", "spec": SPEC}, headers=mine).json()["id"]
+
+    assert client.delete(f"/api/projects/{pid}", headers=theirs).status_code == 404  # another login cannot delete it
+    assert client.delete(f"/api/projects/{pid}", headers=_bearer(aud="https://someone-else")).status_code == 401
+    assert client.delete(f"/api/projects/{pid}", headers={"Authorization": "Bearer not-a-token"}).status_code == 401
+    assert client.delete(f"/api/projects/{pid}").status_code == 401
+    assert client.get(f"/api/projects/{pid}", headers=mine).status_code == 200  # all of that left it in place
+
+    deleted = client.delete(f"/api/projects/{pid}", headers=mine)
+    assert deleted.status_code == 204 and deleted.content == b""
+    assert client.get(f"/api/projects/{pid}", headers=mine).status_code == 404
+    assert client.get("/api/projects", headers=mine).json() == []
+
+
+def test_an_expired_login_cannot_delete(_local_jwks, tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "t.db"))
+    pid = client.post("/api/projects", json={"name": "Ramp", "spec": SPEC}, headers=_bearer()).json()["id"]
+    now = int(time.time())
+    expired = _bearer(iat=now - 7200, exp=now - 3600)
+    assert client.delete(f"/api/projects/{pid}", headers=expired).status_code == 401
+    assert client.get(f"/api/projects/{pid}", headers=_bearer()).status_code == 200
+
+
 def test_verify_can_be_imported_before_anything_else():
     """`app.auth.verify` and `app.api` used to import each other, so importing verify first failed (only a full
     test run, which imported the API first, hid it). A fresh interpreter has no such help."""
