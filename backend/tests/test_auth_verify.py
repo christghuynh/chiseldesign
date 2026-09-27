@@ -97,3 +97,17 @@ def test_valid_token_reaches_the_projects_route(_local_jwks, tmp_path, monkeypat
     r = client.get("/api/projects", headers={"Authorization": f"Bearer {_make_token()}"})
     assert r.status_code == 200
     assert r.json() == []
+
+
+def test_verify_can_be_imported_before_anything_else():
+    """`app.auth.verify` and `app.api` used to import each other, so importing verify first failed (only a full
+    test run, which imported the API first, hid it). A fresh interpreter has no such help."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    backend = Path(__file__).resolve().parents[1]
+    for module in ("app.auth.verify", "app.store.repo", "app.api.errors"):
+        done = subprocess.run([sys.executable, "-c", f"import {module}"], cwd=backend, capture_output=True, text=True)
+        assert done.returncode == 0, f"import {module} failed:\n{done.stderr[-500:]}"
+
