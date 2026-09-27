@@ -41,7 +41,7 @@ export default function App() {
         Skip to content
       </a>
       <header className="app-header sticky top-0 z-30">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2">
+        <div className="app-header__inner flex flex-wrap items-center justify-between gap-3 py-2">
           <div className="app-brand-cluster">
             <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--brand" aria-label="Go to Chisel welcome screen">
               <span className="h-8 w-11 shrink-0" aria-hidden="true">

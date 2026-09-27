@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Inter by Rasmus Andersson (variable, weights 100-900), bundled with the app so it works offline. */
+@import "@fontsource-variable/inter";
 @import "./styles/theme.css";
 
 /* Accessibility baseline: 16px minimum text, visible focus, reduced motion. */
