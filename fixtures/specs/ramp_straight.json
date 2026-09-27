@@ -1762,12 +1762,12 @@
       },
       {
         "key": "4x4_PT_120",
-        "description": "4x4 pressure-treated, 10 ft (placeholder price)",
+        "description": "4x4 pressure-treated, 10 ft",
         "unit": "each",
         "qty": 1,
-        "unit_price": 25.0,
-        "subtotal": 25.0,
-        "source_url": null
+        "unit_price": 20.7,
+        "subtotal": 20.7,
+        "source_url": "https://www.homedepot.ca/product/pressure-treated-4-x-4-x-10-premium-wood-post-suitable-for-ground-contact/1000790080"
       },
       {
         "key": "5/4x6_PT_deck_96",
@@ -1806,11 +1806,11 @@
         "source_url": null
       }
     ],
-    "subtotal": 430.19,
-    "tax": 55.92,
-    "total": 486.11,
+    "subtotal": 425.89,
+    "tax": 55.37,
+    "total": 481.26,
     "contractor_quote": 4000.0,
-    "savings": 3513.89,
+    "savings": 3518.74,
     "has_placeholder_prices": true
   }
 }
