@@ -264,10 +264,10 @@
     "description": "Wooden steps up to a porch, with notched stringers, deck-board treads and risers.",
     "params_schema": {
       "additionalProperties": false,
-      "description": "Step platform parameters. Bounds not stated in the original spec were inferred: width_in,\ntread_depth_in, max_riser_in and step_count.\n\nSchema hints for the parameter panel (see `ramp.Params`): `group` \"key\" for what a homeowner measures\nor decides, \"advanced\" for construction choices; `unit` is the unit of a number; `empty_label` is\nwhat an empty optional value means (the panel says \"No limit\" without it).",
+      "description": "Step platform parameters. Bounds not stated in the original spec were inferred: width_in,\ntread_depth_in, max_riser_in, step_count and platform_depth_in.\n\nSchema hints for the parameter panel (see `ramp.Params`): `group` \"key\" for what a homeowner measures\nor decides, \"advanced\" for construction choices; `unit` is the unit of a number; `empty_label` is\nwhat an empty optional value means (the panel says \"No limit\" without it).",
       "properties": {
         "total_rise_in": {
-          "description": "From the ground to the top of the porch or doorway, measured straight up. The top step is the porch itself.",
+          "description": "From the ground to the top of the porch, deck or doorway, measured straight up. The top step is the platform (or the porch) itself.",
           "group": "key",
           "maximum": 60,
           "minimum": 1,
@@ -307,7 +307,7 @@
         },
         "step_count": {
           "default": null,
-          "description": "How many times you step up, counting the step onto the porch. Leave empty for the fewest steps that keep each riser under the tallest step allowed.",
+          "description": "How many times you step up, counting the step onto the top. Leave empty for the fewest steps that keep each riser under the tallest step allowed.",
           "empty_label": "Automatic",
           "group": "key",
           "title": "Number of steps",
@@ -317,6 +317,23 @@
             "integer",
             "null"
           ]
+        },
+        "top_platform": {
+          "default": true,
+          "description": "Builds a flat platform with its own frame and posts at the top of the steps. Turn it off when the steps end at an existing porch or deck.",
+          "group": "key",
+          "title": "Top platform",
+          "type": "boolean"
+        },
+        "platform_depth_in": {
+          "default": 36,
+          "description": "How far the top platform goes back from the top step, rounded up to whole deck boards. 36 in leaves room to stand and open a door.",
+          "group": "advanced",
+          "maximum": 96,
+          "minimum": 24,
+          "title": "Platform depth",
+          "type": "number",
+          "unit": "in"
         }
       },
       "required": [
@@ -329,7 +346,9 @@
       "width_in": 36,
       "tread_depth_in": 11,
       "max_riser_in": 7,
-      "step_count": null
+      "step_count": null,
+      "top_platform": true,
+      "platform_depth_in": 36
     }
   },
   {
@@ -372,10 +391,20 @@
         },
         "lower_shelf": {
           "default": true,
-          "description": "A plywood shelf between the legs, resting on 2x4 supports, with its top surface 10 in above the floor.",
+          "description": "A plywood shelf between the legs, resting on 2x4 supports.",
           "group": "advanced",
           "title": "Lower shelf",
           "type": "boolean"
+        },
+        "shelf_height_in": {
+          "default": 10.0,
+          "description": "From the floor to the top of the lower shelf. It has to stay at least 6 in below the frame under the top.",
+          "group": "advanced",
+          "maximum": 36,
+          "minimum": 4,
+          "title": "Shelf height",
+          "type": "number",
+          "unit": "in"
         }
       },
       "title": "Params",
@@ -385,7 +414,8 @@
       "width_in": 48,
       "depth_in": 24,
       "height_in": 34,
-      "lower_shelf": true
+      "lower_shelf": true,
+      "shelf_height_in": 10.0
     }
   }
 ]
