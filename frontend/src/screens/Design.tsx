@@ -14,24 +14,195 @@ import type { ParamValue, RuleCheck, TemplateInfo } from "../types";
 import { Scene } from "../three/Scene";
 import { type EditTurn, recordExchange, withTurns } from "./editMemory";
 
-
 export function Design() {
-  const spec = useStore((state) => state.spec); const plan = useStore((state) => state.plan);
-  const selected = useStore((state) => state.selectedPartIds); const setSelected = useStore((state) => state.setSelected);
-  const applyGenerateResult = useStore((state) => state.applyGenerateResult); const undo = useStore((state) => state.undo); const redo = useStore((state) => state.redo); const cursor = useStore((state) => state.cursor); const history = useStore((state) => state.history); const setScreen = useStore((state) => state.setScreen);
-  const setVoiceState = useStore((state) => state.setVoiceState); const setLastReply = useStore((state) => state.setLastReply); const setLastUtterance = useStore((state) => state.setLastUtterance);
-  const { speak } = useSpeak(); const [template, setTemplate] = useState<TemplateInfo | null>(null); const [busy, setBusy] = useState(false); const [error, setError] = useState<string | null>(null); const [reply, setReply] = useState<string | null>(null); const generateTimer = useRef<number | null>(null); const pendingPatch = useRef<Record<string, number | string | boolean | null>>({}); const generation = useRef(0); const editTurns = useRef<EditTurn[]>([]);
-  useEffect(() => { void api.templates().then((items) => setTemplate(items.find((item) => item.key === spec?.template) ?? null)).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Could not load parameter controls.")); }, [spec?.template]);
-  useEffect(() => { const handler = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") { event.preventDefault(); event.shiftKey ? redo() : undo(); } }; window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, [redo, undo]);
-  useEffect(() => () => { if (generateTimer.current !== null) window.clearTimeout(generateTimer.current); }, []);
+  const spec = useStore((state) => state.spec);
+  const plan = useStore((state) => state.plan);
+  const selected = useStore((state) => state.selectedPartIds);
+  const setSelected = useStore((state) => state.setSelected);
+  const applyGenerateResult = useStore((state) => state.applyGenerateResult);
+  const undo = useStore((state) => state.undo);
+  const redo = useStore((state) => state.redo);
+  const cursor = useStore((state) => state.cursor);
+  const history = useStore((state) => state.history);
+  const setScreen = useStore((state) => state.setScreen);
+  const setVoiceState = useStore((state) => state.setVoiceState);
+  const setLastReply = useStore((state) => state.setLastReply);
+  const setLastUtterance = useStore((state) => state.setLastUtterance);
+  const { speak } = useSpeak();
+  const [template, setTemplate] = useState<TemplateInfo | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [reply, setReply] = useState<string | null>(null);
+  const [sceneKey, setSceneKey] = useState(0);
+  const generateTimer = useRef<number | null>(null);
+  const pendingPatch = useRef<Record<string, number | string | boolean | null>>({});
+  const generation = useRef(0);
+  const editTurns = useRef<EditTurn[]>([]);
+
+  useEffect(() => {
+    void api.templates()
+      .then((items) => setTemplate(items.find((item) => item.key === spec?.template) ?? null))
+      .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Could not load parameter controls."));
+  }, [spec?.template]);
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        event.shiftKey ? redo() : undo();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [redo, undo]);
+
+  useEffect(() => () => {
+    if (generateTimer.current !== null) window.clearTimeout(generateTimer.current);
+  }, []);
+
   const selectedPart = useMemo(() => spec?.parts.find((part) => part.id === selected[0]), [selected, spec?.parts]);
-  if (!spec || !plan) return <section aria-labelledby="design-title" className="mx-auto max-w-4xl"><h2 id="design-title" className="text-3xl font-bold">Design</h2><EmptyState title="Start with a sketch or template first"><button type="button" className="app-button mt-2" onClick={() => setScreen("capture")}>Go to capture</button></EmptyState></section>;
+
+  if (!spec || !plan) {
+    return (
+      <section aria-labelledby="design-title" className="workflow-empty-page mx-auto max-w-5xl">
+        <div className="workflow-empty-page__heading"><p>03 · Design</p><h2 id="design-title">Design</h2></div>
+        <EmptyState variant="design" eyebrow="A design starts with a direction" title="Start with a sketch or template" description="Add a photo or pick a starting template, then you can shape the details here.">
+          <button type="button" className="app-button" onClick={() => setScreen("capture")}>Start in Capture</button>
+        </EmptyState>
+      </section>
+    );
+  }
+
   const currentSpec = spec;
-  async function generate(params: Record<string, ParamValue>, source: "manual" | "fix") { const request = ++generation.current; setBusy(true); setError(null); try { const result = await api.generate({ template: currentSpec.template, params, meta: currentSpec.meta }); if (request !== generation.current) return; applyGenerateResult(result.spec, result.plan, source); } catch (reason) { if (request !== generation.current) return; setError(reason instanceof Error ? reason.message : "The model could not be updated."); } finally { if (request === generation.current) setBusy(false); } }
-  // The panel sends one finished, in-range value per edit. Edits made close together are merged into one
-  // regenerate on top of the latest spec, so none is lost; null clears an optional parameter.
-  function change(name: string, raw: number | string | boolean | null) { pendingPatch.current[name] = raw; if (generateTimer.current !== null) window.clearTimeout(generateTimer.current); generateTimer.current = window.setTimeout(() => { generateTimer.current = null; const latest = useStore.getState().spec ?? currentSpec; const params = { ...latest.params }; for (const [key, value] of Object.entries(pendingPatch.current)) { if (value === null) delete params[key]; else params[key] = { value, source: "user", confidence: null }; } pendingPatch.current = {}; void generate(params, "manual"); }, 150); }
-  function fix(rule: RuleCheck) { if (!rule.fix) return; const params = { ...currentSpec.params }; Object.entries(rule.fix.params_patch).forEach(([name, value]) => { if (typeof value === "number" || typeof value === "string" || typeof value === "boolean") params[name] = { value, source: "user", confidence: null }; }); void generate(params, "fix"); }
-  async function edit(text: string) { const keyword = text.trim().toLowerCase(); setLastUtterance(text); if (keyword === "undo") { undo(); return; } if (keyword === "redo") { redo(); return; } setBusy(true); setVoiceState("processing"); setError(null); try { const result = await api.edit({ spec: withTurns(currentSpec, editTurns.current), utterance: text }); editTurns.current = recordExchange(editTurns.current, text, result.message); if (!result.needs_clarification) applyGenerateResult(result.spec, result.plan, "edit"); setReply(result.message); setLastReply(result.message); setVoiceState("speaking"); await speak(result.message); setVoiceState("idle"); } catch (reason) { setVoiceState("error"); setError(reason instanceof Error ? reason.message : "The design edit could not be applied."); } finally { setBusy(false); } }
-  return <section aria-labelledby="design-title" className="mx-auto max-w-7xl space-y-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 id="design-title" className="mb-1 text-3xl font-bold">Design</h2><p className="m-0 text-[var(--text-muted)]">Adjust the plan; changes regenerate the model and checks.</p></div><div className="flex gap-2"><button type="button" className="app-button app-button--secondary" disabled={cursor <= 0 || busy} onClick={undo}>Undo</button><button type="button" className="app-button app-button--secondary" disabled={cursor >= history.length - 1 || busy} onClick={redo}>Redo</button></div></div>{busy && <LoadingState message="Updating your build plan…" />}{error && <ErrorState message={error} />}<div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(20rem,.75fr)]"><div className="space-y-4"><div className="overflow-hidden rounded border border-[var(--border)]"><Scene parts={spec.parts} selectedIds={selected} onSelect={(id) => setSelected(id ? [id] : [])} height="34rem" /></div>{selectedPart && <aside className="app-card p-3" aria-live="polite"><strong>{selectedPart.label}: {selectedPart.name}</strong><span className="ml-2 text-sm text-[var(--text-muted)]">{selectedPart.material} · profile {selectedPart.profile.length} points · {selectedPart.thickness} in thick</span></aside>}<KeyFacts spec={spec} /><RuleBadges rules={spec.rule_checks} onApplyFix={fix} busy={busy} /></div><aside className="space-y-4">{template && <ParamPanel template={template} params={spec.params} onChange={change} busy={busy} />}<section className="app-card p-4" aria-labelledby="edits-title"><h3 id="edits-title" className="mt-0 text-lg font-bold">Edit by voice or text</h3><div className="flex flex-wrap gap-2"><PushToTalk disabled={busy} onTranscript={(text) => void edit(text)} /><span className="self-center text-sm text-[var(--text-muted)]">Hold Space or the button (up to 10 sec)</span></div><div className="mt-3"><TypedEditBox disabled={busy} onSubmit={(text) => void edit(text)} /></div>{reply && <p className="mt-3 rounded bg-[var(--surface-muted)] p-2" role="status">{reply}</p>}</section><button type="button" className="app-button w-full" onClick={() => setScreen("plan")}>Generate plan</button><p className="text-sm text-[var(--text-muted)]">Guidelines, not code compliance. Check local permit requirements.</p></aside></div></section>;
+
+  async function generate(params: Record<string, ParamValue>, source: "manual" | "fix") {
+    const request = ++generation.current;
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await api.generate({ template: currentSpec.template, params, meta: currentSpec.meta });
+      if (request !== generation.current) return;
+      applyGenerateResult(result.spec, result.plan, source);
+    } catch (reason) {
+      if (request !== generation.current) return;
+      setError(reason instanceof Error ? reason.message : "The model could not be updated.");
+    } finally {
+      if (request === generation.current) setBusy(false);
+    }
+  }
+
+  function change(name: string, raw: number | string | boolean | null) {
+    pendingPatch.current[name] = raw;
+    if (generateTimer.current !== null) window.clearTimeout(generateTimer.current);
+    generateTimer.current = window.setTimeout(() => {
+      generateTimer.current = null;
+      const latest = useStore.getState().spec ?? currentSpec;
+      const params = { ...latest.params };
+      for (const [key, value] of Object.entries(pendingPatch.current)) {
+        if (value === null) delete params[key];
+        else params[key] = { value, source: "user", confidence: null };
+      }
+      pendingPatch.current = {};
+      void generate(params, "manual");
+    }, 150);
+  }
+
+  function fix(rule: RuleCheck) {
+    if (!rule.fix) return;
+    const params = { ...currentSpec.params };
+    Object.entries(rule.fix.params_patch).forEach(([name, value]) => {
+      if (typeof value === "number" || typeof value === "string" || typeof value === "boolean") {
+        params[name] = { value, source: "user", confidence: null };
+      }
+    });
+    void generate(params, "fix");
+  }
+
+  async function edit(text: string) {
+    const keyword = text.trim().toLowerCase();
+    setLastUtterance(text);
+    if (keyword === "undo") { undo(); return; }
+    if (keyword === "redo") { redo(); return; }
+    setBusy(true);
+    setVoiceState("processing");
+    setError(null);
+    try {
+      const result = await api.edit({ spec: withTurns(currentSpec, editTurns.current), utterance: text });
+      editTurns.current = recordExchange(editTurns.current, text, result.message);
+      if (!result.needs_clarification) applyGenerateResult(result.spec, result.plan, "edit");
+      setReply(result.message);
+      setLastReply(result.message);
+      setVoiceState("speaking");
+      await speak(result.message);
+      setVoiceState("idle");
+    } catch (reason) {
+      setVoiceState("error");
+      setError(reason instanceof Error ? reason.message : "The design edit could not be applied.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section aria-labelledby="design-title" className="design-workspace">
+      <div className="design-workspace__canvas">
+        <Scene key={sceneKey} parts={spec.parts} selectedIds={selected} onSelect={(id) => setSelected(id ? [id] : [])} height="100%" background="#ffffff" showReset={false} />
+      </div>
+
+      <header className="design-workspace__topbar">
+        <div>
+          <p>03 · Shape your design</p>
+          <h2 id="design-title">Design workspace</h2>
+          <span>Rotate, zoom, and select a part to inspect it.</span>
+        </div>
+        <div className="design-workspace__history">
+          <button type="button" className="app-button app-button--secondary" onClick={() => setScreen("confirm")}>Back to Confirm</button>
+          <button type="button" className="app-button app-button--secondary app-icon-button" title="Reset model view" aria-label="Reset model view" onClick={() => setSceneKey((key) => key + 1)}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8V4m0 0h4M4 4l3 3a8 8 0 1 1-1.4 9.9" /></svg>
+          </button>
+          <button type="button" className="app-button app-button--secondary app-icon-button" title="Undo" aria-label="Undo" disabled={cursor <= 0 || busy} onClick={undo}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M9 7 4 12l5 5M4 12h10a6 6 0 0 1 6 6" /></svg>
+          </button>
+          <button type="button" className="app-button app-button--secondary app-icon-button" title="Redo" aria-label="Redo" disabled={cursor >= history.length - 1 || busy} onClick={redo}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="m15 7 5 5-5 5m5-5H10a6 6 0 0 0-6 6" /></svg>
+          </button>
+        </div>
+      </header>
+
+      {busy && <div className="design-workspace__status"><LoadingState message="Updating your build plan…" /></div>}
+      {error && <div className="design-workspace__status"><ErrorState message={error} /></div>}
+
+      <aside className="design-workspace__panel design-workspace__panel--parameters" aria-label="Design parameters">
+        {template ? <ParamPanel template={template} params={spec.params} onChange={change} busy={busy} /> : <div className="app-card p-4 text-sm text-[var(--text-muted)]">Loading design controls…</div>}
+      </aside>
+
+      <aside className="design-workspace__panel design-workspace__panel--details" aria-label="Design details">
+        {selectedPart && (
+          <section className="app-card design-workspace__selection" aria-live="polite">
+            <p>Selected part</p>
+            <strong>{selectedPart.label}: {selectedPart.name}</strong>
+            <span>{selectedPart.material} · {selectedPart.thickness} in thick</span>
+          </section>
+        )}
+        <KeyFacts spec={spec} />
+        <RuleBadges rules={spec.rule_checks} onApplyFix={fix} busy={busy} />
+      </aside>
+
+      <section className="app-card design-workspace__composer" aria-labelledby="edits-title">
+        <div className="design-workspace__composer-heading">
+          <div>
+            <p>Make an adjustment</p>
+            <h3 id="edits-title">Edit by voice or text</h3>
+          </div>
+          <PushToTalk disabled={busy} onTranscript={(text) => void edit(text)} />
+        </div>
+        <TypedEditBox disabled={busy} onSubmit={(text) => void edit(text)} />
+        {reply && <p className="design-workspace__reply" role="status">{reply}</p>}
+        <div className="design-workspace__composer-footer">
+          <p>Guidelines, not code compliance. Check local permit requirements.</p>
+          <button type="button" className="app-button" onClick={() => setScreen("plan")}>Continue to plan</button>
+        </div>
+      </section>
+    </section>
+  );
 }

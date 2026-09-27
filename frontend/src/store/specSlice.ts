@@ -19,6 +19,8 @@ export interface SpecSlice {
   cursor: number;
   /** Set the current spec/plan (a /generate, /edit or fix result) and record it as a new version. */
   applyGenerateResult: (spec: Spec, plan: Plan, source?: VersionSource) => void;
+  /** Clear the current generated design before starting a new capture. */
+  resetDesign: () => void;
   /** Record the current spec/plan as a new version, dropping any redo tail. */
   pushVersion: (source: VersionSource) => void;
   undo: () => void;
@@ -34,6 +36,7 @@ export const createSpecSlice: StateCreator<AppStore, [], [], SpecSlice> = (set, 
     set({ spec, plan });
     get().pushVersion(source);
   },
+  resetDesign: () => set({ spec: null, plan: null, history: [], cursor: -1 }),
   pushVersion: (source) => {
     const { spec, plan, history, cursor } = get();
     if (spec === null) return;

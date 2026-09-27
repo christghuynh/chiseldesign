@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import { AuthButton } from "./components/auth/AuthButton";
 import { DEV_ROUTES } from "./dev/registry";
 import { SCREENS } from "./screens";
-import { FLOW, type ScreenKey, useStore } from "./store";
-
-const NAV: ScreenKey[] = ["landing", ...FLOW, "projects"];
+import { useStore } from "./store";
 
 export default function App() {
   const screen = useStore((state) => state.screen);
   const setScreen = useStore((state) => state.setScreen);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [sectionsOpen, setSectionsOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     const saved = localStorage.getItem("theme");
     if (saved === "light" || saved === "dark") return saved;
@@ -46,41 +43,22 @@ export default function App() {
       <header className="app-header sticky top-0 z-30">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div className="app-brand-cluster">
-            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button app-home-button--logo" aria-label="Go to Chisel welcome screen">
+            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--logo" aria-label="Go to Chisel welcome screen">
               <span className="h-11 w-24 shrink-0 overflow-hidden" aria-hidden="true">
                 <img src="/brand/logo.png" alt="" className="h-full w-full object-contain" />
               </span>
             </button>
-            <button type="button" onClick={() => { setScreen("landing"); setSectionsOpen(false); }} className="app-home-button app-home-button--wordmark text-left text-xl font-black tracking-tight" aria-label="Go to Chisel welcome screen">
+            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--wordmark text-left text-xl font-black tracking-tight" aria-label="Go to Chisel welcome screen">
               <span className="app-brand-name app-brand-name--chisel">Chisel</span>
             </button>
-            <div className="app-sections-menu relative">
-              <button
-                type="button"
-                className="app-button app-button--secondary text-sm"
-                onClick={() => setSectionsOpen((open) => !open)}
-                aria-expanded={sectionsOpen}
-                aria-controls="project-sections"
-              >
-                Sections
-                <svg aria-hidden="true" viewBox="0 0 20 20" className={`ml-1 inline-block h-4 w-4 transition-transform ${sectionsOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m5 7 5 5 5-5" />
-                </svg>
-              </button>
-              <nav id="project-sections" className={`app-segmented-nav ${sectionsOpen ? "" : "app-segmented-nav--collapsed"}`} aria-label="Project sections" aria-hidden={!sectionsOpen}>
-                {NAV.map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => { setScreen(key); setSectionsOpen(false); }}
-                    aria-current={key === screen ? "page" : undefined}
-                    className={`min-h-11 whitespace-nowrap rounded-xl px-4 text-left text-[.95rem] font-semibold ${key === screen ? "bg-[var(--brand)] text-[var(--brand-contrast)]" : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}
-                  >
-                    {SCREENS[key].label}
-                  </button>
-                ))}
-              </nav>
-            </div>
+            <button
+              type="button"
+              className="app-button app-button--secondary text-sm"
+              onClick={() => setScreen("projects")}
+              aria-current={screen === "projects" ? "page" : undefined}
+            >
+              Projects
+            </button>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <AuthButton />
@@ -108,7 +86,7 @@ export default function App() {
           </div>
         </div>
       </header>
-      <main id="main" className={`mx-auto w-full max-w-7xl px-4 py-7 md:px-6 ${screen === "capture" ? "md:py-5" : "md:py-10"}`}><Component /></main>
+      <main id="main" className={screen === "design" ? "design-main" : `mx-auto w-full max-w-7xl px-4 py-7 md:px-6 ${screen === "capture" ? "md:py-5" : "md:py-10"}`}><Component /></main>
       {helpOpen && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="presentation">
           <section role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" className="app-card max-w-md p-5 shadow-xl">
