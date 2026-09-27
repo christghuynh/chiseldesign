@@ -34,6 +34,7 @@ export function Design() {
   const [error, setError] = useState<string | null>(null);
   const [reply, setReply] = useState<string | null>(null);
   const [sceneKey, setSceneKey] = useState(0);
+  const [adjustOpen, setAdjustOpen] = useState(false);
   const generateTimer = useRef<number | null>(null);
   const pendingPatch = useRef<Record<string, number | string | boolean | null>>({});
   const generation = useRef(0);
@@ -150,11 +151,6 @@ export function Design() {
       </div>
 
       <header className="design-workspace__topbar">
-        <div>
-          <p>03 · Shape your design</p>
-          <h2 id="design-title">Design workspace</h2>
-          <span>Rotate, zoom, and select a part to inspect it.</span>
-        </div>
         <div className="design-workspace__history">
           <button type="button" className="app-button app-button--secondary" onClick={() => setScreen("confirm")}>Back to Confirm</button>
           <button type="button" className="app-button app-button--secondary app-icon-button" title="Reset model view" aria-label="Reset model view" onClick={() => setSceneKey((key) => key + 1)}>
@@ -173,10 +169,16 @@ export function Design() {
       {error && <div className="design-workspace__status"><ErrorState message={error} /></div>}
 
       <aside className="design-workspace__panel design-workspace__panel--parameters" aria-label="Design parameters">
+        <div className="design-workspace__panel-intro">
+          <p>03 · Shape your design</p>
+          <h2 id="design-title">Design workspace</h2>
+          <span>Rotate, zoom, and select a part to inspect it.</span>
+        </div>
         {template ? <ParamPanel template={template} params={spec.params} onChange={change} busy={busy} /> : <div className="app-card p-4 text-sm text-[var(--text-muted)]">Loading design controls…</div>}
       </aside>
 
       <aside className="design-workspace__panel design-workspace__panel--details" aria-label="Design details">
+        <p className="design-workspace__panel-label">Details &amp; checks</p>
         {selectedPart && (
           <section className="app-card design-workspace__selection" aria-live="polite">
             <p>Selected part</p>
@@ -188,21 +190,23 @@ export function Design() {
         <RuleBadges rules={spec.rule_checks} onApplyFix={fix} busy={busy} />
       </aside>
 
-      <section className="app-card design-workspace__composer" aria-labelledby="edits-title">
-        <div className="design-workspace__composer-heading">
-          <div>
-            <p>Make an adjustment</p>
-            <h3 id="edits-title">Edit by voice or text</h3>
-          </div>
-          <PushToTalk disabled={busy} onTranscript={(text) => void edit(text)} />
+      <button type="button" className="app-button design-workspace__edit-trigger" onClick={() => setAdjustOpen(true)}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m4 20 4.2-1 10.5-10.5a2.2 2.2 0 0 0-3.1-3.1L5.1 15.9 4 20Z" /><path d="m13.8 7.2 3.1 3.1" /></svg>
+        Make an adjustment
+      </button>
+      {adjustOpen && (
+        <div className="design-workspace__editor-backdrop" role="presentation" onClick={() => setAdjustOpen(false)}>
+          <section className="app-card design-workspace__composer" role="dialog" aria-modal="true" aria-labelledby="edits-title" onClick={(event) => event.stopPropagation()}>
+            <div className="design-workspace__composer-heading">
+              <div><p>Make an adjustment</p><h3 id="edits-title">Edit by voice or text</h3></div>
+              <div className="flex items-start gap-2"><PushToTalk disabled={busy} onTranscript={(text) => void edit(text)} /><button type="button" className="app-button app-button--secondary app-icon-button" aria-label="Close adjustment menu" onClick={() => setAdjustOpen(false)}>×</button></div>
+            </div>
+            <TypedEditBox disabled={busy} onSubmit={(text) => void edit(text)} />
+            {reply && <p className="design-workspace__reply" role="status">{reply}</p>}
+            <div className="design-workspace__composer-footer"><p>Guidelines, not code compliance. Check local permit requirements.</p><button type="button" className="app-button" onClick={() => setScreen("plan")}>Continue to plan</button></div>
+          </section>
         </div>
-        <TypedEditBox disabled={busy} onSubmit={(text) => void edit(text)} />
-        {reply && <p className="design-workspace__reply" role="status">{reply}</p>}
-        <div className="design-workspace__composer-footer">
-          <p>Guidelines, not code compliance. Check local permit requirements.</p>
-          <button type="button" className="app-button" onClick={() => setScreen("plan")}>Continue to plan</button>
-        </div>
-      </section>
+      )}
     </section>
   );
 }
