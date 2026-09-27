@@ -66,7 +66,7 @@ def test_generate_spec_params_echo_the_caller_and_fill_defaults_in_template_orde
 
 def test_generate_keeps_meta_and_uses_the_contractor_quote():
     spec, plan = engine.generate("ramp", {"total_rise_in": user(12)}, {"contractor_quote_cad": 4000.0, "notes": "x"})
-    assert spec.meta == {"contractor_quote_cad": 4000.0, "notes": "x"}
+    assert {k: v for k, v in spec.meta.items() if k != "summary"} == {"contractor_quote_cad": 4000.0, "notes": "x"}
     assert plan.contractor_quote == 4000.0 and plan.savings == pytest.approx(4000 - plan.total, abs=0.005)
     assert generate(12)[1].savings is None
 
@@ -168,3 +168,17 @@ def test_get_skeleton_follows_the_specs_own_parts():
 def test_error_types_are_distinct():
     assert not issubclass(engine.ParamValidationError, engine.TemplateError)
     assert not issubclass(engine.TemplateError, engine.ParamValidationError)
+
+
+def test_summary_is_recomputed_on_every_call():
+    # The ramp's key numbers land in meta["summary"]; a stale one posted back in meta never survives.
+    spec, _ = engine.generate("ramp", {"total_rise_in": user(21), "available_length_in": user(192)}, {"summary": [{"label": "stale", "value": "x"}]})
+    labels = [fact["label"] for fact in spec.meta["summary"]]
+    assert "stale" not in labels
+    assert labels[:4] == ["Layout", "Slope", "Ramp length", "Space needed"]
+    assert all(isinstance(fact["value"], str) and fact["value"] for fact in spec.meta["summary"])
+
+
+def test_templates_without_a_summary_drop_a_stale_one():
+    spec, _ = engine.generate("workbench", {}, {"summary": [{"label": "stale", "value": "x"}]})
+    assert "summary" not in spec.meta

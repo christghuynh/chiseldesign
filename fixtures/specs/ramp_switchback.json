@@ -1429,7 +1429,50 @@
     "meta": {
       "contractor_quote_cad": 4000.0,
       "notes": "Generated from the real engine by backend/scripts/regenerate_fixtures.py. Prices are placeholders.",
-      "image_ref": null
+      "image_ref": null,
+      "summary": [
+        {
+          "label": "Layout",
+          "value": "Switchback, 2 runs"
+        },
+        {
+          "label": "Slope",
+          "value": "1:12 (4.8°)",
+          "detail": "1:12 or gentler is the usual guideline"
+        },
+        {
+          "label": "Ramp length",
+          "value": "15' 0\"",
+          "detail": "measured along the ground, all runs together"
+        },
+        {
+          "label": "Space needed",
+          "value": "12' 6\" long × 7' 0\" wide",
+          "detail": "fits the 13' 4\" available"
+        },
+        {
+          "label": "Run 1",
+          "value": "rises 7-1/2\" over 7' 6\""
+        },
+        {
+          "label": "Run 2",
+          "value": "rises 7-1/2\" over 7' 6\""
+        },
+        {
+          "label": "Landings",
+          "value": "1 turn landing, 5' 0\" long"
+        },
+        {
+          "label": "Handrails",
+          "value": "Both sides",
+          "detail": "needed above 6\" of rise"
+        },
+        {
+          "label": "Longest stringer",
+          "value": "7' 6-3/4\"",
+          "detail": "longest board sold is 16' 0\""
+        }
+      ]
     }
   },
   "plan": {
