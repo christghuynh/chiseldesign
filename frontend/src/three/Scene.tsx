@@ -44,10 +44,10 @@ export function Scene({ parts, highlightedIds = [], selectedIds = [], onSelect, 
         onPointerMissed={onSelect ? () => onSelect(null) : undefined}
         aria-label="3D model of the ramp"
       >
-        <color attach="background" args={[background ?? (dark ? "#041e2b" : "#eee5e9")]} />
+        <color attach="background" args={[background ?? (dark ? "#1d1c24" : "#f3eef3")]} />
         <ambientLight intensity={0.7} />
         <directionalLight position={[200, 300, 150]} intensity={1.2} />
-        <gridHelper args={[600, 50, lightCanvas ? "#6b818c" : "#6b818c", lightCanvas ? "#d9ced3" : "#0f4059"]} />
+        <gridHelper args={[600, 50, lightCanvas ? "#65655e" : "#8a8a82", lightCanvas ? "#ddd3de" : "#33314a"]} />
         <axesHelper args={[60]} />
         <Bounds key={viewKey} fit clip observe margin={1.3}>
           {parts.map((part) => (
