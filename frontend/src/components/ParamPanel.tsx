@@ -39,7 +39,9 @@ const typesOf = (property: SchemaProperty) => (Array.isArray(property.type) ? pr
 
 export function ParamPanel({ template, params, onChange, busy = false }: ParamPanelProps) {
   const properties = (template.params_schema.properties ?? {}) as Record<string, SchemaProperty>;
-  const entries = Object.entries(properties).filter(([name, property]) => params[name] !== undefined || typesOf(property).includes("null"));
+  const required = (template.params_schema.required as string[] | undefined) ?? [];
+  // Required values nobody has entered yet (e.g. a rise the photo didn't show) still get a field.
+  const entries = Object.entries(properties).filter(([name, property]) => params[name] !== undefined || typesOf(property).includes("null") || required.includes(name));
   const grouped = entries.some(([, property]) => property.group);
   const key = grouped ? entries.filter(([, property]) => property.group !== "advanced") : entries;
   const advanced = grouped ? entries.filter(([, property]) => property.group === "advanced") : [];
@@ -123,7 +125,7 @@ function ParamField({ name, property, current, busy, onChange }: ParamFieldProps
         <label htmlFor={id} className="font-semibold">
           {title}
         </label>
-        {current && <SourceTag source={current.source} />}
+        {current ? <SourceTag source={current.source} /> : !types.includes("null") && <span className="source-tag">required</span>}
       </div>
       {property.description && <p className="mb-2 text-sm text-[var(--text-muted)]">{property.description}</p>}
       {control}
@@ -241,7 +243,7 @@ export function NumberField({ id, title, property, value, nullable, busy, onComm
           inputMode="decimal"
           autoComplete="off"
           value={draft}
-          placeholder={nullable ? "No limit" : undefined}
+          placeholder={nullable ? "No limit" : value === null ? "Required" : undefined}
           aria-invalid={error !== null}
           aria-describedby={error ? errorId : undefined}
           onFocus={() => {
