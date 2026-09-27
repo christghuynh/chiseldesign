@@ -1,4 +1,12 @@
+/* The app's typeface: change --font-sans (and the import in index.css) to try another font; the tracking settings go with it. */
 :root {
+  --font-sans: Poppins, -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
+  /* Letter spacing that goes with the font: Poppins is wide, so body text uses none and headings only a little
+     (Inter or San Francisco would want about -0.011em and -0.028em). */
+  --font-tracking: 0em;
+  --heading-tracking: -0.012em;
+  /* Space between the screen edges and the top bar's contents: grows with the window, so the layout keeps its proportions. */
+  --page-edge: clamp(1rem, 2.5vw, 5rem);
   color-scheme: light;
   /* Palette: alice blue #e8eef2, dust grey #d6c9c9, pale sky #c7d3dd, cool sky #77b6ea,
      gunmetal #37393a. Cool sky is too light for text or button labels, so links and primary
@@ -74,17 +82,18 @@ body {
   overscroll-behavior-y: none;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.011em;
+  font-family: var(--font-sans);
+  letter-spacing: var(--font-tracking);
   line-height: 1.5;
 }
 
 button, input, select, textarea { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
-h1, h2, h3, h4 { letter-spacing: -0.028em; line-height: 1.12; text-wrap: balance; }
+h1, h2, h3, h4 { letter-spacing: var(--heading-tracking); line-height: 1.12; text-wrap: balance; }
 p, li, dd { line-height: 1.6; }
 label { line-height: 1.35; }
 
+.app-header__inner { padding-inline: var(--page-edge); }
 .app-header {
   position: sticky;
   top: 0;
@@ -158,7 +167,7 @@ html { overscroll-behavior-y: none; }
 .app-brand-name {
   display: inline-flex;
   align-items: baseline;
-  font-family: ui-rounded, "Avenir Next Rounded", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  font-family: var(--font-sans); /* was a rounded face (ui-rounded, "Avenir Next Rounded"); restore it here for a rounded wordmark */
   font-size: 1.5em;
   font-weight: 800;
   letter-spacing: -.065em;
@@ -196,7 +205,7 @@ html { overscroll-behavior-y: none; }
 
 /* Design is a focused canvas: tools float above the model instead of competing for page space. */
 .design-main { width: 100%; min-height: 0; height: 100%; padding: 0; }
-.design-workspace { --design-edge: clamp(.75rem, 2vw, 1.25rem); --design-left-panel: 23rem; --design-right-panel: 20rem; --text: #37393a; --text-muted: #4d5052; --surface-solid: #ffffff; --surface: rgb(251 252 253 / 54%); --surface-muted: rgb(219 227 234 / 82%); --border: rgb(55 57 58 / 22%); --design-glass: rgb(255 255 255 / 88%); --design-glass-shadow: 0 22px 58px rgb(55 57 58 / 18%); --design-glass-filter: blur(22px) saturate(1.15); position: relative; min-height: 100%; height: 100%; overflow: hidden; background: #ffffff; color: #37393a; }
+.design-workspace { --design-edge: clamp(.75rem, 2vw, 1.25rem); --design-left-panel: clamp(17rem, 25vw, 24rem); --design-right-panel: clamp(15rem, 21vw, 21rem); --text: #37393a; --text-muted: #4d5052; --surface-solid: #ffffff; --surface: rgb(251 252 253 / 54%); --surface-muted: rgb(219 227 234 / 82%); --border: rgb(55 57 58 / 22%); --design-glass: rgb(255 255 255 / 88%); --design-glass-shadow: 0 22px 58px rgb(55 57 58 / 18%); --design-glass-filter: blur(22px) saturate(1.15); position: relative; min-height: 100%; height: 100%; overflow: hidden; background: #ffffff; color: #37393a; }
 .design-workspace__canvas { position: absolute; inset: 0; }
 .design-workspace__topbar { position: absolute; top: var(--design-edge); right: var(--design-edge); z-index: 4; display: flex; align-items: start; justify-content: end; pointer-events: none; }
 .design-workspace__topbar > * { pointer-events: auto; }
@@ -228,6 +237,10 @@ html { overscroll-behavior-y: none; }
 .design-workspace__selection span { color: var(--text-muted); font-size: .86rem; }
 .design-workspace__status { position: absolute; top: 6.9rem; left: 50%; z-index: 6; width: min(27rem, calc(100vw - 2rem)); transform: translateX(-50%); }
 .design-workspace__status .app-card { background: rgb(255 255 255 / 78%); box-shadow: var(--shadow-card); backdrop-filter: blur(18px); }
+/* Dark mode for the Design workspace: the rule above pins it to light colours, so restate them from the dark theme. */
+:root[data-theme="dark"] .design-workspace { --text: #e8eef2; --text-muted: #c7d3dd; --surface-solid: #37393a; --surface: rgb(55 57 58 / 58%); --surface-muted: rgb(67 71 74 / 82%); --border: rgb(199 211 221 / 22%); --design-glass: rgb(35 37 38 / 86%); --design-glass-shadow: 0 22px 58px rgb(0 0 0 / 45%); background: #232526; color: #e8eef2; }
+:root[data-theme="dark"] .design-workspace__panel { border-color: rgb(199 211 221 / 20%); }
+:root[data-theme="dark"] .design-workspace__status .app-card { background: rgb(35 37 38 / 82%); }
 .project-health { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .7rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow-sm); padding: .45rem .7rem; }
 .project-health__summary { display: inline-flex; align-items: center; gap: .4rem; margin: 0; color: var(--text); font-size: .78rem; font-weight: 760; white-space: nowrap; }
 .project-health__summary-mark { width: .55rem; height: .55rem; border-radius: 999px; background: var(--success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 18%, transparent); }
@@ -324,6 +337,12 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 }
 
 .app-input:focus { border-color: color-mix(in srgb, var(--focus) 70%, var(--border)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus) 18%, transparent); outline: none; }
+/* Parameter rows: slider two thirds, value box one third, then the unit. Both may shrink, so the row always fits its
+   panel with the same proportions (a range input otherwise refuses to shrink below ~130px). */
+.param-number-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; align-items: center; gap: .5rem; }
+.param-number-row--no-slider { grid-template-columns: minmax(0, 1fr) auto; }
+.param-number-row input[type="range"] { width: 100%; min-width: 0; margin: 0; }
+.param-number-row .app-input { width: 100%; min-width: 0; padding-inline: .45rem; }
 .source-tag { display: inline-block; border-radius: 999px; background: var(--surface-muted); color: var(--text-muted); font-size: .7rem; font-weight: 750; letter-spacing: .04em; padding: .2rem .5rem; text-transform: uppercase; }
 .assumption { border-left: 3px solid var(--warning); background: color-mix(in srgb, var(--warning) 9%, var(--surface)); }
 .rule-status--pass { background: #dfeae2; color: #25573f; }
@@ -416,7 +435,6 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 .camera-capture__actions { display: flex; justify-content: end; gap: .7rem; margin-top: 1rem; }
 
 @media (min-width: 801px) and (max-width: 1200px) {
-  .design-workspace { --design-left-panel: 19rem; --design-right-panel: 16rem; }
   .design-workspace__history { gap: .35rem; }
 }
 
@@ -471,8 +489,8 @@ section[aria-labelledby="checks-title"] article { padding: .9rem; }
 .landing-story__copy-track { position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; padding: clamp(2rem, 6vw, 6rem); pointer-events: none; }
 .landing-story__copy-track--left { justify-content: flex-start; }
 .landing-story__copy-track--right { justify-content: flex-end; }
-.landing-story__copy { display: grid; width: min(100%, 27rem); gap: 1.1rem; border: 1px solid color-mix(in srgb, var(--border) 72%, transparent); border-radius: 1.5rem; background: color-mix(in srgb, var(--surface-solid) 78%, transparent); box-shadow: var(--shadow-card); padding: clamp(1.4rem, 3vw, 2.35rem); pointer-events: auto; backdrop-filter: blur(18px) saturate(1.1); }
-.landing-story__copy h1, .landing-story__copy h2 { margin: 0; font-size: clamp(2.3rem, 4.3vw, 4.6rem); font-weight: 760; }
+.landing-story__copy { display: grid; width: min(100%, 27rem); gap: 1.1rem; padding: clamp(.4rem, 1vw, 1rem); pointer-events: auto; }
+.landing-story__copy h1, .landing-story__copy h2 { margin: 0; font-size: clamp(2.3rem, 4.3vw, 4.6rem); font-weight: 700; }
 .landing-story__copy > p:not(.landing-story__eyebrow) { margin: 0; color: var(--text-muted); font-size: clamp(1rem, 1.3vw, 1.18rem); }
 .landing-story__eyebrow { margin: 0; color: var(--brand); font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .landing-story__copy .app-button { justify-self: start; margin-top: .35rem; }

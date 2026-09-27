@@ -5,10 +5,10 @@ import { useStore } from "../store";
 type StoryStep = 0 | 1 | 2 | 3;
 
 const story = [
-  { eyebrow: "01 · Capture", title: "Start with a sketch.", description: "A rough drawing, a photo of your space, or a starting template is enough to begin.", side: "left" },
-  { eyebrow: "02 · Design", title: "Shape it in 3D.", description: "Adjust the dimensions that matter and watch the design respond before you buy a board.", side: "right" },
-  { eyebrow: "03 · Plan", title: "Plan every cut.", description: "See the materials, the cut list, and how each piece fits on the boards you need.", side: "left" },
-  { eyebrow: "04 · Build", title: "Build with a clear next step.", description: "Take a practical, part-by-part guide with you to the workshop.", side: "right" },
+  { eyebrow: "Capture", title: "Start with a sketch.", description: "A rough drawing, a photo of your space, or a starting template is enough to begin.", side: "left" },
+  { eyebrow: "Design", title: "Shape it in 3D.", description: "Adjust the dimensions that matter and watch the design respond before you buy a board.", side: "right" },
+  { eyebrow: "Plan", title: "Plan every cut.", description: "See the materials, the cut list, and how each piece fits on the boards you need.", side: "left" },
+  { eyebrow: "Build", title: "Build with a clear next step.", description: "Take a practical, part-by-part guide with you to the workshop.", side: "right" },
 ] as const;
 
 export function Landing() {
