@@ -35,3 +35,34 @@ export function missingRequired(template: TemplateInfo, spec: Spec): string[] {
   const required = (template.params_schema.required as string[] | undefined) ?? [];
   return required.filter((name) => !(name in spec.params));
 }
+
+/**
+ * The Capture form's measurement fields are generic ("Total rise", "Desired width", "Available
+ * length") but templates name them differently (the ramp's `clear_width_in` is `width_in` on the
+ * garden bed, workbench and step platform). Maps each typed value to the first matching param the
+ * template has; values with no equivalent are left out.
+ */
+export const MEASUREMENT_EQUIVALENTS: Record<string, string[]> = {
+  total_rise_in: ["total_rise_in"],
+  clear_width_in: ["clear_width_in", "width_in"],
+  available_length_in: ["available_length_in"],
+};
+
+export function measurementValues(template: TemplateInfo, typed: Record<string, number | undefined>): Record<string, number> {
+  const known = (template.params_schema.properties ?? {}) as Record<string, unknown>;
+  const out: Record<string, number> = {};
+  for (const [field, value] of Object.entries(typed)) {
+    if (value === undefined || Number.isNaN(value)) continue;
+    const target = (MEASUREMENT_EQUIVALENTS[field] ?? [field]).find((name) => name in known);
+    if (target) out[target] = value;
+  }
+  return out;
+}
+
+/** The template's numeric presets with their display titles, e.g. ["Length (in)", 72]. */
+export function presetDimensions(template: TemplateInfo): [string, number][] {
+  const props = (template.params_schema.properties ?? {}) as Record<string, { title?: string }>;
+  return Object.entries(template.defaults)
+    .filter((entry): entry is [string, number] => typeof entry[1] === "number")
+    .map(([name, value]) => [props[name]?.title ?? name.replaceAll("_", " "), value]);
+}

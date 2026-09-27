@@ -4,7 +4,7 @@ import { ErrorState } from "../components/common/ErrorState";
 import { LoadingState } from "../components/common/LoadingState";
 import { useStore } from "../store";
 import type { TemplateInfo } from "../types";
-import { missingRequired, setCaptureSession, specFromDefaults } from "./flowState";
+import { measurementValues, missingRequired, presetDimensions, setCaptureSession, specFromDefaults } from "./flowState";
 import { IMAGE_ACCEPT, IMAGE_TYPES_TEXT, isAcceptedImage } from "./uploadImage";
 
 type Fields = "total_rise_in" | "available_length_in" | "clear_width_in" | "contractor_quote_cad" | "note";
@@ -156,11 +156,11 @@ export function Capture() {
     const template = templates.find((item) => item.key === key);
     if (!template) return;
     setError(null);
-    // Start from the template's own defaults; /generate rejects a request missing required params.
-    const known = (template.params_schema.properties ?? {}) as Record<string, unknown>;
-    const values: Record<string, number | undefined> = {};
-    (["total_rise_in", "available_length_in", "clear_width_in"] as const).forEach((key) => {
-      if (key in known && fields[key].trim()) values[key] = Number(fields[key]);
+    // Start from the template's own presets; typed measurements go to the template's matching params.
+    const values = measurementValues(template, {
+      total_rise_in: numberOrUndefined(fields.total_rise_in),
+      available_length_in: numberOrUndefined(fields.available_length_in),
+      clear_width_in: numberOrUndefined(fields.clear_width_in),
     });
     const spec = specFromDefaults(template, values, { contractor_quote_cad: numberOrUndefined(fields.contractor_quote_cad), notes: fields.note });
     const missing = missingRequired(template, spec);
@@ -257,7 +257,7 @@ export function Capture() {
                 <h3>{previewTemplate.name}</h3>
                 <p>{previewTemplate.description}</p>
                 <div className="template-selector__defaults">
-                  {Object.entries(previewTemplate.defaults).slice(0, 3).map(([key, value]) => <span key={key}>{key.replaceAll("_", " ")}: {String(value ?? "auto")}</span>)}
+                  {presetDimensions(previewTemplate).map(([title, value]) => <span key={title}>{title}: {value}</span>)}
                 </div>
                 <button type="button" className="app-button w-full" disabled={loading} onClick={() => { setTemplateKey(previewTemplate.key); setTemplatePickerOpen(false); void startTemplate(previewTemplate.key); }}>Start with this template</button>
               </aside>

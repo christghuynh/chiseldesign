@@ -92,6 +92,8 @@ _MEASUREMENT_ALIASES = {
     "width": "clear_width_in",
 }
 _QUOTE_KEYS = {"contractor_quote", "contractor_quote_cad", "quote"}
+# The form's fields use the ramp's names; other templates call the same measurement something else.
+_EQUIVALENTS = {"clear_width_in": ("clear_width_in", "width_in")}
 
 
 class ParseError(Exception):
@@ -253,8 +255,9 @@ def _merge(
         params[name] = ParamValue(value=value, source=source, confidence=conf)
 
     # 2. User measurements override (source user, no confidence).
-    for name, inches in user_overrides.items():
-        spec = props.get(name)
+    for field, inches in user_overrides.items():
+        name = next((n for n in _EQUIVALENTS.get(field, (field,)) if n in props), None)
+        spec = props.get(name) if name else None
         if spec is None:
             continue
         try:

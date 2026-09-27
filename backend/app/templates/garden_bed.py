@@ -27,6 +27,11 @@ Layout decisions made here (the brief left them open):
   parts get a "Cut to <length> in long" note; the note also keeps them off the label of longer boards.
 - `width_in` 12..48 and `height_in` 12..48 are inferred bounds; `length_in` 24..144 is capped by
   the longest 2x10 sold (144 in) so the long sides are single boards.
+- Soil volume is the inner footprint times the course height (the cap rail sits above the soil line).
+- Reach is measured on the OUTER width, as the BED-002 rule does: the whole width from one side, half
+  of it from each side for `both_sides`, against 24 in per side (the rule's width limit per side).
+- "Longest board" in the summary is the single longest piece of any material, compared with the
+  longest board of THAT material sold.
 """
 
 import math
@@ -38,6 +43,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.data import lumber_spec
 from app.engine_errors import ParamValidationError
 from app.models import Part, SkeletonStep
+from app.rules.constants import BED_MAX_WIDTH_BOTH_SIDES_IN, BED_MAX_WIDTH_ONE_SIDE_IN
 from app.templates.geometry import PartBuilder
 from app.util.units import format_fraction, format_ft_in
 
@@ -47,22 +53,33 @@ DESCRIPTION = "Raised garden bed with stacked side boards, corner posts and an o
 
 POST_MATERIAL = "4x4_PT"
 CAP_MATERIAL = "2x6_PT"
+POST_COUNT = 4
+CUBIC_IN_PER_CUBIC_FT = 12.0**3
+CUBIC_FT_PER_CUBIC_YD = 27.0
 
 Access = Literal["one_side", "both_sides"]
 BoardKey = Literal["2x10_PT", "2x8_PT"]
 
+ACCESS_LABELS = {"one_side": "One side (against a wall)", "both_sides": "Both sides"}
+BOARD_LABELS = {"2x10_PT": "2x10 pressure-treated", "2x8_PT": "2x8 pressure-treated"}
+
 
 class Params(BaseModel):
-    """Garden bed parameters. Bounds not stated in the original spec are marked (inferred)."""
+    """Garden bed parameters. Bounds inferred (not in the original spec): width_in and height_in, and
+    length_in, whose 144 in maximum is the longest 2x10 sold so the long sides stay single boards.
+
+    Schema hints for the parameter panel are the same as the ramp's: `group` ("key" or "advanced"),
+    `enum_labels` and `unit`.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    length_in: float = Field(72, ge=24, le=144, title="Length (in)", description="Outer length; 144 in is the longest 2x10 sold, so long sides stay single boards (bounds inferred)", json_schema_extra={"unit": "in"})
-    width_in: float = Field(24, ge=12, le=48, title="Width (in)", description="Outer width (bounds inferred)", json_schema_extra={"unit": "in"})
-    height_in: float = Field(30, ge=12, le=48, title="Height (in)", description="Overall height including the cap rail (bounds inferred)", json_schema_extra={"unit": "in"})
-    access: Access = Field("one_side", title="Access", description="one_side when the bed sits against a wall, both_sides when you can reach it from both long sides")
-    board: BoardKey = Field("2x10_PT", title="Side board", description="Lumber for the stacked side courses")
-    cap_rail: bool = Field(True, title="Cap rail", description="2x6 rail around the top that doubles as a seat or armrest")
+    length_in: float = Field(72, ge=24, le=144, title="Length", description="Outside length of the bed, end to end along the long sides. The long sides are single boards, so 12 ft is the most.", json_schema_extra={"unit": "in", "group": "key"})
+    width_in: float = Field(24, ge=12, le=48, title="Width", description="Outside width of the bed, from the front face to the back face. Keep it within reach: about 24 in from one side, 48 in from both.", json_schema_extra={"unit": "in", "group": "key"})
+    height_in: float = Field(30, ge=12, le=48, title="Height", description="From the ground to the very top of the bed, including the cap rail when there is one.", json_schema_extra={"unit": "in", "group": "key"})
+    access: Access = Field("one_side", title="Reach from", description="Which long sides you can stand at to work the bed. It sets how wide the bed can be and still be reached.", json_schema_extra={"group": "advanced", "enum_labels": ACCESS_LABELS})
+    board: BoardKey = Field("2x10_PT", title="Side boards", description="Lumber stacked on edge to make the walls. The top course is ripped narrower when the height isn't a whole number of boards.", json_schema_extra={"group": "advanced", "enum_labels": BOARD_LABELS})
+    cap_rail: bool = Field(True, title="Cap rail", description="A flat 2x6 rail around the top edge that doubles as a seat or armrest. It counts toward the height.", json_schema_extra={"group": "advanced"})
 
 
 @dataclass(frozen=True)
@@ -89,6 +106,16 @@ class Derived:
     end_board_length_in: float  # side course on the ends, between the posts
     cap_long_length_in: float
     cap_end_length_in: float
+    post_count: int
+    seat_height_in: float | None  # top of the cap rail; None without one
+    soil_volume_cu_ft: float  # inner footprint x course height
+    soil_volume_cu_yd: float
+    reach_sides: int  # long sides you can work from: 1 or 2
+    reach_in: float  # how far in you reach from each access side (outer width / sides)
+    reach_limit_in: float  # guideline reach per side, from the BED-002 width limits
+    longest_board_length_in: float  # the single longest piece of any material
+    longest_board_material: str
+    longest_board_stock_in: float  # longest board of that material sold
 
     @property
     def outer_length_in(self) -> float:
@@ -138,6 +165,16 @@ def derive(params: Params) -> Derived:
         _check_fits_stock(CAP_MATERIAL, "long cap rail", cap_long)
         _check_fits_stock(CAP_MATERIAL, "end cap rail", cap_end)
 
+    inner_length = params.length_in - 2 * wall
+    inner_width = params.width_in - 2 * wall
+    soil_cu_ft = inner_length * inner_width * course_height / CUBIC_IN_PER_CUBIC_FT
+    sides = 2 if params.access == "both_sides" else 1
+    width_limit = BED_MAX_WIDTH_BOTH_SIDES_IN.value if sides == 2 else BED_MAX_WIDTH_ONE_SIDE_IN.value
+    pieces = [(long_len, params.board), (end_len, params.board), (course_height, POST_MATERIAL)]
+    if params.cap_rail:
+        pieces += [(cap_long, CAP_MATERIAL), (cap_end, CAP_MATERIAL)]
+    longest, longest_material = max(pieces, key=lambda piece: piece[0])
+
     return Derived(
         length_in=params.length_in,
         width_in=params.width_in,
@@ -155,13 +192,78 @@ def derive(params: Params) -> Derived:
         course_widths_in=widths,
         ripped_width_in=ripped,
         post_height_in=course_height,
-        inner_length_in=params.length_in - 2 * wall,
-        inner_width_in=params.width_in - 2 * wall,
+        inner_length_in=inner_length,
+        inner_width_in=inner_width,
         long_board_length_in=long_len,
         end_board_length_in=end_len,
         cap_long_length_in=cap_long,
         cap_end_length_in=cap_end,
+        post_count=POST_COUNT,
+        seat_height_in=params.height_in if params.cap_rail else None,
+        soil_volume_cu_ft=soil_cu_ft,
+        soil_volume_cu_yd=soil_cu_ft / CUBIC_FT_PER_CUBIC_YD,
+        reach_sides=sides,
+        reach_in=params.width_in / sides,
+        reach_limit_in=width_limit / sides,
+        longest_board_length_in=longest,
+        longest_board_material=longest_material,
+        longest_board_stock_in=lumber_spec(longest_material).max_stock_length_in,
     )
+
+
+def _in(inches: float) -> str:
+    return f'{format_fraction(inches)}"'
+
+
+def summarize(params: Params, derived: Derived) -> list[dict[str, str]]:
+    """The numbers a builder wants at a glance, as display text (`label`, `value`, optional `detail`).
+
+    Optional template hook (see `ramp.summarize`): every value is formatted here from `derive`.
+    """
+    d = derived
+    size = f"{format_ft_in(d.outer_length_in)} × {format_ft_in(d.outer_width_in)} × {format_ft_in(d.height_in)}"
+    size_detail = "length × width × height, outside faces" + (", including the cap rail" if d.cap_rail else "")
+    facts: list[dict[str, str]] = [{"label": "Outer size", "value": size, "detail": size_detail}]
+
+    course_word = "course" if d.course_count == 1 else "courses"
+    courses = f"{d.course_count} {course_word} of {BOARD_LABELS[params.board]}"
+    if d.ripped_width_in is None:
+        courses_detail = "all full-width boards"
+    elif d.course_count == 1:
+        courses_detail = f"ripped to {_in(d.ripped_width_in)} wide"
+    else:
+        full = d.course_count - 1
+        courses_detail = f"{full} full width, top one ripped to {_in(d.ripped_width_in)} wide"
+    facts.append({"label": "Board courses", "value": courses, "detail": courses_detail})
+
+    inside = f"{format_ft_in(d.inner_length_in)} × {format_ft_in(d.inner_width_in)} × {format_ft_in(d.course_height_in)}"
+    facts.append({
+        "label": "Soil needed",
+        "value": f"{d.soil_volume_cu_ft:.1f} cu ft ({d.soil_volume_cu_yd:.2f} cu yd)",
+        "detail": f"inside {inside} (length × width × depth)",
+    })
+
+    where = "from each long side" if d.reach_sides == 2 else "from the front"
+    within = "within" if d.reach_in <= d.reach_limit_in + 1e-9 else "beyond"
+    facts.append({
+        "label": "Reach",
+        "value": f"{format_ft_in(d.reach_in)} {where}",
+        "detail": f"{within} the {format_ft_in(d.reach_limit_in)} comfortable reach guideline",
+    })
+
+    if d.seat_height_in is not None:
+        facts.append({"label": "Seat height", "value": format_ft_in(d.seat_height_in), "detail": f"top of the {_in(d.cap_width_in)} wide cap rail"})
+
+    post_top = "under the cap rail" if d.cap_rail else "flush with the top course"
+    facts.append({"label": "Corner posts", "value": f"{d.post_count} × {lumber_spec(POST_MATERIAL).nominal}, {format_ft_in(d.post_height_in)} tall", "detail": post_top})
+
+    material = lumber_spec(d.longest_board_material).nominal
+    facts.append({
+        "label": "Longest board",
+        "value": f"{format_ft_in(d.longest_board_length_in)} {material}",
+        "detail": f"longest {material} sold is {format_ft_in(d.longest_board_stock_in)}",
+    })
+    return facts
 
 
 def _rect(w: float, h: float) -> list[tuple[float, float]]:
