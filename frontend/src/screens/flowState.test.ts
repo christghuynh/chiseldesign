@@ -37,3 +37,22 @@ describe("missingRequired", () => {
     expect(missingRequired(ramp, specFromDefaults(ramp, { total_rise_in: 21 }))).toEqual([]);
   });
 });
+
+describe("measurementValues / presetDimensions", () => {
+  const bed: TemplateInfo = {
+    key: "garden_bed", name: "Raised garden bed", description: "",
+    params_schema: { properties: { length_in: { title: "Length (in)" }, width_in: { title: "Width (in)" }, height_in: { title: "Height (in)" }, board: {} } },
+    defaults: { length_in: 72, width_in: 24, height_in: 30, board: "2x10_PT" },
+  };
+
+  it("maps the form's generic width to each template's own width param and drops the rest", async () => {
+    const { measurementValues } = await import("./flowState");
+    expect(measurementValues(bed, { clear_width_in: 30, total_rise_in: 21, available_length_in: undefined })).toEqual({ width_in: 30 });
+    expect(measurementValues(ramp, { clear_width_in: 42, total_rise_in: 14 })).toEqual({ clear_width_in: 42, total_rise_in: 14 });
+  });
+
+  it("lists every numeric preset with its title", async () => {
+    const { presetDimensions } = await import("./flowState");
+    expect(presetDimensions(bed)).toEqual([["Length (in)", 72], ["Width (in)", 24], ["Height (in)", 30]]);
+  });
+});
