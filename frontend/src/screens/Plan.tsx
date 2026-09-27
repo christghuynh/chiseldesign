@@ -8,14 +8,14 @@ import { LayoutList } from "../components/plan/LayoutList";
 import { SafetyNotice } from "../components/plan/SafetyNotice";
 import { ShoppingList } from "../components/plan/ShoppingList";
 import { SummaryCard } from "../components/plan/SummaryCard";
+import { EmptyState } from "../components/common/EmptyState";
 import { SaveProject } from "../components/projects/SaveProject";
 import { useStore } from "../store";
 import { Scene } from "../three/Scene";
 import "../components/plan/print.css";
 
-const BUTTON = "min-h-11 rounded px-4 py-2 font-medium";
-const PRIMARY = `${BUTTON} bg-slate-900 text-white hover:bg-slate-700`;
-const SECONDARY = `${BUTTON} border border-slate-400 hover:bg-slate-100`;
+const PRIMARY = "app-button";
+const SECONDARY = "app-button app-button--secondary";
 
 export function Plan() {
   const spec = useStore((s) => s.spec);
@@ -34,14 +34,11 @@ export function Plan() {
 
   if (!spec || !plan) {
     return (
-      <section aria-labelledby="plan-title" className="space-y-4">
-        <h2 id="plan-title" className="text-2xl font-semibold">
-          Plan
-        </h2>
-        <p>There is no plan yet. Design your project first, then come back here for the cut list and shopping list.</p>
-        <button type="button" onClick={() => setScreen("design")} className={SECONDARY}>
-          Back to design
-        </button>
+      <section aria-labelledby="plan-title" className="workflow-empty-page mx-auto max-w-5xl">
+        <div className="workflow-empty-page__heading"><p>04 · Plan</p><h2 id="plan-title">Plan</h2></div>
+        <EmptyState variant="plan" eyebrow="Your materials, mapped out" title="There is no plan yet" description="Finish shaping a design first. Then you’ll get a cut list, layouts, materials, and a build-ready plan.">
+          <button type="button" onClick={() => setScreen("design")} className="app-button">Back to design</button>
+        </EmptyState>
       </section>
     );
   }

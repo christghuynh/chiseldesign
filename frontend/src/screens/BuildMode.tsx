@@ -8,6 +8,7 @@ import { BuildControls } from "../components/build/BuildControls";
 import { BuildDone } from "../components/build/BuildDone";
 import { BuildProgress } from "../components/build/BuildProgress";
 import { BuildStepView } from "../components/build/BuildStepView";
+import { EmptyState } from "../components/common/EmptyState";
 import { type BuildAction, keyToAction, navigate, partIdsForStep } from "../components/build/navigation";
 import { matchVoiceCommand, VOICE_HELP } from "../components/build/voiceCommands";
 import { PushToTalk } from "../components/PushToTalk";
@@ -112,18 +113,11 @@ export function BuildMode() {
 
   if (!spec) {
     return (
-      <section aria-labelledby="build-title" className="space-y-4">
-        <h2 id="build-title" className="text-2xl font-semibold">
-          Build mode
-        </h2>
-        <p className="text-lg">There is no design yet. Create one first, then come back to build it step by step.</p>
-        <button
-          type="button"
-          onClick={() => setScreen("capture")}
-          className="min-h-11 rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700"
-        >
-          Start a design
-        </button>
+      <section aria-labelledby="build-title" className="workflow-empty-page mx-auto max-w-5xl">
+        <div className="workflow-empty-page__heading"><p>05 · Build mode</p><h2 id="build-title">Build mode</h2></div>
+        <EmptyState variant="build" eyebrow="One clear step at a time" title="Ready when your design is" description="Create a design first, then return here for guided steps, cut details, and hands-free controls.">
+          <button type="button" onClick={() => setScreen("capture")} className="app-button">Start a design</button>
+        </EmptyState>
       </section>
     );
   }
@@ -137,7 +131,7 @@ export function BuildMode() {
         <button
           type="button"
           onClick={() => setScreen("plan")}
-          className="min-h-11 rounded border border-slate-400 px-4 py-2 hover:bg-slate-100"
+          className="app-button app-button--secondary"
         >
           ← Back to the plan
         </button>

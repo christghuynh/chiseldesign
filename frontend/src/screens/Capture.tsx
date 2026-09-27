@@ -35,6 +35,7 @@ function TemplateBlueprint({ template }: { template: TemplateInfo }) {
 
 export function Capture() {
   const setScreen = useStore((state) => state.setScreen);
+  const resetDesign = useStore((state) => state.resetDesign);
   const setCurrentProjectId = useStore((state) => state.setCurrentProjectId);
   const picker = useRef<HTMLInputElement>(null);
   const camera = useRef<HTMLInputElement>(null);
@@ -141,6 +142,7 @@ export function Capture() {
       }, fields.note);
       if (!result.spec) { setError("We could not identify a supported project from this image. Pick a ramp template manually."); return; }
       setCurrentProjectId(null);
+      resetDesign();
       setCaptureSession({ parse: result, imageUrl: preview });
       setScreen("confirm");
     } catch (reason) {
@@ -169,6 +171,7 @@ export function Capture() {
     setLoading(true);
     try {
       setCurrentProjectId(null);
+      resetDesign();
       setCaptureSession({ parse: { spec, template_confidence: null, questions: [], raw_notes: "Template selected manually." }, imageUrl: null });
       setScreen("confirm");
     } catch (reason) {
@@ -194,7 +197,10 @@ export function Capture() {
   return (
     <section aria-labelledby="capture-title" className="capture-page mx-auto">
       <div className="capture-page__heading">
-        <h2 id="capture-title">Capture</h2>
+        <div>
+          <button type="button" className="capture-page__back" onClick={() => setScreen("landing")}>← Back to welcome</button>
+          <h2 id="capture-title">Capture</h2>
+        </div>
         <div className="capture-page__heading-actions">
           <p>Add a photo and any measurements you have, or start from a template.</p>
           <button type="button" className="app-button app-button--secondary" onClick={openTemplatePicker} disabled={!templates.length}>Browse templates</button>
