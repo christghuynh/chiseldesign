@@ -36,28 +36,18 @@ export default function App() {
   if (DevRoute) return <DevRoute />;
 
   return (
-    <div className={`theme-transition ${screen === "landing" ? "app-shell--landing" : "min-h-screen"} bg-[var(--bg)] text-[var(--text)]`}>
+    <div className={`theme-transition ${screen === "landing" ? "app-shell--landing" : screen === "design" ? "app-shell--design" : "min-h-screen"} bg-[var(--bg)] text-[var(--text)]`}>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-[var(--surface)] focus:p-3">
         Skip to content
       </a>
       <header className="app-header sticky top-0 z-30">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2">
           <div className="app-brand-cluster">
-            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--logo" aria-label="Go to Chisel welcome screen">
-              <span className="h-11 w-24 shrink-0 overflow-hidden" aria-hidden="true">
+            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--brand" aria-label="Go to Chisel welcome screen">
+              <span className="h-8 w-11 shrink-0" aria-hidden="true">
                 <img src="/brand/logo.png" alt="" className="h-full w-full object-contain" />
               </span>
-            </button>
-            <button type="button" onClick={() => setScreen("landing")} className="app-home-button app-home-button--wordmark text-left text-xl font-black tracking-tight" aria-label="Go to Chisel welcome screen">
-              <span className="app-brand-name app-brand-name--chisel">Chisel</span>
-            </button>
-            <button
-              type="button"
-              className="app-button app-button--secondary text-sm"
-              onClick={() => setScreen("projects")}
-              aria-current={screen === "projects" ? "page" : undefined}
-            >
-              Projects
+              <span className="app-brand-name app-brand-name--chisel">chisel</span>
             </button>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -80,13 +70,21 @@ export default function App() {
                 </svg>
               )}
             </button>
+            <button
+              type="button"
+              className="app-button app-button--secondary text-sm"
+              onClick={() => setScreen("projects")}
+              aria-current={screen === "projects" ? "page" : undefined}
+            >
+              Projects
+            </button>
             <button type="button" className="app-button app-button--secondary text-sm" onClick={() => setHelpOpen(true)} aria-haspopup="dialog">
               Shortcuts
             </button>
           </div>
         </div>
       </header>
-      <main id="main" className={screen === "design" ? "design-main" : `mx-auto w-full max-w-7xl px-4 py-7 md:px-6 ${screen === "capture" ? "md:py-5" : "md:py-10"}`}><Component /></main>
+      <main id="main" className={screen === "design" ? "design-main" : screen === "landing" ? "landing-main" : `mx-auto w-full max-w-7xl px-4 py-7 md:px-6 ${screen === "capture" ? "md:py-5" : "md:py-10"}`}><Component /></main>
       {helpOpen && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" role="presentation">
           <section role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" className="app-card max-w-md p-5 shadow-xl">

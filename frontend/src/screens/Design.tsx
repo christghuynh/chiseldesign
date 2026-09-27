@@ -17,6 +17,10 @@ import { type EditTurn, recordExchange, withTurns } from "./editMemory";
 
 type DesignFeedback = { change: string; materials: string };
 
+function viewportIsNarrow() {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 800px)").matches;
+}
+
 function titleFor(name: string) {
   return name.replace(/_in$/, "").replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
@@ -56,8 +60,12 @@ export function Design() {
   const [adjustOpen, setAdjustOpen] = useState(false);
   const [feedback, setFeedback] = useState<DesignFeedback | null>(null);
   // Side panels can be collapsed to their header so more of the model is visible.
-  const [collapsed, setCollapsed] = useState({ parameters: false, details: false });
-  const togglePanel = (panel: keyof typeof collapsed) => setCollapsed((current) => ({ ...current, [panel]: !current[panel] }));
+  const [collapsed, setCollapsed] = useState(() => ({ parameters: viewportIsNarrow(), details: viewportIsNarrow() }));
+  const togglePanel = (panel: keyof typeof collapsed) => setCollapsed((current) => {
+    const willExpand = current[panel];
+    if (willExpand && viewportIsNarrow()) return { parameters: panel !== "parameters", details: panel !== "details" };
+    return { ...current, [panel]: !current[panel] };
+  });
   const generateTimer = useRef<number | null>(null);
   const feedbackTimer = useRef<number | null>(null);
   const pendingPatch = useRef<Record<string, number | string | boolean | null>>({});
