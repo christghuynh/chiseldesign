@@ -189,3 +189,26 @@ describe("KeyFacts", () => {
     expect(keyFacts({ ...spec, meta: { summary: [{ label: 1 }, { label: "Slope", value: "1:12" }] } })).toEqual([{ label: "Slope", value: "1:12" }]);
   });
 });
+
+describe("step platform top platform", () => {
+  const steps = (read("templates.json") as TemplateInfo[]).find((t) => t.key === "step_platform")!;
+  const params: Record<string, ParamValue> = {
+    total_rise_in: { value: 21, source: "user", confidence: null },
+    width_in: { value: 36, source: "default", confidence: null },
+    tread_depth_in: { value: 11, source: "default", confidence: null },
+    max_riser_in: { value: 7, source: "default", confidence: null },
+    top_platform: { value: true, source: "default", confidence: null },
+    platform_depth_in: { value: 36, source: "default", confidence: null },
+  };
+
+  it("is a checkbox with the key dimensions, on by default, and unticking it keeps the steps up to a porch", () => {
+    const onChange = vi.fn();
+    render(h(ParamPanel, { template: steps, params, onChange }));
+    const box = screen.getByLabelText("Top platform") as HTMLInputElement;
+    expect(box.type).toBe("checkbox");
+    expect(box.checked).toBe(true);
+    expect(box.closest("details")).toBeNull(); // not folded under Advanced settings
+    fireEvent.click(box);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith("top_platform", false);
+  });
+});
