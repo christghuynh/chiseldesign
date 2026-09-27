@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.api_error import ApiError
 from app.engine import ParamValidationError, TemplateError
 from app.models import ErrorBody, ErrorResponse
 
@@ -19,12 +20,6 @@ HTTP_CODES = {
     429: "RATE_LIMITED",
     501: "NOT_IMPLEMENTED",
 }
-
-
-class ApiError(Exception):
-    def __init__(self, status: int, code: str, message: str):
-        super().__init__(message)
-        self.status, self.code, self.message = status, code, message
 
 
 def not_implemented(task_id: str) -> ApiError:

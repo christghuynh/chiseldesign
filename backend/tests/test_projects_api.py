@@ -79,3 +79,57 @@ def test_owner_only_a_foreign_project_is_404():
         assert client.get("/api/projects").json() == []
     finally:
         app.dependency_overrides.clear()
+
+
+def _count(table: str, where: str = "1=1", args: tuple = ()) -> int:
+    from app.store.db import connect
+
+    with connect() as conn:
+        return int(conn.execute(f"SELECT COUNT(*) FROM {table} WHERE {where}", args).fetchone()[0])
+
+
+def test_delete_removes_the_project_and_all_its_versions():
+    keep = client.post("/api/projects", json={"name": "Keep", "spec": SPEC}).json()["id"]
+    gone = client.post("/api/projects", json={"name": "Gone", "spec": SPEC}).json()["id"]
+    client.post(f"/api/projects/{gone}/versions", json={"spec": SPEC, "source": "edit"})
+    client.post(f"/api/projects/{keep}/versions", json={"spec": SPEC, "source": "edit"})
+
+    r = client.delete(f"/api/projects/{gone}")
+    assert r.status_code == 204 and r.content == b""
+
+    assert client.get(f"/api/projects/{gone}").status_code == 404
+    assert client.get(f"/api/projects/{gone}/versions/1").status_code == 404
+    assert [s["name"] for s in client.get("/api/projects").json()] == ["Keep"]
+    assert _count("versions", "project_id = ?", (gone,)) == 0  # no orphaned version rows
+    assert _count("versions", "project_id = ?", (keep,)) == 2  # the other project is untouched
+
+
+def test_deleting_twice_or_a_missing_project_is_404():
+    pid = client.post("/api/projects", json={"name": "P", "spec": SPEC}).json()["id"]
+    assert client.delete(f"/api/projects/{pid}").status_code == 204
+    again = client.delete(f"/api/projects/{pid}")
+    assert again.status_code == 404 and again.json()["error"]["code"] == "NOT_FOUND"
+    assert client.delete("/api/projects/9999").status_code == 404
+
+
+def test_a_user_cannot_delete_someone_elses_project():
+    pid = client.post("/api/projects", json={"name": "Private", "spec": SPEC}).json()["id"]
+    from app.auth.verify import AuthUser, current_user
+
+    app.dependency_overrides[current_user] = lambda: AuthUser(sub="auth0|other")
+    try:
+        r = client.delete(f"/api/projects/{pid}")
+        assert r.status_code == 404 and r.json()["error"]["code"] == "NOT_FOUND"  # existence is not revealed
+    finally:
+        app.dependency_overrides.clear()
+    assert client.get(f"/api/projects/{pid}").status_code == 200  # still there for its owner
+    assert _count("versions", "project_id = ?", (pid,)) == 1
+
+
+def test_delete_needs_a_login(monkeypatch):
+    monkeypatch.delenv("AUTH_DISABLED")
+    monkeypatch.setenv("AUTH0_DOMAIN", "tenant.example.com")
+    monkeypatch.setenv("AUTH0_AUDIENCE", "https://api.example.com")
+    r = client.delete("/api/projects/1")
+    assert r.status_code == 401
+

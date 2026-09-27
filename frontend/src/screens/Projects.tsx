@@ -8,7 +8,7 @@ import { ErrorState } from "../components/common/ErrorState";
 import { LoadingState } from "../components/common/LoadingState";
 import { ProjectList } from "../components/projects/ProjectList";
 import { SaveProject } from "../components/projects/SaveProject";
-import { openProject } from "../components/projects/projectActions";
+import { deleteProject, openProject } from "../components/projects/projectActions";
 import { projectErrorMessage, projectsApi } from "../components/projects/projectsApi";
 import { useAuth } from "../hooks/useAuth";
 import { useStore } from "../store";
@@ -22,6 +22,7 @@ export function Projects() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openingId, setOpeningId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const sub = user?.sub ?? null;
 
   // getToken is a new function every render, so the list reloads when the user changes instead.
@@ -52,6 +53,18 @@ export function Projects() {
     }
   };
 
+  const remove = async (id: number) => {
+    setDeletingId(id);
+    setError(null);
+    try {
+      await deleteProject(await getToken(), id);
+    } catch (e) {
+      setError(projectErrorMessage(e));
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   let content;
   if (mode === "auth0" && !ready) {
     content = <LoadingState message="Checking login…" />;
@@ -70,7 +83,16 @@ export function Projects() {
       </EmptyState>
     );
   } else {
-    content = <ProjectList projects={projects} currentProjectId={currentProjectId} openingId={openingId} onOpen={open} />;
+    content = (
+      <ProjectList
+        projects={projects}
+        currentProjectId={currentProjectId}
+        openingId={openingId}
+        deletingId={deletingId}
+        onOpen={open}
+        onDelete={remove}
+      />
+    );
   }
 
   return (

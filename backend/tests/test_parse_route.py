@@ -92,11 +92,49 @@ def test_prepare_rejects_non_image_bytes():
         prepare_image(b"this is not an image at all")
 
 
-def test_prepare_rejects_gif():
+def _encode(fmt: str, img: Image.Image | None = None, **kw) -> bytes:
     buf = io.BytesIO()
-    Image.new("RGB", (50, 50)).save(buf, format="GIF")
+    (img or Image.new("RGB", (320, 240), (200, 100, 50))).save(buf, format=fmt, **kw)
+    return buf.getvalue()
+
+
+@pytest.mark.parametrize("fmt", ["HEIF", "AVIF", "GIF", "BMP", "TIFF"])
+def test_prepare_accepts_other_common_formats(fmt):
+    # HEIF = the iPhone's HEIC photos (via pillow-heif).
+    out = prepare_image(_encode(fmt))
+    with Image.open(io.BytesIO(out)) as img:
+        assert img.format == "JPEG" and img.size == (320, 240)
+
+
+def test_transparent_images_go_on_white_not_black():
+    sketch = Image.new("RGBA", (100, 100), (0, 0, 0, 0))  # transparent page ...
+    sketch.putpixel((50, 50), (0, 0, 0, 255))  # ... with one black ink dot
+    with Image.open(io.BytesIO(prepare_image(_encode("PNG", sketch)))) as img:
+        assert min(img.getpixel((5, 5))) > 240  # background is white
+        assert max(img.getpixel((50, 50))) < 80  # ink stays dark
+
+
+def test_animated_gif_uses_the_first_frame():
+    frames = [Image.new("RGB", (60, 60), c) for c in ((250, 250, 250), (0, 0, 0))]
+    raw = _encode("GIF", frames[0], save_all=True, append_images=frames[1:])
+    with Image.open(io.BytesIO(prepare_image(raw))) as img:
+        assert min(img.getpixel((30, 30))) > 200
+
+
+def test_prepare_rejects_decodable_but_unsupported_formats():
+    with pytest.raises(UnsupportedImage, match="HEIC"):
+        prepare_image(_encode("ICO"))
+
+
+def test_prepare_rejects_non_images():
     with pytest.raises(UnsupportedImage):
-        prepare_image(buf.getvalue())
+        prepare_image(b"%PDF-1.7 not an image")
+
+
+def test_route_accepts_an_iphone_heic_photo(app_client):
+    files, form = _upload(_encode("HEIF"), filename="IMG_0042.HEIC", content_type="image/heic")
+    res = app_client.post("/api/parse", files=files, data=form)
+    assert res.status_code == 200, res.text
 
 
 # ---------------------------------------------------------------------------------------------

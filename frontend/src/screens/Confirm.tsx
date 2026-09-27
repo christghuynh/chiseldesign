@@ -1,22 +1,226 @@
-import { useState } from "react";
-import { api } from "../api/client";
+// Confirm (FE-4): check what the photo parse found before generating. Every value is editable in the same
+// parameter panel as Design (key dimensions first, the rest under Advanced settings), required values the
+// parse couldn't read show up as empty "Required" fields, the parse's questions can be answered in words
+// (through /edit, so numbers still come from the engine), and the project type can be changed to any template.
+import { useEffect, useState } from "react";
+import { ApiError, api } from "../api/client";
 import { EmptyState } from "../components/common/EmptyState";
 import { ErrorState } from "../components/common/ErrorState";
 import { LoadingState } from "../components/common/LoadingState";
-import { SourceTag } from "../components/common/SourceTag";
+import { ParamPanel, type SchemaProperty } from "../components/ParamPanel";
 import { useStore } from "../store";
-import type { ParamValue, Spec } from "../types";
-import { getCaptureSession, setCaptureSession } from "./flowState";
+import type { ParamValue, Spec, TemplateInfo } from "../types";
+import { getCaptureSession, missingRequired, setCaptureSession, specFromDefaults, ungeneratedSpec } from "./flowState";
+
+const assumedOf = (params: Record<string, ParamValue>) =>
+  Object.entries(params)
+    .filter(([, item]) => item.source === "default" || item.source === "inferred")
+    .map(([name]) => name);
 
 export function Confirm() {
   const session = getCaptureSession();
   const applyGenerateResult = useStore((state) => state.applyGenerateResult);
   const setScreen = useStore((state) => state.setScreen);
   const [spec, setSpec] = useState<Spec | null>(session?.parse.spec ?? null);
-  const [loading, setLoading] = useState(false); const [error, setError] = useState<string | null>(null);
-  if (!spec) return <section aria-labelledby="confirm-title" className="mx-auto max-w-3xl"><h2 id="confirm-title" className="text-3xl font-bold">Confirm</h2><EmptyState title="Nothing to confirm yet"><button type="button" className="app-button mt-2" onClick={() => setScreen("capture")}>Go to capture</button></EmptyState></section>;
-  const confirmedSpec = spec;
-  const update = (key: string, value: number | string) => { const params = { ...spec.params, [key]: { value, source: "user", confidence: null } satisfies ParamValue }; const assumed = Object.entries(params).filter(([, item]) => item.source === "default" || item.source === "inferred").map(([name]) => name); const next = { ...spec, params, assumed }; setSpec(next); if (session) setCaptureSession({ ...session, parse: { ...session.parse, spec: next } }); };
-  async function confirm() { setLoading(true); setError(null); try { const response = await api.generate({ template: confirmedSpec.template, params: confirmedSpec.params, meta: confirmedSpec.meta }); applyGenerateResult(response.spec, response.plan, "parse"); setScreen("design"); } catch (reason) { setError(reason instanceof Error ? reason.message : "We could not generate the design. Please try again."); } finally { setLoading(false); } }
-  return <section aria-labelledby="confirm-title" className="mx-auto max-w-4xl space-y-5"><div><h2 id="confirm-title" className="mb-1 text-3xl font-bold">Confirm what we found</h2><p className="m-0 text-[var(--text-muted)]">Values marked inferred or default are assumptions—please check them before generating a plan.</p></div>{loading && <LoadingState message="Generating the model, checks, and plan…" />}{error && <ErrorState message={error} onRetry={() => void confirm()} />}<div className="grid gap-5 md:grid-cols-[.75fr_1.25fr]"><aside className="app-card p-4"><h3 className="mt-0">Detected project</h3><p className="mb-1 font-semibold">{spec.template === "ramp" ? "Accessibility ramp" : spec.template}</p><p className="text-sm text-[var(--text-muted)]">{session?.parse.template_confidence === null ? "Selected manually" : `${Math.round((session?.parse.template_confidence ?? 0) * 100)}% confidence`}</p>{session?.imageUrl ? <img src={session.imageUrl} alt="Uploaded sketch or site" className="max-h-56 w-full rounded object-contain" /> : <p className="rounded bg-[var(--surface-muted)] p-3 text-sm">No photo attached.</p>}<label className="mt-3 block">Change type<select className="app-input mt-1 w-full" value={spec.template} onChange={(event) => update("template", event.target.value)}><option value="ramp">Accessibility ramp</option></select></label></aside><div className="app-card p-4"><h3 className="mt-0">Measurements and assumptions</h3><div className="space-y-2">{Object.entries(spec.params).map(([name, item]) => { const assumption = item.source === "default" || item.source === "inferred"; const label = name.replaceAll("_", " "); return <div key={name} className={`flex flex-wrap items-center justify-between gap-2 rounded p-2 ${assumption ? "assumption" : ""}`}><label className="font-medium capitalize">{label}{typeof item.value === "number" ? <input className="app-input ml-2 w-24" type="number" value={item.value} onChange={(event) => update(name, Number(event.target.value))} /> : <span className="ml-2">{String(item.value)}</span>}</label><SourceTag source={item.source} /></div>; })}</div><div className="mt-4"><p className="mb-2 font-semibold">Common ramp widths</p><div className="flex flex-wrap gap-2">{[36, 42, 48].map((width) => <button type="button" key={width} className="app-button app-button--secondary" onClick={() => update("clear_width_in", width)}>{width}″</button>)}</div></div>{session?.parse.questions.length ? <div className="mt-4 rounded bg-[var(--surface-muted)] p-3"><p className="m-0 font-semibold">A couple of questions</p><ul className="mb-0 mt-1">{session.parse.questions.slice(0, 3).map((question) => <li key={question}>{question}</li>)}</ul></div> : null}</div></div><button type="button" className="app-button w-full" disabled={loading} onClick={() => void confirm()}>Looks right — generate design</button></section>;
+  const [templates, setTemplates] = useState<TemplateInfo[] | null>(null);
+  const [questions, setQuestions] = useState<string[]>(session?.parse.questions.slice(0, 3) ?? []);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [answering, setAnswering] = useState(false);
+  const [answerNote, setAnswerNote] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    api
+      .templates()
+      .then(setTemplates)
+      .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Could not load the project types."));
+  }, []);
+
+  if (!spec) {
+    return (
+      <section aria-labelledby="confirm-title" className="mx-auto max-w-3xl">
+        <h2 id="confirm-title" className="text-3xl font-bold">
+          Confirm
+        </h2>
+        <EmptyState title="Nothing to confirm yet">
+          <button type="button" className="app-button mt-2" onClick={() => setScreen("capture")}>
+            Go to capture
+          </button>
+        </EmptyState>
+      </section>
+    );
+  }
+
+  const current = spec;
+  const template = templates?.find((item) => item.key === current.template) ?? null;
+  const properties = (template?.params_schema.properties ?? {}) as Record<string, SchemaProperty>;
+  const titleOf = (name: string) => properties[name]?.title ?? name.replaceAll("_", " ");
+  const missing = template ? missingRequired(template, current) : [];
+
+  const save = (next: Spec) => {
+    setSpec(next);
+    if (session) setCaptureSession({ ...session, parse: { ...session.parse, spec: next } });
+  };
+
+  const update = (name: string, value: number | string | boolean | null) => {
+    const params = { ...current.params };
+    if (value === null) delete params[name];
+    else params[name] = { value, source: "user", confidence: null };
+    save({ ...current, params, assumed: assumedOf(params) });
+  };
+
+  const changeTemplate = (key: string) => {
+    const info = templates?.find((item) => item.key === key);
+    if (!info || key === current.template) return;
+    // The parse's values and questions belong to the old type; start the new one from its defaults.
+    save(specFromDefaults(info, {}, current.meta));
+    setQuestions([]);
+    setAnswers([]);
+    setAnswerNote(null);
+  };
+
+  async function applyAnswers() {
+    const text = questions
+      .map((question, i) => (answers[i]?.trim() ? `${question} ${answers[i].trim()}` : null))
+      .filter((line): line is string => line !== null)
+      .join(" ");
+    if (!text) return;
+    setAnswering(true);
+    setAnswerNote(null);
+    try {
+      const result = await api.edit({ spec: current, utterance: text });
+      save({ ...ungeneratedSpec(result.spec), assumed: assumedOf(result.spec.params) });
+      if (result.needs_clarification) {
+        setAnswerNote(result.message);
+      } else {
+        setAnswerNote(`${result.message} Check the values above, then generate.`);
+        setQuestions(questions.filter((_, i) => !answers[i]?.trim()));
+        setAnswers([]);
+      }
+    } catch (reason) {
+      if (reason instanceof ApiError && reason.status === 422 && missing.length > 0) {
+        setAnswerNote(`Chisel still needs ${missing.map(titleOf).join(" and ")}. Type it into the field above.`);
+      } else if (reason instanceof ApiError && reason.status === 503) {
+        setAnswerNote("The assistant is unavailable right now. Fill in the values above instead.");
+      } else {
+        setAnswerNote(reason instanceof Error ? reason.message : "That answer couldn't be applied. Fill in the values above instead.");
+      }
+    } finally {
+      setAnswering(false);
+    }
+  }
+
+  async function confirm() {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.generate({ template: current.template, params: current.params, meta: current.meta });
+      applyGenerateResult(response.spec, response.plan, "parse");
+      setScreen("design");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "We could not generate the design. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const confidence = session?.parse.template_confidence;
+  const hasAnswer = answers.some((answer) => answer?.trim());
+
+  return (
+    <section aria-labelledby="confirm-title" className="mx-auto max-w-5xl space-y-5">
+      <div>
+        <h2 id="confirm-title" className="mb-1 text-3xl font-bold">
+          Confirm what we found
+        </h2>
+        <p className="m-0 text-[var(--text-muted)]">Highlighted values are assumptions. Check them, answer any questions, then generate the design.</p>
+      </div>
+      {loading && <LoadingState message="Generating the model, checks, and plan…" />}
+      {error && <ErrorState message={error} onRetry={() => void confirm()} />}
+      <div className="grid gap-5 md:grid-cols-[.8fr_1.2fr]">
+        <aside className="app-card space-y-3 self-start p-4">
+          <h3 className="m-0">Detected project</h3>
+          <div>
+            <p className="m-0 font-semibold">{template?.name ?? current.template}</p>
+            <p className="m-0 text-sm text-[var(--text-muted)]">
+              {confidence === null || confidence === undefined ? "Selected manually" : `${Math.round(confidence * 100)}% confidence`}
+            </p>
+          </div>
+          {session?.imageUrl ? (
+            <img
+              src={session.imageUrl}
+              alt="Uploaded sketch or site"
+              className="max-h-56 w-full rounded object-contain"
+              // Some browsers can't preview HEIC (iPhone) photos; hide the broken image instead of showing it.
+              onError={(event) => {
+                event.currentTarget.hidden = true;
+              }}
+            />
+          ) : (
+            <p className="m-0 rounded bg-[var(--surface-muted)] p-3 text-sm">No photo attached.</p>
+          )}
+          <label className="block">
+            Wrong type? Change it
+            <select className="app-input mt-1 w-full" value={current.template} disabled={!templates} onChange={(event) => changeTemplate(event.target.value)}>
+              {(templates ?? []).map((item) => (
+                <option key={item.key} value={item.key}>
+                  {item.name}
+                </option>
+              ))}
+              {!templates && <option value={current.template}>{current.template}</option>}
+            </select>
+          </label>
+          {template?.description && <p className="m-0 text-sm text-[var(--text-muted)]">{template.description}</p>}
+        </aside>
+
+        <div className="space-y-5">
+          {questions.length > 0 && (
+            <section className="app-card p-4" aria-labelledby="questions-title">
+              <h3 id="questions-title" className="mt-0">
+                A few questions
+              </h3>
+              <p className="mt-0 text-sm text-[var(--text-muted)]">Answer in your own words, or skip them and fill in the values below.</p>
+              <form
+                className="space-y-3"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void applyAnswers();
+                }}
+              >
+                {questions.map((question, i) => (
+                  <label key={question} className="block">
+                    <span className="font-medium">{question}</span>
+                    <input
+                      className="app-input mt-1 w-full"
+                      value={answers[i] ?? ""}
+                      placeholder="Your answer"
+                      onChange={(event) => setAnswers((prev) => Object.assign([...prev], { [i]: event.target.value }))}
+                    />
+                  </label>
+                ))}
+                <button type="submit" className="app-button app-button--secondary" disabled={answering || !hasAnswer}>
+                  {answering ? "Applying…" : "Apply answers"}
+                </button>
+              </form>
+            </section>
+          )}
+          {answerNote && (
+            <p className="m-0 rounded bg-[var(--surface-muted)] p-3" role="status">
+              {answerNote}
+            </p>
+          )}
+          {template ? <ParamPanel template={template} params={current.params} onChange={update} /> : !error && <LoadingState message="Loading the measurements…" />}
+        </div>
+      </div>
+      {missing.length > 0 && (
+        <p className="m-0 text-center text-[var(--text-muted)]" role="status">
+          Fill in {missing.map(titleOf).join(" and ")} to generate the design.
+        </p>
+      )}
+      <button type="button" className="app-button w-full" disabled={loading || !template || missing.length > 0} onClick={() => void confirm()}>
+        Looks right — generate design
+      </button>
+    </section>
+  );
 }

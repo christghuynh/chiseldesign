@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../../api/client";
 import { useStore } from "../../store";
 import type { GenerateResponse, Spec } from "../../types";
-import { MAX_UPLOADED_VERSIONS, openProject, saveCurrentProject } from "./projectActions";
+import { MAX_UPLOADED_VERSIONS, deleteProject, openProject, saveCurrentProject } from "./projectActions";
 import { projectErrorMessage, projectsApi } from "./projectsApi";
 
 const load = (name: string) =>
@@ -36,7 +36,7 @@ function mockFetch(routes: Record<string, unknown | ((call: Call) => unknown)>) 
     if (route === undefined) return new Response(JSON.stringify({ error: { code: "NO_ROUTE", message: url } }), { status: 599 });
     const answer = typeof route === "function" ? route(call) : route;
     const [status, body] = Array.isArray(answer) && typeof answer[0] === "number" ? answer : [200, answer];
-    return new Response(JSON.stringify(body), { status });
+    return status === 204 ? new Response(null, { status }) : new Response(JSON.stringify(body), { status });
   });
   vi.stubGlobal("fetch", fetchMock);
   return calls;
@@ -156,3 +156,37 @@ describe("openProject", () => {
     expect(useStore.getState().currentProjectId).toBeNull();
   });
 });
+
+describe("deleting a project", () => {
+  it("sends DELETE with the login token and accepts the empty 204 answer", async () => {
+    const calls = mockFetch({ "DELETE /api/projects/7": [204, null] });
+    await expect(projectsApi.remove("tok", 7)).resolves.toBeUndefined();
+    expect(calls).toEqual([{ method: "DELETE", url: "/api/projects/7", auth: "Bearer tok", body: null }]);
+  });
+
+  it("removes it from the list, and unlinks the editor only when it was the open project", async () => {
+    const summary = (id: number) => ({ id, name: `P${id}`, template: "ramp", updated_at: "2026-09-26T14:00:00Z", thumb: null });
+    mockFetch({ "DELETE /api/projects/1": [204, null], "DELETE /api/projects/2": [204, null] });
+    useStore.setState({ projects: [summary(1), summary(2)], currentProjectId: 2 });
+
+    await deleteProject(null, 1);
+    expect(useStore.getState().projects.map((p) => p.id)).toEqual([2]);
+    expect(useStore.getState().currentProjectId).toBe(2); // a different project: still linked
+
+    await deleteProject(null, 2);
+    expect(useStore.getState().projects).toEqual([]);
+    expect(useStore.getState().currentProjectId).toBeNull(); // saving now makes a new project
+  });
+
+  it("leaves the list alone and reports a project the server does not have", async () => {
+    mockFetch({ "DELETE /api/projects/3": [404, { error: { code: "NOT_FOUND", message: "Project 3 not found" } }] });
+    const summary = { id: 3, name: "P3", template: "ramp", updated_at: "2026-09-26T14:00:00Z", thumb: null };
+    useStore.setState({ projects: [summary], currentProjectId: 3 });
+    const failure = await deleteProject(null, 3).catch((e: unknown) => e);
+    expect(failure).toBeInstanceOf(ApiError);
+    expect(projectErrorMessage(failure)).toMatch(/doesn't exist or belongs to someone else/);
+    expect(useStore.getState().projects).toEqual([summary]);
+    expect(useStore.getState().currentProjectId).toBe(3);
+  });
+});
+
