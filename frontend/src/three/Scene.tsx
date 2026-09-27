@@ -3,6 +3,7 @@
 import { Bounds, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useMemo, useState } from "react";
+import { useDarkTheme } from "../hooks/useDarkTheme";
 import type { Part } from "../types";
 import { PartMesh } from "./PartMesh";
 
@@ -32,7 +33,7 @@ export function Scene({ parts, highlightedIds = [], selectedIds = [], onSelect, 
   const highlighted = useMemo(() => new Set(highlightedIds), [highlightedIds]);
   const selected = useMemo(() => new Set(selectedIds), [selectedIds]);
   const [viewKey, setViewKey] = useState(0);
-  const dark = document.documentElement.dataset.theme === "dark";
+  const dark = useDarkTheme();
   const lightCanvas = background !== undefined || !dark;
 
   return (

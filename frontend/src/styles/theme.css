@@ -228,6 +228,10 @@ html { overscroll-behavior-y: none; }
 .design-workspace__selection span { color: var(--text-muted); font-size: .86rem; }
 .design-workspace__status { position: absolute; top: 6.9rem; left: 50%; z-index: 6; width: min(27rem, calc(100vw - 2rem)); transform: translateX(-50%); }
 .design-workspace__status .app-card { background: rgb(255 255 255 / 78%); box-shadow: var(--shadow-card); backdrop-filter: blur(18px); }
+/* Dark mode for the Design workspace: the rule above pins it to light colours, so restate them from the dark theme. */
+:root[data-theme="dark"] .design-workspace { --text: #e8eef2; --text-muted: #c7d3dd; --surface-solid: #37393a; --surface: rgb(55 57 58 / 58%); --surface-muted: rgb(67 71 74 / 82%); --border: rgb(199 211 221 / 22%); --design-glass: rgb(35 37 38 / 86%); --design-glass-shadow: 0 22px 58px rgb(0 0 0 / 45%); background: #232526; color: #e8eef2; }
+:root[data-theme="dark"] .design-workspace__panel { border-color: rgb(199 211 221 / 20%); }
+:root[data-theme="dark"] .design-workspace__status .app-card { background: rgb(35 37 38 / 82%); }
 .project-health { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .7rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow-sm); padding: .45rem .7rem; }
 .project-health__summary { display: inline-flex; align-items: center; gap: .4rem; margin: 0; color: var(--text); font-size: .78rem; font-weight: 760; white-space: nowrap; }
 .project-health__summary-mark { width: .55rem; height: .55rem; border-radius: 999px; background: var(--success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 18%, transparent); }

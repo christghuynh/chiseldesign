@@ -14,6 +14,7 @@ import { useStore } from "../store";
 import type { ParamValue, Plan, RuleCheck, TemplateInfo } from "../types";
 import { Scene } from "../three/Scene";
 import { type EditTurn, recordExchange, withTurns } from "./editMemory";
+import { useDarkTheme } from "../hooks/useDarkTheme";
 
 type DesignFeedback = { change: string; materials: string };
 
@@ -38,6 +39,7 @@ function describeStockDelta(previous: Plan, next: Plan) {
 }
 
 export function Design() {
+  const dark = useDarkTheme(); // white canvas in light mode, the theme's dark canvas in dark mode
   const spec = useStore((state) => state.spec);
   const plan = useStore((state) => state.plan);
   const selected = useStore((state) => state.selectedPartIds);
@@ -196,7 +198,7 @@ export function Design() {
   return (
     <section aria-labelledby="design-title" className="design-workspace">
       <div className="design-workspace__canvas">
-        <Scene key={sceneKey} parts={spec.parts} selectedIds={selected} onSelect={(id) => setSelected(id ? [id] : [])} height="100%" background="#ffffff" showReset={false} />
+        <Scene key={sceneKey} parts={spec.parts} selectedIds={selected} onSelect={(id) => setSelected(id ? [id] : [])} height="100%" background={dark ? undefined : "#ffffff"} showReset={false} />
       </div>
 
       <header className="design-workspace__topbar">
