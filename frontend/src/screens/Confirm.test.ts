@@ -99,7 +99,7 @@ describe("Confirm", () => {
     fireEvent.click(screen.getByRole("button", { name: "Apply answers" }));
     expect(await screen.findByText(/Set the rise to twenty-one inches/)).toBeTruthy();
     expect(calls.find((c) => c.url === "/api/edit")!.body.utterance).toBe(`${QUESTION} three steps, about 21 inches`);
-    expect(riseBox().value).toBe("21");
+    await waitFor(() => expect(riseBox().value).toBe("21")); // the field picks up the new value in an effect
     expect(screen.queryByLabelText(QUESTION)).toBeNull();
     expect(generateButton().disabled).toBe(false);
   });
