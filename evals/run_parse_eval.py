@@ -75,14 +75,15 @@ def _compare(spec, expect, default_tol) -> list[tuple[str, bool, str]]:
     return rows
 
 
-def run(fake: bool) -> int:
+def run(fake: bool, cases_path: Path | None = None, repeat: int = 1) -> int:
     if fake:
         os.environ["FAKE_AI"] = "1"
     prepare_image, parse_image = _load_pipeline()
 
-    spec = json.loads(CASES_PATH.read_text(encoding="utf-8"))
+    spec = json.loads((cases_path or CASES_PATH).read_text(encoding="utf-8"))
     default_tol = spec.get("tolerances_default_in", 1.0)
-    cases = spec["cases"]
+    cases = [dict(c, name=f"{c['name']}#{r + 1}" if repeat > 1 else c["name"]) for c in spec["cases"] for r in range(repeat)]
+    flaky: dict[str, set[bool]] = {}
 
     total = correct = 0
     errored = 0
@@ -107,6 +108,7 @@ def run(fake: bool) -> int:
             continue
 
         rows = _compare(result.spec, case["expect"], default_tol)
+        flaky.setdefault(case["name"].split("#")[0], set()).add(all(ok for _, ok, _ in rows))
         case_ok = sum(1 for _, ok, _ in rows if ok)
         total += len(rows)
         correct += case_ok
@@ -115,6 +117,11 @@ def run(fake: bool) -> int:
             print(f"      [{'PASS' if ok else 'FAIL'}] {param}: {detail}")
 
     pct = (100.0 * correct / total) if total else 0.0
+    passed = sum(1 for v in flaky.values() if v == {True})
+    print(f"\ncases fully correct on every run: {passed}/{len(flaky)}")
+    unstable = [k for k, v in flaky.items() if v == {True, False}]
+    if unstable:
+        print("inconsistent across runs: " + ", ".join(unstable))
     print(f"\noverall: {correct}/{total} params correct ({pct:.0f}%)")
     if errored:
         print(f"{errored} case(s) errored", file=sys.stderr)
@@ -125,8 +132,10 @@ def run(fake: bool) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Run the parse eval set and report per-param accuracy.")
     ap.add_argument("--fake", action="store_true", help="FAKE_AI mode: no network, skips missing images")
+    ap.add_argument("--cases", type=Path, help="cases file (default evals/parse_cases.json)")
+    ap.add_argument("--repeat", type=int, default=1, help="run each case N times to measure consistency")
     args = ap.parse_args()
-    return run(args.fake)
+    return run(args.fake, args.cases, max(1, args.repeat))
 
 
 if __name__ == "__main__":
