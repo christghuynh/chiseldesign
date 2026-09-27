@@ -874,7 +874,47 @@
     "meta": {
       "contractor_quote_cad": 4000.0,
       "notes": "Generated from the real engine by backend/scripts/regenerate_fixtures.py. Prices are placeholders.",
-      "image_ref": null
+      "image_ref": null,
+      "summary": [
+        {
+          "label": "Layout",
+          "value": "Straight, 1 run"
+        },
+        {
+          "label": "Slope",
+          "value": "1:12 (4.8°)",
+          "detail": "1:12 or gentler is the usual guideline"
+        },
+        {
+          "label": "Ramp length",
+          "value": "15' 0\"",
+          "detail": "measured along the ground, all runs together"
+        },
+        {
+          "label": "Space needed",
+          "value": "15' 0\" long × 3' 0\" wide",
+          "detail": "1' 8\" more than the 13' 4\" available"
+        },
+        {
+          "label": "Run",
+          "value": "rises 15\" over 15' 0\""
+        },
+        {
+          "label": "Landings",
+          "value": "None",
+          "detail": "one run straight up to the porch"
+        },
+        {
+          "label": "Handrails",
+          "value": "Both sides",
+          "detail": "needed above 6\" of rise"
+        },
+        {
+          "label": "Longest stringer",
+          "value": "14' 9/16\"",
+          "detail": "longest board sold is 16' 0\""
+        }
+      ]
     }
   },
   "plan": {

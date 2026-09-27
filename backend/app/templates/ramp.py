@@ -30,6 +30,7 @@ from app.data import lumber_spec
 from app.models import Part, SkeletonStep
 from app.rules.constants import HANDRAIL_RISE_THRESHOLD_IN, MAX_RISE_PER_RUN_IN
 from app.templates.ramp_geometry import sloped_length, stringer_length
+from app.util.units import format_fraction, format_ft_in
 
 KEY = "ramp"
 NAME = "Accessibility ramp"
@@ -43,22 +44,27 @@ ResolvedLayout = Literal["straight", "switchback"]
 
 
 class Params(BaseModel):
-    """Ramp parameters. Bounds not stated in the original spec are marked (inferred)."""
+    """Ramp parameters. Bounds not stated in the original spec are marked (inferred).
+
+    Schema hints for the parameter panel (in `json_schema_extra`): `group` is "key" for the few dimensions
+    a homeowner measures and "advanced" for construction choices, which the panel folds away;
+    `enum_labels` gives readable names for the choices; `unit` is the unit of a number.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    total_rise_in: float = Field(..., ge=1, le=60, title="Total rise (in)", description="Height from the ground to the top of the porch", json_schema_extra={"unit": "in"})
-    clear_width_in: float = Field(36, ge=30, le=60, title="Clear width (in)", description="Usable width between the edges", json_schema_extra={"unit": "in"})
-    available_length_in: float | None = Field(None, ge=12, le=1200, title="Available length (in)", description="Length of the yard or site available; leave empty for no limit (bounds inferred)", json_schema_extra={"unit": "in"})
-    layout: Layout = Field("auto", title="Layout", description="auto picks straight when it fits the site and the lumber, otherwise switchback")
-    slope_ratio: float = Field(12, ge=2, le=40, title="Slope (run per unit rise)", description="12 means 1:12; 12 or more is recommended (bounds inferred)")
-    landing_length_in: float = Field(60, ge=12, le=240, title="Landing length (in)", description="Length of each landing between runs (bounds inferred)", json_schema_extra={"unit": "in"})
-    framing: Literal["2x6_PT", "2x8_PT"] = Field("2x6_PT", title="Framing lumber", description="Stringer and landing framing material")
-    stringer_spacing_in: float = Field(16, ge=8, le=24, title="Stringer spacing (in)", description="On center (bounds inferred)", json_schema_extra={"unit": "in"})
-    decking: Literal["5/4x6_PT_deck", "3/4_ext_ply"] = Field("5/4x6_PT_deck", title="Decking", description="Deck boards or exterior plywood")
-    deck_gap_in: float = Field(0.125, ge=0, le=0.5, title="Deck gap (in)", description="Gap between deck boards (bounds inferred)", json_schema_extra={"unit": "in"})
-    handrails: Literal["auto", "yes", "no"] = Field("auto", title="Handrails", description="auto adds handrails when the rise requires them")
-    edge_curb: bool = Field(True, title="Edge curb", description="2x6 curb, at least 4 in tall, on the open sides")
+    total_rise_in: float = Field(..., ge=1, le=60, title="Rise (height to climb)", description="From the ground to the top of the porch or doorway, measured straight up. Three standard steps are about 21 in.", json_schema_extra={"unit": "in", "group": "key"})
+    clear_width_in: float = Field(36, ge=30, le=60, title="Ramp width", description="Walking width of the whole ramp, edge to edge inside the curbs. Every run and landing gets this width; 36 in fits a wheelchair.", json_schema_extra={"unit": "in", "group": "key"})
+    available_length_in: float | None = Field(None, ge=12, le=1200, title="Space in front (optional)", description="How far the yard extends out from the porch. Leave empty if space isn't a limit; if a straight ramp won't fit, Chisel suggests a switchback. (bounds inferred)", json_schema_extra={"unit": "in", "group": "key"})
+    layout: Layout = Field("auto", title="Layout", description="Automatic uses a straight ramp when it fits the space and the lumber, otherwise a switchback (two runs side by side with a turn landing).", json_schema_extra={"group": "advanced", "enum_labels": {"auto": "Automatic", "straight": "Straight", "switchback": "Switchback"}})
+    slope_ratio: float = Field(12, ge=2, le=40, title="Slope (inches of ramp per inch of rise)", description="12 means 1:12, the usual guideline for wheelchairs; higher is gentler and longer. (bounds inferred)", json_schema_extra={"group": "advanced"})
+    landing_length_in: float = Field(60, ge=12, le=240, title="Landing length", description="Length of each flat landing between runs, where people rest or turn. (bounds inferred)", json_schema_extra={"unit": "in", "group": "advanced"})
+    framing: Literal["2x6_PT", "2x8_PT"] = Field("2x6_PT", title="Framing lumber", description="Boards for the stringers (the sloped supports) and the landing frames.", json_schema_extra={"group": "advanced", "enum_labels": {"2x6_PT": "2x6 pressure-treated", "2x8_PT": "2x8 pressure-treated"}})
+    stringer_spacing_in: float = Field(16, ge=8, le=24, title="Stringer spacing", description="Distance between the sloped supports under the deck, center to center. Closer is stiffer. (bounds inferred)", json_schema_extra={"unit": "in", "group": "advanced"})
+    decking: Literal["5/4x6_PT_deck", "3/4_ext_ply"] = Field("5/4x6_PT_deck", title="Decking", description="The walking surface.", json_schema_extra={"group": "advanced", "enum_labels": {"5/4x6_PT_deck": "5/4x6 deck boards", "3/4_ext_ply": "3/4 exterior plywood"}})
+    deck_gap_in: float = Field(0.125, ge=0, le=0.5, title="Deck board gap", description="Gap between deck boards for drainage. (bounds inferred)", json_schema_extra={"unit": "in", "group": "advanced"})
+    handrails: Literal["auto", "yes", "no"] = Field("auto", title="Handrails", description="Automatic adds handrails on both sides when the rise needs them.", json_schema_extra={"group": "advanced", "enum_labels": {"auto": "Automatic", "yes": "Always", "no": "None"}})
+    edge_curb: bool = Field(True, title="Edge curb", description="A 2x6 curb along the open sides so wheels and canes can't slip off the edge.", json_schema_extra={"group": "advanced"})
 
 
 @dataclass(frozen=True)
@@ -238,6 +244,65 @@ def derive(params: Params) -> Derived:
         return switchback
     # auto: straight only when it fits the site AND every stringer is buyable as one board
     return straight if straight.fits_site and straight.stringers_fit_stock else replace(switchback, requested_layout="auto")
+
+
+def _in(inches: float) -> str:
+    return f'{format_fraction(inches)}"'
+
+
+def summarize(params: Params, derived: Derived) -> list[dict[str, str]]:
+    """The numbers a builder wants at a glance, as display text (`label`, `value`, optional `detail`).
+
+    Optional template hook: the engine stores the result on the spec as `meta["summary"]`. Every value
+    is formatted here from `derive`, so the UI only displays text and computes nothing.
+    """
+    runs = derived.runs
+    run_word = "run" if len(runs) == 1 else "runs"
+    facts: list[dict[str, str]] = [
+        {"label": "Layout", "value": f"{derived.layout.capitalize()}, {len(runs)} {run_word}"},
+        {"label": "Slope", "value": f"1:{derived.slope_ratio:g} ({derived.slope_angle_deg:.1f}°)", "detail": "1:12 or gentler is the usual guideline"},
+        {"label": "Ramp length", "value": format_ft_in(derived.total_run_in), "detail": "measured along the ground, all runs together"},
+    ]
+
+    space = f"{format_ft_in(derived.footprint_length_in)} long × {format_ft_in(derived.footprint_width_in)} wide"
+    if params.available_length_in is None:
+        space_detail = "no space limit given"
+    elif derived.fits_site:
+        space_detail = f"fits the {format_ft_in(params.available_length_in)} available"
+    else:
+        space_detail = f"{format_ft_in(derived.footprint_length_in - params.available_length_in)} more than the {format_ft_in(params.available_length_in)} available"
+    facts.append({"label": "Space needed", "value": space, "detail": space_detail})
+
+    if len(runs) == 1:
+        facts.append({"label": "Run", "value": f"rises {_in(runs[0].rise_in)} over {format_ft_in(runs[0].run_in)}"})
+    else:
+        for run in runs:
+            facts.append({"label": f"Run {run.index + 1}", "value": f"rises {_in(run.rise_in)} over {format_ft_in(run.run_in)}"})
+
+    if derived.landings:
+        kinds = {landing.kind for landing in derived.landings}
+        kind = "turn" if kinds == {"turn"} else "intermediate" if kinds == {"intermediate"} else "flat"
+        count = len(derived.landings)
+        facts.append({"label": "Landings", "value": f"{count} {kind} landing{'s' if count > 1 else ''}, {format_ft_in(derived.landing_length_in)} long"})
+    else:
+        facts.append({"label": "Landings", "value": "None", "detail": "one run straight up to the porch"})
+
+    if derived.handrails_included:
+        rails = "Both sides"
+        rails_detail = f"needed above {_in(HANDRAIL_RISE_THRESHOLD_IN.value)} of rise" if derived.handrails_required else "added by choice"
+    else:
+        rails = "None"
+        rails_detail = f"recommended above {_in(HANDRAIL_RISE_THRESHOLD_IN.value)} of rise" if derived.handrails_required else f"not needed at {_in(derived.total_rise_in)} of rise"
+    facts.append({"label": "Handrails", "value": rails, "detail": rails_detail})
+
+    if derived.max_stringer_length_in > 0:
+        stock = format_ft_in(derived.max_stock_length_in)
+        facts.append({
+            "label": "Longest stringer",
+            "value": format_ft_in(derived.max_stringer_length_in),
+            "detail": f"longest board sold is {stock}" + ("" if derived.stringers_fit_stock else ", too long for one board"),
+        })
+    return facts
 
 
 def generate_parts(params: Params) -> list[Part]:
